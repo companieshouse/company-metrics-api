@@ -25,3 +25,6 @@ test-integration     Run integration tests
 test-unit            Run unit tests
 
 ```
+
+## Running mongodb locally
+From root folder of this project run ```docker-compose up -d```
