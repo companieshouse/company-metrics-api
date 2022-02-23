@@ -4,7 +4,7 @@ company-metrics-api
 company-metrics-api is responsible for 
 1. Persisting company metrics collection to database
 2. Company Metrics API has a single RESTful endpoint to GET company metrics and a single RPC (action based) endpoint to force a metrics recalculation
-3. Company Metrics API is a store for few different types of resource mterics: charges, officers and pscs.
+3. Company Metrics API is a store for few different types of resource metrics: charges, officers and pscs.
 
 ## Development
 
