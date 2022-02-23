@@ -1,0 +1,8 @@
+
+logger:
+  namespace: company-metrics-api
+
+chs:
+  kafka:
+    api:
+      endpoint: ${CHS_KAFKA_API_URL:localhost}
