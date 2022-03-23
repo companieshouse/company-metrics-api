@@ -1,0 +1,26 @@
+{
+  "_id" : "00000587",
+  "data" : {
+    "counts" : {
+      "appointments" : {
+        "active_count" : 1,
+        "active_secretaries_count" : 0,
+        "active_directors_count" : 1,
+        "resigned_count" : 16,
+        "total_count" : 17,
+        "active_llp_members_count" : 0
+      }
+    },
+    "mortgage" : {
+      "part_satisfied_count" : 0,
+      "satisfied_count" : 42,
+      "total_count" : 51
+    },
+    "etag" : "eb5f291ff2acc7b127b36802de2004c3f764c6ed"
+  },
+  "updated" : {
+    "by" : "5b56357518200334fa0c6c1f",
+    "at" : "2020-06-23T14:27:34.987Z",
+    "type" : "company_metrics"
+  }
+}

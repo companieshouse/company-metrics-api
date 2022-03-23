@@ -1,8 +1,15 @@
-
 logger:
   namespace: company-metrics-api
+
+mongo:
+  company-metrics-collection: company_metrics
 
 chs:
   kafka:
     api:
-      endpoint: ${CHS_KAFKA_API_URL:localhost}
+      endpoint: ${CHS_URL:localhost}
+      key: ${CHS_API_KEY:chsApiKey}
+
+springfox:
+  documentation:
+    auto-startup: false
