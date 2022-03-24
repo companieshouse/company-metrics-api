@@ -15,16 +15,7 @@ springfox:
   documentation:
     auto-startup: false
 
-
-logging:
-  level:
-    org:
-      mongodb: DEBUG
-
 spring:
   data:
     mongodb:
       uri: ${MONGODB_URL:mongodb://127.0.0.1:27017/company_metrics}
-
-server:
-  port: 8082

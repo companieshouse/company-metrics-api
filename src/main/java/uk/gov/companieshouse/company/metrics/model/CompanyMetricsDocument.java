@@ -33,7 +33,7 @@ public class CompanyMetricsDocument {
     }
 
     /**
-     * Default Constructor.
+     * Constructor.
      */
     public CompanyMetricsDocument() {
         this.companyMetrics = null;

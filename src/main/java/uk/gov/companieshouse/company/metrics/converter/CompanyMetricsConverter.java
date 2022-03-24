@@ -28,7 +28,9 @@ public class CompanyMetricsConverter implements Converter<Document, CompanyMetri
                     .builder()
                     .dateTimeConverter(new JsonDateTimeConverter())
                     .build();
-            return mapper.readValue(source.toJson(writerSettings), CompanyMetricsDocument.class);
+            CompanyMetricsDocument companyMetricsDocument = mapper
+                    .readValue(source.toJson(writerSettings), CompanyMetricsDocument.class);
+            return companyMetricsDocument;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

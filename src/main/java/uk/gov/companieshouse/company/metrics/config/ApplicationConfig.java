@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.company.metrics.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ public class ApplicationConfig implements WebMvcConfigurer {
         ObjectMapper customMapper = new Jackson2ObjectMapperBuilder().build();
         // Exclude properties with null values from being serialised
         customMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        customMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         return customMapper;
     }
 

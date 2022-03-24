@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.repository.CompanyMetricsRepository;
@@ -45,6 +46,7 @@ class CompanyMetricsServiceTest {
     @Test
     @DisplayName("When company metrics is retrieved successfully then it is returned")
     void getCompanyMetrics() throws IOException {
+
         CompanyMetricsDocument companyMetricsDocument = testData.
                 createCompanyMetricsDocument("source-metrics-body-1.json");
 
