@@ -57,8 +57,8 @@ class CompanyMetricsControllerTest {
 
         mockMvc.perform(get(COMPANY_URL))
                 .andExpect(status().isOk())
-                .andExpect(content().string(objectMapper.writeValueAsString(companyMetricsDocument)));
-        System.out.println("response = "+ objectMapper.writeValueAsString(companyMetricsDocument));
+                .andExpect(content().string(objectMapper.writeValueAsString(companyMetricsDocument.getCompanyMetrics())));
+        System.out.println("response = "+ objectMapper.writeValueAsString(companyMetricsDocument.getCompanyMetrics()));
     }
 
     @Test

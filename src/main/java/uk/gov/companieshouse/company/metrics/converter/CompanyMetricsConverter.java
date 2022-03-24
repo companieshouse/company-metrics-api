@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.company.Data;
-import uk.gov.companieshouse.api.metrics.MetricsApi;
+
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 
 @ReadingConverter

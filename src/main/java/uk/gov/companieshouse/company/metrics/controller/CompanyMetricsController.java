@@ -25,12 +25,12 @@ public class CompanyMetricsController {
      * @return company metrics api
      */
     @GetMapping("/company/{company_number}/metrics")
-    public ResponseEntity<CompanyMetricsDocument> getCompanyMetrics(
+    public ResponseEntity<MetricsApi> getCompanyMetrics(
             @PathVariable("company_number") String companyNumber) {
         return companyMetricsService.get(companyNumber)
                 .map(companyMetricsDocument ->
                         new ResponseEntity<>(
-                                companyMetricsDocument,
+                                companyMetricsDocument.getCompanyMetrics(),
                                 HttpStatus.OK))
                 .orElse(ResponseEntity.notFound().build());
     }

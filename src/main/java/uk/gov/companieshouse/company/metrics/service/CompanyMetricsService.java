@@ -2,7 +2,6 @@ package uk.gov.companieshouse.company.metrics.service;
 
 import java.util.Optional;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.repository.CompanyMetricsRepository;
