@@ -8,8 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
+import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
 
@@ -47,8 +49,13 @@ class CompanyMetricsServiceTest {
     @DisplayName("When company metrics is retrieved successfully then it is returned")
     void getCompanyMetrics() throws IOException {
 
-        CompanyMetricsDocument companyMetricsDocument = testData.
-                createCompanyMetricsDocument("source-metrics-body-1.json");
+        MetricsApi metricsApi = testData.
+                createMetricsApi("source-metrics-body-1.json");
+
+        Updated updated = testData.
+                createUpdated("source-metrics-updated-body-1.json");
+
+        CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsDocument(metricsApi, updated);
 
         when(companyMetricsRepository.findById(anyString()))
                 .thenReturn(Optional.of(companyMetricsDocument));

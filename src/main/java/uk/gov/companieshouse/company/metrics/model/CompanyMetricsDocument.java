@@ -11,17 +11,17 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 public class CompanyMetricsDocument {
     @Id
     @Field("_id")
-    @JsonProperty("_id")
+    //@JsonProperty("_id")
     private String id;
 
     @Field("data")
     @JsonProperty("data")
-    private final MetricsApi companyMetrics;
+    private MetricsApi companyMetrics;
 
     @Version
     private Long version;
 
-    private final Updated updated;
+    private Updated updated;
 
     /**
      * Constructor taking in MetricsApi and Updated objects.
@@ -52,6 +52,15 @@ public class CompanyMetricsDocument {
         return companyMetrics;
     }
 
+    /**
+     * setter for companyMetrics.
+     */
+    public MetricsApi setCompanyMetrics(MetricsApi companyMetrics) {
+
+        this.companyMetrics = companyMetrics;
+        return this.companyMetrics;
+    }
+
     public Long getVersion() {
         return version;
     }
@@ -62,5 +71,10 @@ public class CompanyMetricsDocument {
 
     public Updated getUpdated() {
         return updated;
+    }
+
+    public Updated setUpdated(Updated updated) {
+        this.updated = updated;
+        return this.updated;
     }
 }

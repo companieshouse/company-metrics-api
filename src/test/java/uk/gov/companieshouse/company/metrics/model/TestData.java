@@ -2,34 +2,40 @@ package uk.gov.companieshouse.company.metrics.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.jetbrains.annotations.NotNull;
+
 import org.springframework.util.FileCopyUtils;
-import uk.gov.companieshouse.api.charges.ChargesApi;
+
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 public class TestData {
 
     private ObjectMapper objectMapper;
 
-    public CompanyMetricsDocument createCompanyMetricsDocument(String jsonFileName) throws IOException {
+    public MetricsApi createMetricsApi(String jsonFileName) throws IOException {
 
         String companyMetricsDocument = loadTestdataFile(jsonFileName);
-        return getObjectMapper().readValue(companyMetricsDocument, CompanyMetricsDocument.class);
+        return getObjectMapper().readValue(companyMetricsDocument, MetricsApi.class);
+
+    }
+
+    public Updated createUpdated(String jsonFileName) throws IOException {
+
+        String companyMetricsDocument = loadTestdataFile(jsonFileName);
+        return getObjectMapper().readValue(companyMetricsDocument, Updated.class);
 
     }
 
     public String loadTestdataFile(String jsonFileName) throws IOException {
-        InputStreamReader exampleChargesJsonPayload = new InputStreamReader(
+        InputStreamReader jsonPayload = new InputStreamReader(
                 Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResourceAsStream(jsonFileName)));
-        return FileCopyUtils.copyToString(exampleChargesJsonPayload);
+        return FileCopyUtils.copyToString(jsonPayload);
     }
 
-    private ObjectMapper getObjectMapper()
+    public ObjectMapper getObjectMapper()
     {
         objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
         objectMapper.registerModule(new JavaTimeModule());

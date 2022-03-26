@@ -311,7 +311,6 @@
 						<arg>-Xlint</arg>
 						<arg>-Xlint:-processing</arg>
 						<arg>-Xlint:-serial</arg>
-						<arg>-Werror</arg>
 					</compilerArgs>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>

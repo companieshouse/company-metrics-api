@@ -2,11 +2,11 @@ package uk.gov.companieshouse.company.metrics.model;
 
 public class Updated {
 
-    private final String at;
+    private String at;
 
-    private final String by;
+    private String by;
 
-    private final String type;
+    private String type;
 
     /**
      * Instantiate company insolvency updated data.
@@ -33,11 +33,23 @@ public class Updated {
         return at;
     }
 
+    public void setAt(String at) {
+        this.at = at;
+    }
+
     public String getBy() {
         return by;
     }
 
+    public void setBy(String by) {
+        this.by = by;
+    }
+
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
