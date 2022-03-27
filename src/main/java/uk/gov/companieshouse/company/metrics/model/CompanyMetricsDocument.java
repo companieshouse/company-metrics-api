@@ -11,7 +11,6 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 public class CompanyMetricsDocument {
     @Id
     @Field("_id")
-    //@JsonProperty("_id")
     private String id;
 
     @Field("data")
