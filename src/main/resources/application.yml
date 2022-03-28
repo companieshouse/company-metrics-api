@@ -20,8 +20,7 @@ mongodb:
   company:
     metrics:
     transactions: ${TRANSACTIONS_ENABLED:false}
-    collection:
-      name: ${COMPANY_METRICS_COLLECTION_NAME:company_metrics}
+
 
 
 spring:
@@ -29,3 +28,4 @@ spring:
     mongodb:
       uri: ${MONGODB_URL:mongodb://localhost:27017/company_metrics}
       name: company_metrics
+      collection: company_metrics
