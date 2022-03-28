@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 
-@Document(collection = "#{@environment.getProperty('mongo.company-metrics-collection')}")
+@Document(collection = "#{@environment.getProperty('mongodb.company.metrics.collection.name')}")
 public class CompanyMetricsDocument {
     @Id
     @Field("_id")
