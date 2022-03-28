@@ -21,7 +21,7 @@ mongodb:
     metrics:
     transactions: ${TRANSACTIONS_ENABLED:false}
     collection:
-      name: ${COMPANY_METRICS_COLLECTION_NAME:company_mortgages}
+      name: ${COMPANY_METRICS_COLLECTION_NAME:company_metrics}
 
 
 spring:
