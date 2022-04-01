@@ -69,12 +69,16 @@ public class CompanyMetricsService {
                               Integer partSatisfiedCount, String updatedBy,
                               CompanyMetricsDocument companyMetricsDocument) {
         logger.debug(String.format("Started : Save or Update Company_Metrics with totalCount %s "
-                        + "and satisfiedCount %s and  partSatisfiedCount %s",
-                         totalCount, satisfiedCount));
+                        + "and satisfiedCount %s and  partSatisfiedCount %s ",
+                         totalCount, satisfiedCount, partSatisfiedCount));
 
         if (companyMetricsDocument != null && companyMetricsDocument.getCompanyMetrics() != null) {
+            if (companyMetricsDocument.getUpdated() != null) {
+                companyMetricsDocument.getUpdated().setBy(updatedBy);
+            }
             MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
             metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+
             if (metricsApi.getMortgage() != null) {
                 metricsApi.getMortgage().setTotalCount(totalCount);
                 metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
@@ -86,7 +90,7 @@ public class CompanyMetricsService {
             logger.debug(String.format("Finished : Save or Update Company_Metrics "
                             + "with totalCount %s "
                             + "and satisfiedCount %s and  partSatisfiedCount %s",
-                    totalCount, satisfiedCount));
+                    totalCount, satisfiedCount , partSatisfiedCount));
         } else  {
             logger.info("companyMetricsDocument is null hence not "
                     + "saving or updating the company_metrics collection ");
@@ -102,7 +106,7 @@ public class CompanyMetricsService {
      *  @return Integer
      */
     public Integer queryCompanyMetrics(String companyNumber, String status) {
-        return status == null ? chargesRepository.getTotalCharges(companyNumber) :
+        return status.equalsIgnoreCase("none") ? chargesRepository.getTotalCharges(companyNumber) :
                 chargesRepository.getPartOrFullSatisfiedCharges(companyNumber, status);
 
     }

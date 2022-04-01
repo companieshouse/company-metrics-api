@@ -110,7 +110,7 @@ class CompanyMetricsControllerTest {
     void postRecalculateCompanyCharges() throws Exception {
 
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
-        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER, null)).thenReturn(20);
+        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER, "none")).thenReturn(20);
         when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER, "satisfied")).thenReturn(10);
         when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
 

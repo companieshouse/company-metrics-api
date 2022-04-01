@@ -58,18 +58,15 @@ public class CompanyMetricsController {
         // Check to see if mortgages flag only then process further
         if (requestBody != null && requestBody.getMortgage()) {
             // query the mongodb to get a charges counts
-            int totalCount  = companyMetricsService.queryCompanyMetrics(companyNumber, null);
+            int totalCount  = companyMetricsService.queryCompanyMetrics(companyNumber, "none");
             int satisfiedCount =   companyMetricsService.queryCompanyMetrics(
                      companyNumber, "satisfied");
             int partSatisfiedCount = companyMetricsService.queryCompanyMetrics(
                      companyNumber, "part-satisfied");
             String updatedBy =  requestBody.getInternalData() != null
                       ? requestBody.getInternalData().getUpdatedBy() : null;
-
-            Optional<CompanyMetricsDocument> companyMetricsDocument =
-                     companyMetricsService.get(companyNumber);
             companyMetricsService.upsertMetrics(totalCount,satisfiedCount, partSatisfiedCount,
-                     updatedBy, companyMetricsDocument.get());
+                     updatedBy, companyMetricsService.get(companyNumber).get());
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
