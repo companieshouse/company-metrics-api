@@ -2,4 +2,6 @@ app_name: company-metrics-api
 group: api
 weight: 900
 routes:
-   1: ^/company/(.*)/metrics.*
+   1: ^/company-metrics-api/healthcheck
+   2: ^/company/(.*)/metrics/(.*)
+   3: ^/company/(.*)/metrics
