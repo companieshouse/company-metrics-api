@@ -47,7 +47,7 @@ class CompanyMetricsReadConverterTest {
         CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsReadConverter(objectMapper).convert(companyMetricsBson);
 
         String expectedMetricsFileName = "expected-metrics-body-2.json";
-        String expectedMetricsJson = testData.loadTestdataFile(expectedMetricsFileName);
+        String expectedMetricsJson = testData.loadTestDataFile(expectedMetricsFileName);
         CompanyMetricsDocument expectedMetricsDocument = objectMapper.readValue(expectedMetricsJson, CompanyMetricsDocument.class);
         // assert that we're using the custom objectMapper
         assertThat(objectMapper.getRegisteredModuleIds().stream().findFirst().get().toString().contains("SimpleModule"));

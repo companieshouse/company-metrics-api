@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.company.metrics.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
+import uk.gov.companieshouse.company.metrics.repository.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
 
@@ -19,11 +21,10 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CompanyMetricsServiceTest {
@@ -31,6 +32,9 @@ class CompanyMetricsServiceTest {
 
     @Mock
     CompanyMetricsRepository companyMetricsRepository;
+
+    @Mock
+    ChargesRepository chargesRepository;
 
     @Mock
     Logger logger;
@@ -78,5 +82,38 @@ class CompanyMetricsServiceTest {
 
         assertTrue(companyMetricsActual.isEmpty());
         verify(logger, times(2)).trace(anyString());
+    }
+
+    @Test
+    @DisplayName("When queryCompanyMetrics method is invoked with company number and status then return the count")
+    void queryCompanyMetrics() throws IOException {
+
+        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,null))
+                .thenReturn(20);
+        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"satisfied"))
+                .thenReturn(10);
+        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"part-satisfied"))
+                .thenReturn(10);
+
+        assertEquals(20, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,null));
+        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"satisfied"));
+        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"part-satisfied"));
+
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("When upsert method is invoked with total, satisfied, part-satisfied count then persist those in metrics")
+    void upsertMetrics() throws IOException {
+
+        /*when(companyMetricsService.upsertMetrics(20,10,10,
+                "updatedBy",
+                testData.populateCompanyMetricsDocument())).then(doNothing());*/
+
+
+        assertEquals(20, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,null));
+        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"satisfied"));
+        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"part-satisfied"));
+
     }
 }

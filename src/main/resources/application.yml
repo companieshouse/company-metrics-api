@@ -19,13 +19,18 @@ springfox:
 mongodb:
   company:
     metrics:
-    transactions: ${TRANSACTIONS_ENABLED:false}
+    transactions: ${TRANSACTIONS_ENABLED:true}
 
 
 
 spring:
   data:
     mongodb:
-      uri: ${MONGODB_URL:mongodb://localhost:27017/company_metrics}
-      name: company_metrics
-      collection: company_metrics
+      metrics:
+        uri: ${MONGODB_METRICS_URL:mongodb://localhost:27017/company_metrics}
+        name: company_metrics
+        collection: company_metrics
+      charges:
+        uri: ${MONGODB_CHARGES_URL:mongodb://localhost:27017/company_mortgages}
+        name: company_mortgages
+        collection: company_mortgages
