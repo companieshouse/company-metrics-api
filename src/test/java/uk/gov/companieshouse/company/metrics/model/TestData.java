@@ -6,9 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.bson.Document;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileCopyUtils;
 
@@ -53,24 +50,6 @@ public class TestData {
         objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
-    }
-
-    public List<ChargesDocument> createChargesDocumentList () throws IOException {
-        List<String> chargesJsonFiles = new ArrayList<>();
-
-        chargesJsonFiles.add(loadTestDataFile("charges-test-record-0.json"));
-        chargesJsonFiles.add(loadTestDataFile("charges-test-record-1.json"));
-
-        List<ChargesDocument> chargeList = new ArrayList<>();
-        for (String document : chargesJsonFiles) {
-            chargeList.add(returnChargesDocument(document));
-        }
-        return chargeList;
-    }
-
-    private ChargesDocument  returnChargesDocument(String record) {
-        Document chargesBson = Document.parse(record);
-        return getObjectMapper().convertValue(chargesBson, ChargesDocument.class);
     }
 
     public MetricsRecalculateApi populateMetricsRecalculateApi() {

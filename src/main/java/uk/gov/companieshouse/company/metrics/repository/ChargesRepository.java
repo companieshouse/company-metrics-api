@@ -11,7 +11,9 @@ public interface ChargesRepository extends MongoRepository<ChargesDocument, Stri
     @Query(value = "{company_number: ?0}",count = true)
     Integer getTotalCharges(String companyNumber);
 
-    @Query(value = "{company_number: ?0, status: ?1}",count = true)
+    @Query(value = "{'company_number': ?0, 'data.status': ?1}",count = true)
     Integer getPartOrFullSatisfiedCharges(String companyNumber, String status);
+
+
 
 }

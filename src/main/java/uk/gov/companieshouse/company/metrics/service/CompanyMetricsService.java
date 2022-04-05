@@ -1,15 +1,19 @@
 package uk.gov.companieshouse.company.metrics.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
+import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
-
 
 
 @Service
@@ -74,7 +78,7 @@ public class CompanyMetricsService {
 
         if (companyMetricsDocument != null && companyMetricsDocument.getCompanyMetrics() != null) {
             if (companyMetricsDocument.getUpdated() != null) {
-                companyMetricsDocument.getUpdated().setBy(updatedBy);
+                companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
             }
             MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
             metricsApi.setEtag(GenerateEtagUtil.generateEtag());
@@ -92,11 +96,37 @@ public class CompanyMetricsService {
                             + "and satisfiedCount %s and  partSatisfiedCount %s",
                     totalCount, satisfiedCount , partSatisfiedCount));
         } else  {
-            logger.info("companyMetricsDocument is null hence not "
-                    + "saving or updating the company_metrics collection ");
+            logger.info("companyMetricsDocument is null hence creating "
+                    + "a new record in the company_metrics collection ");
+            var companyMetricsRecord  = new CompanyMetricsDocument();
+
         }
 
     }
+
+    /**
+     * Add or Insert company_metrics.
+     *
+     * @param id id.
+     * @param totalCount total_count.
+     * @param satisfiedCount      satisfied_count.
+     * @param partSatisfiedCount   part_satisfied_count.
+     * @param updatedBy   updatedBy.
+     */
+    @Transactional
+    public void insertMetrics(String id, Integer totalCount, Integer satisfiedCount,
+                              Integer partSatisfiedCount, String updatedBy) {
+
+        var companyMetricsDocument =
+                populateCompanyMetrics(id,totalCount,satisfiedCount,partSatisfiedCount,updatedBy);
+
+        logger.debug("Started : inserting a new record in metrics collection ");
+        companyMetricsRepository.save(companyMetricsDocument);
+        logger.debug("Finished : added a record into "
+                + "Company_Metrics with id " + id);
+
+    }
+
 
     /**
      *  Query company metrics collection.
@@ -111,5 +141,36 @@ public class CompanyMetricsService {
 
     }
 
+    private CompanyMetricsDocument populateCompanyMetrics(String id,
+                             Integer totalCount, Integer satisfiedCount,
+                             Integer partSatisfiedCount, String updatedBy) {
+        var companyMetricsRecord  = new CompanyMetricsDocument();
+        companyMetricsRecord.setId(id);
+        var metricsApi = new MetricsApi();
+        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+        var mortgageApi = new MortgageApi();
+        mortgageApi.setTotalCount(totalCount);
+        mortgageApi.setSatisfiedCount(satisfiedCount);
+        mortgageApi.setPartSatisfiedCount(partSatisfiedCount);
+        metricsApi.setMortgage(mortgageApi);
+
+        companyMetricsRecord.setUpdated(populateUpdated(updatedBy));
+        companyMetricsRecord.setCompanyMetrics(metricsApi);
+
+        return companyMetricsRecord;
+    }
+
+    private Updated populateUpdated(String updatedBy) {
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Date date = new Date();
+        String updatedAt =  simpleDateFormat.format(date);
+
+        Updated updated = new Updated();
+        updated.setBy(updatedBy);
+        updated.setAt("ISODate(\"" + updatedAt + "\")");
+        updated.setType("company_metrics");
+        return updated;
+    }
 
 }

@@ -112,4 +112,14 @@ class CompanyMetricsServiceTest {
         Mockito.verify(companyMetricsRepository, Mockito.times(1)).save(Mockito.any());
 
     }
+
+    @Test
+    @DisplayName("When insert method is invoked with id, total, satisfied, part-satisfied count and updated by then save those in metrics")
+    void insertMetrics() {
+
+        companyMetricsService.insertMetrics("12345", 20,10,
+                10, "updatedBy");
+        Mockito.verify(companyMetricsRepository, Mockito.times(1)).save(Mockito.any());
+
+    }
 }
