@@ -4,7 +4,6 @@ logger:
 mongo:
   company-metrics-collection: company_metrics
 
-
 chs:
   kafka:
     api:
@@ -20,8 +19,6 @@ mongodb:
   company:
     metrics:
     transactions: ${TRANSACTIONS_ENABLED:true}
-
-
 
 spring:
   data:

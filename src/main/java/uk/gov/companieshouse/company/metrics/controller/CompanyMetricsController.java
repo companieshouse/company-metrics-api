@@ -2,6 +2,7 @@ package uk.gov.companieshouse.company.metrics.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
+import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 
 
@@ -55,23 +57,24 @@ public class CompanyMetricsController {
 
         // Check to see if mortgages flag is true then process further
         if (requestBody != null && requestBody.getMortgage()) {
-            // query the mongodb to get a charges counts
-            int totalCount  = companyMetricsService.queryCompanyMetrics(companyNumber, "none");
-            int satisfiedCount =   companyMetricsService.queryCompanyMetrics(
+            // query the mongodb to get a charges counts from company_mortgages
+            int totalCount  = companyMetricsService.queryCompanyMortgages(companyNumber, "none");
+            int satisfiedCount =   companyMetricsService.queryCompanyMortgages(
                      companyNumber, "satisfied");
-            int partSatisfiedCount = companyMetricsService.queryCompanyMetrics(
+            int partSatisfiedCount = companyMetricsService.queryCompanyMortgages(
                      companyNumber, "part-satisfied");
             String updatedBy =  requestBody.getInternalData() != null
                       ? requestBody.getInternalData().getUpdatedBy() : null;
 
-            if (companyMetricsService.get(companyNumber).isPresent()) {
+            Optional<CompanyMetricsDocument> companyMetricsDocument =
+                    companyMetricsService.get(companyNumber);
+            if (null != companyMetricsDocument.get().getCompanyMetrics()) {
                 companyMetricsService.upsertMetrics(totalCount, satisfiedCount, partSatisfiedCount,
-                        updatedBy, companyMetricsService.get(companyNumber).get());
+                        updatedBy, companyMetricsDocument.get());
             } else {
                 companyMetricsService.insertMetrics(companyNumber,totalCount,
                         satisfiedCount,partSatisfiedCount,updatedBy);
             }
-
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } else {

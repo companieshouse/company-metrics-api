@@ -37,9 +37,9 @@ public class ChargesRepositoryTest {
         when(chargesRepository.getPartOrFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"part-satisfied"))
                 .thenReturn(10);
 
-        assertEquals(20, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"none"));
-        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"satisfied"));
-        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"part-satisfied"));
+        assertEquals(20, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"));
+        assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"satisfied"));
+        assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"));
 
     }
 

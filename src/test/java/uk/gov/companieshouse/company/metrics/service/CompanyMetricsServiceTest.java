@@ -89,16 +89,16 @@ class CompanyMetricsServiceTest {
     @DisplayName("When queryCompanyMetrics method is invoked with company number and status then return the count")
     void invokeQueryCompanyMetrics() throws IOException {
 
-        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"none"))
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"))
                 .thenReturn(20);
-        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"satisfied"))
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"satisfied"))
                 .thenReturn(10);
-        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"part-satisfied"))
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"))
                 .thenReturn(10);
 
-        assertEquals(20, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"none"));
-        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"satisfied"));
-        assertEquals(10, companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER,"part-satisfied"));
+        assertEquals(20, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"));
+        assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"satisfied"));
+        assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"));
 
     }
 

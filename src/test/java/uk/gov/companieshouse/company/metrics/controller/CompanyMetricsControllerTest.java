@@ -2,40 +2,22 @@ package uk.gov.companieshouse.company.metrics.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.springframework.util.FileCopyUtils;
-import uk.gov.companieshouse.api.charges.ChargeApi;
-import uk.gov.companieshouse.api.charges.InternalChargeApi;
-import uk.gov.companieshouse.api.metrics.InternalData;
-import uk.gov.companieshouse.api.metrics.MetricsApi;
-import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
-import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
-import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
-import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -110,9 +92,9 @@ class CompanyMetricsControllerTest {
     void postRecalculateCompanyCharges() throws Exception {
 
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
-        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER, "none")).thenReturn(20);
-        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER, "satisfied")).thenReturn(10);
-        when(companyMetricsService.queryCompanyMetrics(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "none")).thenReturn(20);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "satisfied")).thenReturn(10);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
 
         mockMvc.perform(post(RECALCULATE_URL)
                          .contentType(APPLICATION_JSON)

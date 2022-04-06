@@ -76,31 +76,24 @@ public class CompanyMetricsService {
                         + "and satisfiedCount %s and  partSatisfiedCount %s ",
                          totalCount, satisfiedCount, partSatisfiedCount));
 
-        if (companyMetricsDocument != null && companyMetricsDocument.getCompanyMetrics() != null) {
-            if (companyMetricsDocument.getUpdated() != null) {
-                companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
-            }
-            MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
-            metricsApi.setEtag(GenerateEtagUtil.generateEtag());
-
-            if (metricsApi.getMortgage() != null) {
-                metricsApi.getMortgage().setTotalCount(totalCount);
-                metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
-                metricsApi.getMortgage().setPartSatisfiedCount(partSatisfiedCount);
-            }
-
-            logger.debug("Started : Saving charges in DB ");
-            companyMetricsRepository.save(companyMetricsDocument);
-            logger.debug(String.format("Finished : Save or Update Company_Metrics "
-                            + "with totalCount %s "
-                            + "and satisfiedCount %s and  partSatisfiedCount %s",
-                    totalCount, satisfiedCount , partSatisfiedCount));
-        } else  {
-            logger.info("companyMetricsDocument is null hence creating "
-                    + "a new record in the company_metrics collection ");
-            var companyMetricsRecord  = new CompanyMetricsDocument();
-
+        if (companyMetricsDocument.getUpdated() != null) {
+            companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
         }
+        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+
+        if (metricsApi.getMortgage() != null) {
+            metricsApi.getMortgage().setTotalCount(totalCount);
+            metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
+            metricsApi.getMortgage().setPartSatisfiedCount(partSatisfiedCount);
+        }
+
+        logger.debug("Started : Saving charges in DB ");
+        companyMetricsRepository.save(companyMetricsDocument);
+        logger.debug(String.format("Finished : Save or Update Company_Metrics "
+                        + "with totalCount %s "
+                        + "and satisfiedCount %s and  partSatisfiedCount %s",
+                totalCount, satisfiedCount , partSatisfiedCount));
 
     }
 
@@ -116,6 +109,9 @@ public class CompanyMetricsService {
     @Transactional
     public void insertMetrics(String id, Integer totalCount, Integer satisfiedCount,
                               Integer partSatisfiedCount, String updatedBy) {
+
+        logger.info("companyMetricsDocument with id not found hence creating "
+                + "a new record in the company_metrics collection with id: %s " + id);
 
         var companyMetricsDocument =
                 populateCompanyMetrics(id,totalCount,satisfiedCount,partSatisfiedCount,updatedBy);
@@ -135,7 +131,7 @@ public class CompanyMetricsService {
      *  @param status status
      *  @return Integer
      */
-    public Integer queryCompanyMetrics(String companyNumber, String status) {
+    public Integer queryCompanyMortgages(String companyNumber, String status) {
         return status.equalsIgnoreCase("none") ? chargesRepository.getTotalCharges(companyNumber) :
                 chargesRepository.getPartOrFullSatisfiedCharges(companyNumber, status);
 
@@ -144,8 +140,8 @@ public class CompanyMetricsService {
     private CompanyMetricsDocument populateCompanyMetrics(String id,
                              Integer totalCount, Integer satisfiedCount,
                              Integer partSatisfiedCount, String updatedBy) {
-        var companyMetricsRecord  = new CompanyMetricsDocument();
-        companyMetricsRecord.setId(id);
+        var companyMetricsDocument  = new CompanyMetricsDocument();
+        companyMetricsDocument.setId(id);
         var metricsApi = new MetricsApi();
         metricsApi.setEtag(GenerateEtagUtil.generateEtag());
         var mortgageApi = new MortgageApi();
@@ -154,10 +150,10 @@ public class CompanyMetricsService {
         mortgageApi.setPartSatisfiedCount(partSatisfiedCount);
         metricsApi.setMortgage(mortgageApi);
 
-        companyMetricsRecord.setUpdated(populateUpdated(updatedBy));
-        companyMetricsRecord.setCompanyMetrics(metricsApi);
+        companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
+        companyMetricsDocument.setCompanyMetrics(metricsApi);
 
-        return companyMetricsRecord;
+        return companyMetricsDocument;
     }
 
     private Updated populateUpdated(String updatedBy) {
