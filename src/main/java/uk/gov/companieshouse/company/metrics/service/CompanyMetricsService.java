@@ -64,7 +64,7 @@ public class CompanyMetricsService {
      * Save or Update company_metrics.
      *
      * @param totalCount total_count.
-     * @param satisfiedCount      satisfied_count.
+     * @param satisfiedCount   satisfied_count.
      * @param partSatisfiedCount   part_satisfied_count.
      * @param companyMetricsDocument   CompanyMetricsDocument.
      */
@@ -76,16 +76,21 @@ public class CompanyMetricsService {
                         + "and satisfiedCount %s and  partSatisfiedCount %s ",
                          totalCount, satisfiedCount, partSatisfiedCount));
 
-        if (companyMetricsDocument.getUpdated() != null) {
-            companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
-        }
-        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
-        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+        if (companyMetricsDocument.getCompanyMetrics() != null) {
 
-        if (metricsApi.getMortgage() != null) {
-            metricsApi.getMortgage().setTotalCount(totalCount);
-            metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
-            metricsApi.getMortgage().setPartSatisfiedCount(partSatisfiedCount);
+            MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+            companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
+            metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+
+            if (metricsApi.getMortgage() != null) {
+                metricsApi.getMortgage().setTotalCount(totalCount);
+                metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
+                metricsApi.getMortgage().setPartSatisfiedCount(partSatisfiedCount);
+            } else {
+                metricsApi.setMortgage(populateMortgageApi(
+                        totalCount, satisfiedCount,partSatisfiedCount));
+
+            }
         }
 
         logger.debug("Started : Saving charges in DB ");
@@ -144,10 +149,8 @@ public class CompanyMetricsService {
         companyMetricsDocument.setId(id);
         var metricsApi = new MetricsApi();
         metricsApi.setEtag(GenerateEtagUtil.generateEtag());
-        var mortgageApi = new MortgageApi();
-        mortgageApi.setTotalCount(totalCount);
-        mortgageApi.setSatisfiedCount(satisfiedCount);
-        mortgageApi.setPartSatisfiedCount(partSatisfiedCount);
+        var mortgageApi = populateMortgageApi(
+                totalCount,satisfiedCount,partSatisfiedCount);
         metricsApi.setMortgage(mortgageApi);
 
         companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
@@ -167,6 +170,17 @@ public class CompanyMetricsService {
         updated.setAt("ISODate(\"" + updatedAt + "\")");
         updated.setType("company_metrics");
         return updated;
+    }
+
+    private MortgageApi populateMortgageApi(Integer totalCount, Integer satisfiedCount,
+                                             Integer partSatisfiedCount) {
+        var mortgageApi = new MortgageApi();
+
+        mortgageApi.setTotalCount(totalCount);
+        mortgageApi.setSatisfiedCount(satisfiedCount);
+        mortgageApi.setPartSatisfiedCount(partSatisfiedCount);
+
+        return mortgageApi;
     }
 
 }

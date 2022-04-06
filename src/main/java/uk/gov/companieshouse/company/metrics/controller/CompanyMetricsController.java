@@ -68,7 +68,7 @@ public class CompanyMetricsController {
 
             Optional<CompanyMetricsDocument> companyMetricsDocument =
                     companyMetricsService.get(companyNumber);
-            if (null != companyMetricsDocument.get().getCompanyMetrics()) {
+            if (companyMetricsDocument.isPresent()) {
                 companyMetricsService.upsertMetrics(totalCount, satisfiedCount, partSatisfiedCount,
                         updatedBy, companyMetricsDocument.get());
             } else {
