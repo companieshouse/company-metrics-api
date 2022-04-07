@@ -23,6 +23,8 @@ import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
+import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
+import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 import uk.gov.companieshouse.logging.Logger;
 

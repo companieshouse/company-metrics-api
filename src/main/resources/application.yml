@@ -24,10 +24,10 @@ spring:
   data:
     mongodb:
       metrics:
-        uri: ${MONGODB_METRICS_URL:mongodb://mongo-db1-rebel1.development.aws.internal:27017/company_metrics}
+        uri: ${MONGODB_METRICS_URL:mongodb://localhost:27017/company_metrics}
         name: company_metrics
         collection: company_metrics
       charges:
-        uri: ${MONGODB_CHARGES_URL:mongodb://mongo-db1-rebel1.development.aws.internal:27017/company_mortgages}
+        uri: ${MONGODB_CHARGES_URL:mongodb://localhost:27017/company_mortgages}
         name: company_mortgages
         collection: company_mortgages

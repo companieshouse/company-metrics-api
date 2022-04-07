@@ -11,8 +11,8 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
-import uk.gov.companieshouse.company.metrics.repository.ChargesRepository;
-import uk.gov.companieshouse.company.metrics.repository.CompanyMetricsRepository;
+import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
+import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
 
 
@@ -20,7 +20,9 @@ import uk.gov.companieshouse.logging.Logger;
 public class CompanyMetricsService {
 
     private final Logger logger;
+
     private final CompanyMetricsRepository companyMetricsRepository;
+
     private final ChargesRepository chargesRepository;
 
     /**
