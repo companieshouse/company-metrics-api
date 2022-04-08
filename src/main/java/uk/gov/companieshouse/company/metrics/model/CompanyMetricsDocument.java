@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 
-//#{@environment.getProperty('spring.data.mongodb.metrics.collection')}
 @Document(collection = "company_metrics")
 public class CompanyMetricsDocument {
     @Id
@@ -18,8 +17,8 @@ public class CompanyMetricsDocument {
     @JsonProperty("data")
     private MetricsApi companyMetrics;
 
-    /*@Version
-    private Long version;*/
+    @Version
+    private Long version;
 
     private Updated updated;
 
@@ -61,13 +60,13 @@ public class CompanyMetricsDocument {
         return this.companyMetrics;
     }
 
-    /* public Long getVersion() {
+    public Long getVersion() {
         return version;
     }
 
     public void setVersion(Long version) {
         this.version = version;
-    }*/
+    }
 
     public Updated getUpdated() {
         return updated;
