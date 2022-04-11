@@ -14,11 +14,14 @@ springfox:
   documentation:
     auto-startup: false
 
-
 mongodb:
   company:
     metrics:
-    transactions: ${TRANSACTIONS_ENABLED:true}
+      transactions: ${TRANSACTIONS_ENABLED:false}
+      collection: ${METRICS_COLLECTION_NAME:company_metrics}
+    charges:
+      collection: ${CHARGES_COLLECTION_NAME:company_mortgages}
+
 
 spring:
   data:
