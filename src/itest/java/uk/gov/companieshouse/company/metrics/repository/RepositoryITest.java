@@ -1,46 +1,69 @@
 package uk.gov.companieshouse.company.metrics.repository;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import uk.gov.companieshouse.api.company.Data;
+import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.company.metrics.config.TestConfig;
+import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
+import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
+import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
+import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
+import uk.gov.companieshouse.logging.Logger;
+
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Import(TestConfig.class)
 @Testcontainers
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(properties = {
-        "mongodb.company.metrics.collection.name=company_metrics"
+        "mongodb.company.metrics.collection.name=company_metrics",
+        "mongodb.company.mortgages.collection.name=company_mortgages"
 })
 public class RepositoryITest {
 
   @Autowired
   private CompanyMetricsRepository companyMetricsRepository;
 
+  @Autowired
+  private ChargesRepository chargesRepository;
+
   private static final String MOCK_COMPANY_NUMBER = "12345678";
 
   private TestData testData;
+
+  private CompanyMetricsService companyMetricsService;
+
+  @Mock
+  Logger logger;
 
   static final MongoDBContainer mongoDBContainer = new MongoDBContainer(
       DockerImageName.parse("mongo:4.0.10"));
@@ -60,6 +83,8 @@ public class RepositoryITest {
   void setupForEach() {
     this.companyMetricsRepository.deleteAll();
     this.testData = new TestData();
+    this.chargesRepository.deleteAll();
+    this.companyMetricsService = new CompanyMetricsService(logger,companyMetricsRepository,chargesRepository );
   }
 
   @Test
@@ -100,6 +125,80 @@ public class RepositoryITest {
 
     this.companyMetricsRepository.save(expectedCompanyMetricsDocument);
     assertTrue(this.companyMetricsRepository.findById("non_existing_company_number").isEmpty());
+  }
+
+  @Test
+  void should_return_mortgages_for_existing_company_number() throws IOException {
+
+    List<ChargesDocument> documentList =  new ArrayList<>();
+    documentList.add(populateChargesDocument("1234", MOCK_COMPANY_NUMBER, ChargeApi.StatusEnum.FULLY_SATISFIED));
+    documentList.add(populateChargesDocument("12345", MOCK_COMPANY_NUMBER, ChargeApi.StatusEnum.SATISFIED));
+    documentList.add(populateChargesDocument("123456", MOCK_COMPANY_NUMBER, ChargeApi.StatusEnum.PART_SATISFIED));
+    documentList.add(populateChargesDocument("1234567", MOCK_COMPANY_NUMBER, ChargeApi.StatusEnum.OUTSTANDING));
+
+    this.chargesRepository.saveAll(documentList);
+
+     assertEquals(4, this.chargesRepository.getTotalCharges(MOCK_COMPANY_NUMBER));
+     assertEquals(1, this.chargesRepository.getPartOrFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"satisfied"));
+     assertEquals(1, this.chargesRepository.getPartOrFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"part-satisfied"));
+
+  }
+
+  @Test
+  void should_update_company_metrics_collection_with_mortgage_details() throws IOException {
+
+    MetricsApi metricsApi = testData.
+            createMetricsApi("source-metrics-body-1.json");
+    Updated updated = testData.
+            createUpdated("source-metrics-updated-body-1.json");
+    CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsDocument(metricsApi, updated);
+    companyMetricsDocument.setId(MOCK_COMPANY_NUMBER);
+    companyMetricsService.upsertMetrics(4,1,1,"updatedBy", companyMetricsDocument );
+
+    Optional<CompanyMetricsDocument>  document = companyMetricsRepository.findById(MOCK_COMPANY_NUMBER);
+    assertEquals( MOCK_COMPANY_NUMBER, document.get().getId());
+    assertEquals( 4, document.get().getCompanyMetrics().getMortgage().getTotalCount());
+    assertEquals( 1, document.get().getCompanyMetrics().getMortgage().getSatisfiedCount());
+    assertEquals( 1, document.get().getCompanyMetrics().getMortgage().getPartSatisfiedCount());
+
+  }
+
+  @Test
+  void should_insert_company_metrics_collection_with_mortgage_details() throws IOException {
+
+    companyMetricsService.insertMetrics(MOCK_COMPANY_NUMBER,4,1,1,"updatedBy" );
+
+    Optional<CompanyMetricsDocument>  document = companyMetricsRepository.findById(MOCK_COMPANY_NUMBER);
+    assertEquals( MOCK_COMPANY_NUMBER, document.get().getId());
+    assertEquals( 4, document.get().getCompanyMetrics().getMortgage().getTotalCount());
+
+  }
+
+  private ChargesDocument populateChargesDocument(String id, String companyNumber, ChargeApi.StatusEnum status) {
+
+    ChargeApi chargeApi = new ChargeApi();
+    chargeApi.setStatus(status);
+    chargeApi.setId(id);
+
+    var chargesDocument =
+            new ChargesDocument().setCompanyNumber(companyNumber)
+                    .setId(id).setData(chargeApi)
+                    .setUpdated(populateUpdateObject("updatedBy"));
+
+    return chargesDocument;
+  }
+
+  private Updated populateUpdateObject(String updatedBy) {
+
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    Date date = new Date();
+    String formattedDate =  simpleDateFormat.format(date);
+
+    Updated updated = new Updated();
+    updated.setBy(updatedBy);
+    updated.setAt("ISODate(\"" + formattedDate + "\")");
+    updated.setType("company_metrics");
+    return updated;
   }
 
 }
