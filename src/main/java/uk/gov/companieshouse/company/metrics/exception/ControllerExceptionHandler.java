@@ -39,14 +39,13 @@ public class ControllerExceptionHandler {
      */
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleException(Exception ex, WebRequest request) {
-        logger.error(ex.getMessage(), ex);
         String correlationId = generateShortCorrelationId();
         Map<String, Object> responseBody = new LinkedHashMap<>();
         responseBody.put("timestamp", LocalDateTime.now());
         responseBody.put("message", "Error processing the request");
         responseBody.put("correlationId", correlationId);
         request.setAttribute("javax.servlet.error.exception", ex, 0);
-        logger.error("correlationId = " + correlationId);
+        logger.error("correlationId = " + correlationId, ex);
         return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

@@ -68,13 +68,15 @@ public class CompanyMetricsController {
 
             Optional<CompanyMetricsDocument> companyMetricsDocument =
                     companyMetricsService.get(companyNumber);
-            if (companyMetricsDocument.isPresent()) {
-                companyMetricsService.upsertMetrics(totalCount, satisfiedCount, partSatisfiedCount,
-                        updatedBy, companyMetricsDocument.get());
-            } else {
-                companyMetricsService.insertMetrics(companyNumber,totalCount,
-                        satisfiedCount,partSatisfiedCount,updatedBy);
-            }
+
+            companyMetricsDocument.ifPresentOrElse(
+                    companyMetrics -> companyMetricsService.upsertMetrics(totalCount,
+                            satisfiedCount, partSatisfiedCount,
+                            updatedBy, companyMetrics),
+                    () -> companyMetricsService.insertMetrics(companyNumber,totalCount,
+                            satisfiedCount,partSatisfiedCount,updatedBy)
+            );
+
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } else {
