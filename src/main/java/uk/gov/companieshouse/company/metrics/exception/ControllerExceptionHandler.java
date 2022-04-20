@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.company.metrics.exception;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -8,10 +9,12 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
@@ -46,6 +49,21 @@ public class ControllerExceptionHandler {
         responseBody.put("correlationId", correlationId);
         request.setAttribute("javax.servlet.error.exception", ex, 0);
         logger.error("correlationId = " + correlationId, ex);
+
+        if (ex instanceof ResponseStatusException){
+            ResponseStatusException rse = (ResponseStatusException)ex;
+            Throwable cause = rse.getCause();
+            if (cause instanceof IOException){
+                return new ResponseEntity(responseBody, HttpStatus.SERVICE_UNAVAILABLE);
+            }
+            if ("invokeChsKafkaApi".equals(rse.getReason())){
+                return new ResponseEntity(responseBody, HttpStatus.NOT_EXTENDED);
+            }
+        }
+        if (ex instanceof HttpMessageNotReadableException){
+            return new ResponseEntity(responseBody, HttpStatus.BAD_REQUEST);
+        }
+
         return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
