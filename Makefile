@@ -1,6 +1,7 @@
 artifact_name       := company-metrics-api
 version             := unversioned
 
+##
 ## Create help from comments in Makefile
 help:
 	@printf "%-20s %s\n" "Target" "Description"
