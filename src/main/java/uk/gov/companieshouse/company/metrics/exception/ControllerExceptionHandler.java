@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -34,6 +36,12 @@ public class ControllerExceptionHandler {
         this.logger = logger;
     }
 
+    private void populateResponseBody(Map<String, Object> responseBody , String correlationId){
+        responseBody.put("timestamp", LocalDateTime.now());
+        responseBody.put("message", "There is issue completing the request.");
+        responseBody.put("correlationId", correlationId);
+    }
+
     /**
      * Runtime exception handler.
      *
@@ -50,21 +58,40 @@ public class ControllerExceptionHandler {
         request.setAttribute("javax.servlet.error.exception", ex, 0);
         logger.error("correlationId = " + correlationId, ex);
 
-        if (ex instanceof ResponseStatusException){
-            ResponseStatusException rse = (ResponseStatusException)ex;
-            Throwable cause = rse.getCause();
-            if (cause instanceof IOException){
-                return new ResponseEntity(responseBody, HttpStatus.SERVICE_UNAVAILABLE);
-            }
-            if ("invokeChsKafkaApi".equals(rse.getReason())){
-                return new ResponseEntity(responseBody, HttpStatus.NOT_EXTENDED);
-            }
-        }
-        if (ex instanceof HttpMessageNotReadableException){
-            return new ResponseEntity(responseBody, HttpStatus.BAD_REQUEST);
-        }
-
         return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(value = {DataAccessResourceFailureException.class})
+    public ResponseEntity<Object> handleException(DataAccessResourceFailureException ex, WebRequest request) {
+        var correlationId = generateShortCorrelationId();
+        logger.error(String.format("Started: handleException: %s Generating error response ",
+            correlationId), ex);
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        populateResponseBody(responseBody, correlationId);
+        Throwable cause = ex.getCause();
+
+        return new ResponseEntity<>(responseBody, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(value = {InvalidDataAccessApiUsageException.class})
+    public ResponseEntity<Object> handleException(InvalidDataAccessApiUsageException ex, WebRequest request) {
+        var correlationId = generateShortCorrelationId();
+        logger.error(String.format("Started: handleException: %s Generating error response ",
+            correlationId), ex);
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        populateResponseBody(responseBody, correlationId);
+
+        return new ResponseEntity<>(responseBody, HttpStatus.NOT_EXTENDED);
+    }
+
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
+    public ResponseEntity<Object> handleException(HttpMessageNotReadableException ex, WebRequest request) {
+        var correlationId = generateShortCorrelationId();
+        logger.error(String.format("Started: handleException: %s Generating error response ",
+                correlationId), ex);
+        Map<String, Object> responseBody = new LinkedHashMap<>();
+        populateResponseBody(responseBody, correlationId);
+        return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
     private String generateShortCorrelationId() {
