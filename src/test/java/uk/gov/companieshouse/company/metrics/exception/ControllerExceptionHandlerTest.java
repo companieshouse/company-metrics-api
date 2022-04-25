@@ -91,8 +91,8 @@ class ControllerExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("Handle DataAccessResourceFailureException")
-    public void handleCausedByIOExceptionTest() {
+    @DisplayName("Handle DataAccessException")
+    public void handleCausedByDataAccessExceptionTest() {
         DataAccessResourceFailureException exp = new DataAccessResourceFailureException("Test exception");
         ResponseEntity<Object> response = controllerExceptionHandler.handleException(exp, request);
         assertEquals(503, response.getStatusCodeValue());

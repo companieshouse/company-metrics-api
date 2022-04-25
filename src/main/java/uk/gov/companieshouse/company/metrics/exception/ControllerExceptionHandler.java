@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
@@ -52,9 +53,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<Object> handleException(Exception ex, WebRequest request) {
         String correlationId = generateShortCorrelationId();
         Map<String, Object> responseBody = new LinkedHashMap<>();
-        responseBody.put("timestamp", LocalDateTime.now());
-        responseBody.put("message", "Error processing the request");
-        responseBody.put("correlationId", correlationId);
+        populateResponseBody(responseBody, correlationId);
         request.setAttribute("javax.servlet.error.exception", ex, 0);
         logger.error("correlationId = " + correlationId, ex);
 
@@ -68,18 +67,20 @@ public class ControllerExceptionHandler {
             correlationId), ex);
         Map<String, Object> responseBody = new LinkedHashMap<>();
         populateResponseBody(responseBody, correlationId);
+        request.setAttribute("javax.servlet.error.exception", ex, 0);
         Throwable cause = ex.getCause();
 
         return new ResponseEntity<>(responseBody, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    @ExceptionHandler(value = {InvalidDataAccessApiUsageException.class})
-    public ResponseEntity<Object> handleException(InvalidDataAccessApiUsageException ex, WebRequest request) {
+    @ExceptionHandler(value = {DataAccessException.class})
+    public ResponseEntity<Object> handleException(DataAccessException ex, WebRequest request) {
         var correlationId = generateShortCorrelationId();
         logger.error(String.format("Started: handleException: %s Generating error response ",
             correlationId), ex);
         Map<String, Object> responseBody = new LinkedHashMap<>();
         populateResponseBody(responseBody, correlationId);
+        request.setAttribute("javax.servlet.error.exception", ex, 0);
 
         return new ResponseEntity<>(responseBody, HttpStatus.NOT_EXTENDED);
     }
@@ -91,6 +92,8 @@ public class ControllerExceptionHandler {
                 correlationId), ex);
         Map<String, Object> responseBody = new LinkedHashMap<>();
         populateResponseBody(responseBody, correlationId);
+        request.setAttribute("javax.servlet.error.exception", ex, 0);
+
         return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
