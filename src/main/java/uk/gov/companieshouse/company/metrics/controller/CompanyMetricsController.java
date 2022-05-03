@@ -3,6 +3,8 @@ package uk.gov.companieshouse.company.metrics.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Optional;
+
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +58,7 @@ public class CompanyMetricsController {
     ) throws JsonProcessingException {
 
         // Check to see if mortgages flag is true then process further
-        if (requestBody != null && requestBody.getMortgage()) {
+        if (requestBody != null && BooleanUtils.isTrue(requestBody.getMortgage())) {
             // query the mongodb to get a charges counts from company_mortgages
             int totalCount  = companyMetricsService.queryCompanyMortgages(companyNumber, "none");
             int satisfiedCount =   companyMetricsService.queryCompanyMortgages(

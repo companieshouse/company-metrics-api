@@ -18,6 +18,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.company.metrics.config.AbstractMongoConfig;
 import uk.gov.companieshouse.company.metrics.config.TestConfig;
 import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
@@ -31,6 +32,8 @@ import uk.gov.companieshouse.logging.Logger;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Testcontainers
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestPropertySource(properties = {
-        "mongodb.company.metrics.collection.name=company_metrics",
-        "mongodb.company.mortgages.collection.name=company_mortgages"
-})
-public class RepositoryITest {
+public class RepositoryITest extends AbstractMongoConfig {
 
   @Autowired
   private CompanyMetricsRepository companyMetricsRepository;
@@ -64,15 +63,6 @@ public class RepositoryITest {
 
   @Mock
   Logger logger;
-
-  static final MongoDBContainer mongoDBContainer = new MongoDBContainer(
-      DockerImageName.parse("mongo:4.0.10"));
-
-  @DynamicPropertySource
-  static void setProperties(DynamicPropertyRegistry registry) {
-    registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-    mongoDBContainer.start();
-  }
 
   @BeforeAll
   static void setup(){
@@ -190,13 +180,9 @@ public class RepositoryITest {
 
   private Updated populateUpdateObject(String updatedBy) {
 
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    Date date = new Date();
-    String formattedDate =  simpleDateFormat.format(date);
-
     Updated updated = new Updated();
     updated.setBy(updatedBy);
-    updated.setAt("ISODate(\"" + formattedDate + "\")");
+    updated.setAt(LocalDateTime.now(ZoneOffset.UTC));
     updated.setType("company_metrics");
     return updated;
   }

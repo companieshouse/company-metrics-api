@@ -29,6 +29,7 @@ public class CompanyMetricsReadConverter implements Converter<Document, CompanyM
                     .readValue(source.toJson(writerSettings), CompanyMetricsDocument.class);
             return companyMetricsDocument;
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
     }

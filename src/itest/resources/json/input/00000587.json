@@ -1,0 +1,19 @@
+ {
+    "etag": "eb5f291ff2acc7b127b36802de2004c3f764c6ed",
+    "counts": {
+      "persons-with-significant-control": null,
+      "appointments": {
+        "active_directors_count": 1,
+        "active_secretaries_count": 0,
+        "active_count": 1,
+        "resigned_count": 16,
+        "total_count": 17,
+        "active_llp_members_count": 0
+      }
+    },
+    "mortgage": {
+      "satisfied_count": 42,
+      "part_satisfied_count": 0,
+      "total_count": 51
+    }
+  }
