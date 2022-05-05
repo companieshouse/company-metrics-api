@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.company.metrics.service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;

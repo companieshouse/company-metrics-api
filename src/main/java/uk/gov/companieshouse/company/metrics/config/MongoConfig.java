@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -49,10 +47,6 @@ public class MongoConfig {
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDate.class, new LocalDateSerializer());
         module.addDeserializer(LocalDate.class, new LocalDateDeSerializer());
-        //module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-        //module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeSerializer());
-        //module.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
-        //module.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeSerializer());
         objectMapper.registerModule(module);
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;

@@ -2,13 +2,10 @@ package uk.gov.companieshouse.company.metrics.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
-import org.bson.json.JsonWriterSettings;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 
-import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
-import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 
 @ReadingConverter
 public class CompanyMetricsReadConverter implements Converter<Document, MetricsApi> {

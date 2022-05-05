@@ -16,11 +16,8 @@ import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Objects;
 
 @ExtendWith(SpringExtension.class)
 public class ITestUtil {
@@ -42,12 +39,6 @@ public class ITestUtil {
                     .setCompanyNumber(companyNumber)
                     .setData(chargeApi)
                     .setUpdated(updated);
-    }
-
-    public String loadTestDataFile(String jsonFileName) throws IOException {
-        InputStreamReader jsonPayload = new InputStreamReader(
-                Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResourceAsStream(jsonFileName)));
-        return FileCopyUtils.copyToString(jsonPayload);
     }
 
     public CompanyMetricsDocument createTestCompanyMetricsDocument(String companyNumber) {
@@ -84,10 +75,9 @@ public class ITestUtil {
         return metricsDocument;
     }
 
-
     public MetricsRecalculateApi populateMetricsRecalculateApi(Boolean mortgage) {
 
-        MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();
+        var metricsRecalculateApi = new MetricsRecalculateApi();
         metricsRecalculateApi.setAppointments(false);
         metricsRecalculateApi.setMortgage(mortgage);
         metricsRecalculateApi.setPersonsWithSignificantControl(false);

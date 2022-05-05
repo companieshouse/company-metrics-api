@@ -82,7 +82,7 @@ public class CompanyMetricsController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } else {
-            // mortgage flag is false in payload hence returning 400
+            // mortgage flag is null or false in payload hence returning 400 bad request
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }

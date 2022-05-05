@@ -6,11 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileCopyUtils;
-import uk.gov.companieshouse.api.metrics.*;
-
+import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
+import uk.gov.companieshouse.api.metrics.InternalData;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @ExtendWith(SpringExtension.class)
@@ -25,40 +25,6 @@ public class TestData {
         return getObjectMapper().readValue(companyMetricsDocument, MetricsApi.class);
 
     }
-
-    public CompanyMetricsDocument populateCompanyMetricsDocument(String companyNumber) {
-
-        CompanyMetricsDocument metricsDocument = new CompanyMetricsDocument();
-        var metricsApi = new MetricsApi();
-        metricsApi.setEtag("eb5f291ff2acc7b127b36802de2004c3f764c6ed");
-        var mortgageApi = new MortgageApi();
-        mortgageApi.setPartSatisfiedCount(1);
-        mortgageApi.setSatisfiedCount(1);
-        mortgageApi.setTotalCount(2);
-        metricsApi.setMortgage(mortgageApi);
-        var countsApi = new CountsApi();
-        var appointmentsApi = new AppointmentsApi();
-        appointmentsApi.setTotalCount(3);
-        appointmentsApi.setActiveCount(2);
-        appointmentsApi.setResignedCount(1);
-        appointmentsApi.setActiveDirectorsCount(2);
-        countsApi.setAppointments(appointmentsApi);
-        var pscApi = new PscApi();
-        pscApi.setTotalCount(2);
-        pscApi.setPscsCount(3);
-        countsApi.setPersonsWithSignificantControl(pscApi);
-        metricsApi.setCounts(countsApi);
-        var updated = new Updated();
-        updated.setType("company_metrics");
-        updated.setBy("header-offset-partition");
-        updated.setAt(LocalDateTime.now());
-        metricsDocument.setId(companyNumber);
-        metricsDocument.setCompanyMetrics(metricsApi);
-        metricsDocument.setUpdated(updated);
-
-        return metricsDocument;
-    }
-
 
     public Updated createUpdated(String jsonFileName) throws IOException {
 

@@ -5,7 +5,6 @@ import com.mongodb.BasicDBObject;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.WritingConverter;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
-import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 
 @WritingConverter
 public class CompanyMetricsWriteConverter implements
