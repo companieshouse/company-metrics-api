@@ -46,5 +46,6 @@ class CompanyMetricsReadConverterTest {
         assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getTotalCount()).isEqualTo(51);
         assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getSatisfiedCount()).isEqualTo(42);
         assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getPartSatisfiedCount()).isEqualTo(0);
+        assertThat(objectMapper.getRegisteredModuleIds().stream().findFirst().get().toString().contains("SimpleModule"));
     }
 }
