@@ -7,10 +7,11 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 
 import uk.gov.companieshouse.api.charges.ChargeApi;
+import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 
 @ReadingConverter
-public class CompanyMetricsReadConverter implements Converter<Document, CompanyMetricsDocument> {
+public class CompanyMetricsReadConverter implements Converter<Document, MetricsApi> {
 
     private final ObjectMapper mapper;
 
@@ -19,18 +20,10 @@ public class CompanyMetricsReadConverter implements Converter<Document, CompanyM
     }
 
     @Override
-    public CompanyMetricsDocument convert(Document source) {
+    public MetricsApi convert(Document source) {
         try {
             // Use a custom converter for the ISO datetime stamps
-            /*JsonWriterSettings writerSettings = JsonWriterSettings
-                    .builder()
-                    .dateTimeConverter(new JsonDateTimeConverter())
-                    .build();
-            CompanyMetricsDocument companyMetricsDocument = mapper
-                    .readValue(source.toJson(writerSettings), CompanyMetricsDocument.class);
-            return companyMetricsDocument;*/
-
-            return mapper.readValue(source.toJson(), CompanyMetricsDocument.class);
+            return mapper.readValue(source.toJson(), MetricsApi.class);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

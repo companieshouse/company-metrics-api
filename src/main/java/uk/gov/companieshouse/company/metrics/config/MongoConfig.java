@@ -19,8 +19,6 @@ import uk.gov.companieshouse.company.metrics.converter.CompanyMetricsWriteConver
 import uk.gov.companieshouse.company.metrics.converter.EnumConverters;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateDeSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateSerializer;
-import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeDeSerializer;
-import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeSerializer;
 
 
 @Configuration
@@ -51,8 +49,10 @@ public class MongoConfig {
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDate.class, new LocalDateSerializer());
         module.addDeserializer(LocalDate.class, new LocalDateDeSerializer());
-        module.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
-        module.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeSerializer());
+        //module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+        //module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeSerializer());
+        //module.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
+        //module.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeSerializer());
         objectMapper.registerModule(module);
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
+import org.springframework.util.FileCopyUtils;
+import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.config.CucumberContext;
@@ -19,7 +21,9 @@ import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRe
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.companieshouse.company.metrics.config.AbstractMongoConfig.mongoDBContainer;
@@ -58,8 +62,10 @@ public class CompanyMetricsApiSteps {
 
 
     @Given("the company metrics exists for {string}")
-    public void the_company_metrics_exists_for(String dataFile) throws IOException {
-        companyMetricsRepository.save(iTestUtil.populateCompanyMetricsDocument(dataFile));
+    public void the_company_metrics_exists_for(String companyNumber) throws IOException {
+        companyMetricsRepository.save(iTestUtil.createTestCompanyMetricsDocument(companyNumber));
+        Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(true);
+
     }
     @Given("no company metrics exists for {string}")
     public void no_company_metrics_exists_for(String companyNumber) throws IOException {
@@ -70,8 +76,7 @@ public class CompanyMetricsApiSteps {
     }
     @Given("the company charges entries exists for {string}")
     public void company_charges_exists_for(String companyNumber) throws IOException {
-        chargesRepository.save(iTestUtil.populateCompanyCharges("OC342023_satisfied"));
-
+        chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "123456789==", ChargeApi.StatusEnum.FULLY_SATISFIED));
         Assertions.assertThat(chargesRepository.getTotalCharges(companyNumber)).isEqualTo(1);
     }
 
@@ -86,12 +91,12 @@ public class CompanyMetricsApiSteps {
     }
 
     @Then("the Get call response body should match {string} file")
-    public void the_get_call_response_body_should_match_file(String dataFile) throws IOException {
-        File file = new ClassPathResource("/json/output/" + dataFile + ".json").getFile();
+    public void the_get_call_response_body_should_match_file(String jsonFileName) throws IOException {
 
+        File file = new ClassPathResource("/json/output/" + jsonFileName + ".json").getFile();
         MetricsApi expected = objectMapper.readValue(file, MetricsApi.class);
-        MetricsApi actual = (MetricsApi) CucumberContext.CONTEXT.get("getResponseBody");
 
+        MetricsApi actual = (MetricsApi) CucumberContext.CONTEXT.get("getResponseBody");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -110,7 +115,6 @@ public class CompanyMetricsApiSteps {
 
         String uri = "/company/{company_number}/metrics/recalculate";
         ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class, companyNumber);
-
         CucumberContext.CONTEXT.set("statusCode", response.getStatusCodeValue());
 
     }
@@ -119,6 +123,28 @@ public class CompanyMetricsApiSteps {
     public void nothing_persisted_database() {
         List<CompanyMetricsDocument> companyMetricsDocuments = companyMetricsRepository.findAll();
         Assertions.assertThat(companyMetricsDocuments).hasSize(0);
+    }
+
+    @Then("company metrics exists for {string} in company_metrics db with total mortgage count {string}")
+    public void company_metrics_exists_for(String companyNumber, String number) throws IOException {
+        Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(true);
+        CompanyMetricsDocument companyMetricsDocument = companyMetricsRepository.findById(companyNumber).get();
+        assertThat(companyMetricsDocument.getId()).isEqualTo(companyNumber);
+        assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getTotalCount().toString()).isEqualTo(number);
+
+    }
+
+    @When("I send POST request with company number {string} and mortgage flag null in request")
+    public void i_send_post_request_with_company_number_and_mortgage_flag_null(String companyNumber) throws IOException {
+
+        MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(null);
+        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi,
+                iTestUtil.populateHttpHeaders("1234567"));
+
+        String uri = "/company/{company_number}/metrics/recalculate";
+        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class, companyNumber);
+        CucumberContext.CONTEXT.set("statusCode", response.getStatusCodeValue());
+
     }
 
 }

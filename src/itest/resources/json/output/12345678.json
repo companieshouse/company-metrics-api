@@ -3,8 +3,8 @@
   "counts": {
     "persons-with-significant-control": null,
     "appointments": {
-      "active_directors_count": 1,
-      "active_secretaries_count": 0,
+      "active_directors_count": 2,
+      "active_secretaries_count": 2,
       "active_count": 1,
       "resigned_count": 16,
       "total_count": 17,
@@ -12,8 +12,8 @@
     }
   },
   "mortgage": {
-    "satisfied_count": 42,
-    "part_satisfied_count": 0,
-    "total_count": 51
+    "satisfied_count": 1,
+    "part_satisfied_count": 1,
+    "total_count": 2
   }
 }
