@@ -97,6 +97,7 @@ public class RepositoryITest extends AbstractMongoConfig {
     CompanyMetricsDocument expectedCompanyMetricsDocument = new CompanyMetricsDocument(metricsApi, updated);
     expectedCompanyMetricsDocument.setId(MOCK_COMPANY_NUMBER);
 
+   // CompanyMetricsDocument expectedCompanyMetricsDocument =  testData.populateCompanyMetricsDocument(MOCK_COMPANY_NUMBER);
     this.companyMetricsRepository.save(expectedCompanyMetricsDocument);
     Optional<CompanyMetricsDocument> companyMetricsDocument  = this.companyMetricsRepository.findById(MOCK_COMPANY_NUMBER);
     assertTrue(companyMetricsDocument.isPresent());

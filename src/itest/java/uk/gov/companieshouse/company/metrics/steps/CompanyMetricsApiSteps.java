@@ -13,11 +13,13 @@ import org.springframework.http.*;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.config.CucumberContext;
+import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.companieshouse.company.metrics.config.AbstractMongoConfig.mongoDBContainer;
@@ -56,8 +58,21 @@ public class CompanyMetricsApiSteps {
 
 
     @Given("the company metrics exists for {string}")
-    public void the_company_links_exists_for(String dataFile) throws IOException {
+    public void the_company_metrics_exists_for(String dataFile) throws IOException {
         companyMetricsRepository.save(iTestUtil.populateCompanyMetricsDocument(dataFile));
+    }
+    @Given("no company metrics exists for {string}")
+    public void no_company_metrics_exists_for(String companyNumber) throws IOException {
+        companyMetricsRepository.deleteAll();
+        companyMetricsRepository.findById(companyNumber);
+
+        Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(false);
+    }
+    @Given("the company charges entries exists for {string}")
+    public void company_charges_exists_for(String companyNumber) throws IOException {
+        chargesRepository.save(iTestUtil.populateCompanyCharges("OC342023_satisfied"));
+
+        Assertions.assertThat(chargesRepository.getTotalCharges(companyNumber)).isEqualTo(1);
     }
 
     @When("I send GET request with company number {string}")
@@ -98,6 +113,12 @@ public class CompanyMetricsApiSteps {
 
         CucumberContext.CONTEXT.set("statusCode", response.getStatusCodeValue());
 
+    }
+
+    @Then("nothing is persisted in the database")
+    public void nothing_persisted_database() {
+        List<CompanyMetricsDocument> companyMetricsDocuments = companyMetricsRepository.findAll();
+        Assertions.assertThat(companyMetricsDocuments).hasSize(0);
     }
 
 }

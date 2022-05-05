@@ -5,22 +5,29 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
+public class OffsetDateTimeSerializer extends JsonSerializer<OffsetDateTime> {
 
     @Override
-    public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator,
+    public void serialize(OffsetDateTime offsetDateTime, JsonGenerator jsonGenerator,
                           SerializerProvider serializerProvider) throws IOException {
-        if (localDateTime == null) {
+        if (offsetDateTime == null) {
             jsonGenerator.writeNull();
         } else {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter
                     .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            String format = localDateTime.format(dateTimeFormatter);
+            String format = offsetDateTime.format(dateTimeFormatter);
             jsonGenerator.writeRawValue("ISODate(\"" + format + "\")");
+
+            //jsonGenerator.writeStartObject();
+            //jsonGenerator.writeFieldName("$date");
+            //String isoDate = ISODateTimeFormat.dateTime().print(new DateTime(format));
+            //jsonGenerator.writeString(isoDate);
+            //jsonGenerator.writeEndObject();
+
+
         }
     }
 }

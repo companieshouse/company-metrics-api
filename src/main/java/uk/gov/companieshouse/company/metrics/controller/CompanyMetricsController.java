@@ -82,8 +82,8 @@ public class CompanyMetricsController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } else {
-            // mortgage flag is false in payload hence returning 404
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            // mortgage flag is false in payload hence returning 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

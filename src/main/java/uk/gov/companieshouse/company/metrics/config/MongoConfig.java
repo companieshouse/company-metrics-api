@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -18,8 +19,9 @@ import uk.gov.companieshouse.company.metrics.converter.CompanyMetricsWriteConver
 import uk.gov.companieshouse.company.metrics.converter.EnumConverters;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateDeSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateSerializer;
-import uk.gov.companieshouse.company.metrics.serialization.LocalDateTimeDeSerializer;
-import uk.gov.companieshouse.company.metrics.serialization.LocalDateTimeSerializer;
+import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeDeSerializer;
+import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeSerializer;
+
 
 @Configuration
 public class MongoConfig {
@@ -45,11 +47,14 @@ public class MongoConfig {
         // Exclude properties with null values from being serialised
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDate.class, new LocalDateSerializer());
         module.addDeserializer(LocalDate.class, new LocalDateDeSerializer());
-        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeSerializer());
+       // module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+       // module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeSerializer());
+        module.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
+        module.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeSerializer());
         objectMapper.registerModule(module);
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
