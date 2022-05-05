@@ -51,8 +51,6 @@ public class MongoConfig {
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDate.class, new LocalDateSerializer());
         module.addDeserializer(LocalDate.class, new LocalDateDeSerializer());
-       // module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-       // module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeSerializer());
         module.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
         module.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeSerializer());
         objectMapper.registerModule(module);
