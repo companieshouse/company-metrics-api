@@ -23,11 +23,6 @@ public class CommonApiSteps {
         assertThat(restTemplate).isNotNull();
         lastResponse = null;
     }
-    @Given("Company metrics api service is running")
-    public void theCompanyMetricsAPIApplicationRunning() {
-        assertThat(restTemplate).isNotNull();
-        lastResponse = null;
-    }
 
     @When("the client invokes {string} endpoint")
     public void theClientInvokesAnEndpoint(String url) {

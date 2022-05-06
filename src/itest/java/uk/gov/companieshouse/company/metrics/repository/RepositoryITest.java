@@ -10,7 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.company.metrics.config.AbstractMongoConfig;
@@ -38,7 +42,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Testcontainers
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RepositoryITest extends AbstractMongoConfig {
+public class RepositoryITest  {
+
+  public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(
+          DockerImageName.parse("mongo:4.0.10"));
+
+  @DynamicPropertySource
+  static void setProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl );
+    mongoDBContainer.start();
+  }
 
   @Autowired
   private CompanyMetricsRepository companyMetricsRepository;

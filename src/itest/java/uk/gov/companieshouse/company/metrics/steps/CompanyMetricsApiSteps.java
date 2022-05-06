@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
@@ -54,6 +55,14 @@ public class CompanyMetricsApiSteps {
         iTestUtil = new ITestUtil();
     }
 
+    @Given("Company metrics api rest service is running")
+    public void charges_delta_consumer_service_is_running() {
+
+        ResponseEntity<String> response = restTemplate.getForEntity("/healthcheck", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.valueOf(200));
+        assertThat(response.getBody()).isEqualTo("I am healthy");
+    }
+
     @Given("the company charges database is down")
     public void the_company_charges_db_is_down() {
         mongoDBContainer.stop();
@@ -61,22 +70,29 @@ public class CompanyMetricsApiSteps {
 
 
     @Given("the company metrics exists for {string}")
-    public void the_company_metrics_exists_for(String companyNumber) throws IOException {
+    public void the_company_metrics_exists_for(String companyNumber) {
         companyMetricsRepository.save(iTestUtil.createTestCompanyMetricsDocument(companyNumber));
         Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(true);
 
     }
     @Given("no company metrics exists for {string}")
-    public void no_company_metrics_exists_for(String companyNumber) throws IOException {
+    public void no_company_metrics_exists_for(String companyNumber) {
         companyMetricsRepository.deleteAll();
-        companyMetricsRepository.findById(companyNumber);
-
         Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(false);
     }
     @Given("the company charges entries exists for {string}")
     public void company_charges_exists_for(String companyNumber) throws IOException {
         chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "123456789==", ChargeApi.StatusEnum.FULLY_SATISFIED));
         Assertions.assertThat(chargesRepository.getTotalCharges(companyNumber)).isEqualTo(1);
+    }
+
+    @Given("multiple company charges entries exists for {string}")
+    public void multiple_company_charges_exists_for(String companyNumber) throws IOException {
+        chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "123456789==", ChargeApi.StatusEnum.FULLY_SATISFIED));
+        chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "1234567==", ChargeApi.StatusEnum.SATISFIED));
+        chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "123456==", ChargeApi.StatusEnum.PART_SATISFIED));
+
+        Assertions.assertThat(chargesRepository.getTotalCharges(companyNumber)).isEqualTo(3);
     }
 
     @When("I send GET request with company number {string}")
