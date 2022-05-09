@@ -4,7 +4,7 @@ import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.junit.runner.RunWith;
-import uk.gov.companieshouse.company.metrics.config.CucumberSpringConfiguration;
+import uk.gov.companieshouse.company.metrics.config.AbstractIntegrationTest;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
@@ -13,6 +13,6 @@ import uk.gov.companieshouse.company.metrics.config.CucumberSpringConfiguration;
         glue = {"uk.gov.companieshouse.company.metrics"}
 )
 @CucumberContextConfiguration
-public class CucumberFeaturesRunnerITest extends CucumberSpringConfiguration {
+public class CucumberFeaturesRunnerITest extends AbstractIntegrationTest {
 
 }

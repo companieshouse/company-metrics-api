@@ -7,5 +7,5 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @ActiveProfiles({"test"})
-public class CucumberSpringConfiguration extends AbstractMongoConfig {
+public class AbstractIntegrationTest extends AbstractMongoConfig {
 }

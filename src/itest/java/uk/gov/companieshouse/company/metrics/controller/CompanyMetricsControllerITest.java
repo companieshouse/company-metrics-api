@@ -10,7 +10,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
-import uk.gov.companieshouse.company.metrics.config.CucumberSpringConfiguration;
+import uk.gov.companieshouse.company.metrics.config.AbstractIntegrationTest;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-class CompanyMetricsControllerITest extends CucumberSpringConfiguration {
+class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     private static final String MOCK_COMPANY_NUMBER = "12345678";
     private static final String COMPANY_URL = String.format("/company/%s/metrics", MOCK_COMPANY_NUMBER);
 
