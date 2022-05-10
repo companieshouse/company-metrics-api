@@ -1,19 +1,16 @@
 package uk.gov.companieshouse.company.metrics.converter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileCopyUtils;
 import uk.gov.companieshouse.company.metrics.config.TestConfig;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
-import uk.gov.companieshouse.company.metrics.model.TestData;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CompanyMetricsReadConverterTest {
 
     String companyMetricsData;
-    private TestData testData;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -37,20 +33,19 @@ class CompanyMetricsReadConverterTest {
         companyMetricsData =
                 FileCopyUtils.copyToString(new InputStreamReader(Objects.requireNonNull(
                         ClassLoader.getSystemClassLoader().getResourceAsStream(inputPath))));
-        testData = new TestData();
     }
 
     @Test
-    void convert() throws IOException {
-        Document companyMetricsBson = Document.parse(companyMetricsData);
+    void convert() {
 
-        CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsReadConverter(objectMapper).convert(companyMetricsBson);
-
-        String expectedMetricsFileName = "expected-metrics-body-2.json";
-        String expectedMetricsJson = testData.loadTestDataFile(expectedMetricsFileName);
-        CompanyMetricsDocument expectedMetricsDocument = objectMapper.readValue(expectedMetricsJson, CompanyMetricsDocument.class);
-        // assert that we're using the custom objectMapper
+        Document metricsBson = Document.parse(companyMetricsData);
+        CompanyMetricsDocument companyMetricsDocument =
+                objectMapper.convertValue(metricsBson, CompanyMetricsDocument.class);
+        assertThat(companyMetricsDocument).isNotNull();
+        assertThat(companyMetricsDocument.getCompanyMetrics()).isNotNull();
+        assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getTotalCount()).isEqualTo(51);
+        assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getSatisfiedCount()).isEqualTo(42);
+        assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getPartSatisfiedCount()).isEqualTo(0);
         assertThat(objectMapper.getRegisteredModuleIds().stream().findFirst().get().toString().contains("SimpleModule"));
-        assertThat(companyMetricsDocument).usingRecursiveComparison().isEqualTo(expectedMetricsDocument);
     }
 }

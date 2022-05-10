@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.company.metrics.service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -163,13 +162,9 @@ public class CompanyMetricsService {
 
     private Updated populateUpdated(String updatedBy) {
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Date date = new Date();
-        String updatedAt =  simpleDateFormat.format(date);
-
         Updated updated = new Updated();
         updated.setBy(updatedBy);
-        updated.setAt("ISODate(\"" + updatedAt + "\")");
+        updated.setAt(LocalDateTime.now());
         updated.setType("company_metrics");
         return updated;
     }

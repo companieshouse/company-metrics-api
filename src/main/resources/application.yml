@@ -17,7 +17,7 @@ springfox:
 mongodb:
   company:
     metrics:
-      transactions: ${TRANSACTIONS_ENABLED:true}
+      transactions: ${TRANSACTIONS_ENABLED:false}
 
 spring:
   data:

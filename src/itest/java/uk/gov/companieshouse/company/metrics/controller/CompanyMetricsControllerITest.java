@@ -4,18 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.company.metrics.AbstractIntegrationTest;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
@@ -24,15 +19,10 @@ import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class CompanyMetricsControllerITest {
+class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     private static final String MOCK_COMPANY_NUMBER = "12345678";
     private static final String COMPANY_URL = String.format("/company/%s/metrics", MOCK_COMPANY_NUMBER);
 

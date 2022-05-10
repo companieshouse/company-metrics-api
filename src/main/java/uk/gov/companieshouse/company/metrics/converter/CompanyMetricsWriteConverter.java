@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.WritingConverter;
-import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
+import uk.gov.companieshouse.api.metrics.MetricsApi;
 
 @WritingConverter
 public class CompanyMetricsWriteConverter implements
-        Converter<CompanyMetricsDocument, BasicDBObject> {
+        Converter<MetricsApi, BasicDBObject> {
 
     private final ObjectMapper objectMapper;
 
@@ -22,7 +22,7 @@ public class CompanyMetricsWriteConverter implements
      * @return CompanyMetrics BSON object.
      */
     @Override
-    public BasicDBObject convert(CompanyMetricsDocument source) {
+    public BasicDBObject convert(MetricsApi source) {
         try {
             return BasicDBObject.parse(objectMapper.writeValueAsString(source));
         } catch (Exception ex) {

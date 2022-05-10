@@ -40,7 +40,7 @@
 		<springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
 		<skip.integration.tests>false</skip.integration.tests>
 		<skip.unit.tests>false</skip.unit.tests>
-
+		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 		<!--sonar configuration-->
 		<sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -373,6 +373,32 @@
 						<expandClasspathDependencies>true</expandClasspathDependencies>
 					</container>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/test-classes</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/src/itest/resources</directory>
+									<includes>
+										<include>**/*.*</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

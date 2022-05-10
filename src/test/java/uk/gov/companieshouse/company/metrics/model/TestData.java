@@ -2,21 +2,15 @@ package uk.gov.companieshouse.company.metrics.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import org.bson.Document;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileCopyUtils;
-
-import uk.gov.companieshouse.api.metrics.InternalData;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
-
+import uk.gov.companieshouse.api.metrics.InternalData;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @ExtendWith(SpringExtension.class)
