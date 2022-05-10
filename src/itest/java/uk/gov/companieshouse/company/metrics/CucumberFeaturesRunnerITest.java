@@ -4,7 +4,6 @@ import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.junit.runner.RunWith;
-import uk.gov.companieshouse.company.metrics.config.AbstractIntegrationTest;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
