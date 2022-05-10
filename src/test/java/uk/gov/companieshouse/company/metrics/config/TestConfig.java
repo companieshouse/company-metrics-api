@@ -14,6 +14,7 @@ import uk.gov.companieshouse.company.metrics.converter.EnumConverters;
 import uk.gov.companieshouse.company.metrics.serialization.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @TestConfiguration
@@ -46,8 +47,9 @@ public class TestConfig {
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDate.class, new LocalDateSerializer());
         module.addDeserializer(LocalDate.class, new LocalDateDeSerializer());
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeSerializer());
         objectMapper.registerModule(module);
-        objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
     }
 
