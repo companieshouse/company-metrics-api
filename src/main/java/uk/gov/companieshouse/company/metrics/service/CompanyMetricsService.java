@@ -77,21 +77,18 @@ public class CompanyMetricsService {
                         + "and satisfiedCount %s and  partSatisfiedCount %s ",
                          totalCount, satisfiedCount, partSatisfiedCount));
 
-        if (companyMetricsDocument.getCompanyMetrics() != null) {
+        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+        companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
+        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
 
-            MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
-            companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
-            metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+        if (metricsApi.getMortgage() != null) {
+            metricsApi.getMortgage().setTotalCount(totalCount);
+            metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
+            metricsApi.getMortgage().setPartSatisfiedCount(partSatisfiedCount);
+        } else {
+            metricsApi.setMortgage(populateMortgageApi(
+                    totalCount, satisfiedCount,partSatisfiedCount));
 
-            if (metricsApi.getMortgage() != null) {
-                metricsApi.getMortgage().setTotalCount(totalCount);
-                metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
-                metricsApi.getMortgage().setPartSatisfiedCount(partSatisfiedCount);
-            } else {
-                metricsApi.setMortgage(populateMortgageApi(
-                        totalCount, satisfiedCount,partSatisfiedCount));
-
-            }
         }
 
         logger.debug("Started : Saving charges in DB ");

@@ -22,6 +22,20 @@ import java.util.Collections;
 @ExtendWith(SpringExtension.class)
 public class ITestUtil {
 
+    public ChargesDocument createChargesDocumentWithoutData(String companyNumber,
+        String chargeId) {
+
+        var updated = new Updated();
+        updated.setAt(LocalDateTime.now());
+        updated.setType("mortgage_delta");
+        updated.setBy("updatedBy");
+        return new ChargesDocument()
+            .setId(chargeId)
+            .setCompanyNumber(companyNumber)
+            .setData(null)
+            .setUpdated(updated);
+    }
+
     public ChargesDocument createChargesDocument(String companyNumber,
                                                  String chargeId,
                                                  ChargeApi.StatusEnum status) {
@@ -70,6 +84,20 @@ public class ITestUtil {
         updated.setAt(LocalDateTime.now());
         metricsDocument.setId(companyNumber);
         metricsDocument.setCompanyMetrics(metricsApi);
+        metricsDocument.setUpdated(updated);
+
+        return metricsDocument;
+    }
+
+    public CompanyMetricsDocument createTestCompanyMetricsDocumentWithoutData(String companyNumber) {
+
+        CompanyMetricsDocument metricsDocument = new CompanyMetricsDocument();
+        var updated = new Updated();
+        updated.setType("company_metrics");
+        updated.setBy("partition-offset-id");
+        updated.setAt(LocalDateTime.now());
+        metricsDocument.setId(companyNumber);
+        metricsDocument.setCompanyMetrics(null);
         metricsDocument.setUpdated(updated);
 
         return metricsDocument;
