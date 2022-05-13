@@ -17,8 +17,9 @@ public class CompanyMetricsDocument {
     @JsonProperty("data")
     private MetricsApi companyMetrics;
 
-    @Version
-    private Long version;
+    // Versioning not yet configures, removed to solve issue DSND-891
+    //    @Version
+    //    private Long version;
 
     private Updated updated;
 
@@ -59,14 +60,14 @@ public class CompanyMetricsDocument {
         this.companyMetrics = companyMetrics;
         return this.companyMetrics;
     }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
+    // removed to solve issue DSND-891
+    //    public Long getVersion() {
+    //        return version;
+    //    }
+    //
+    //    public void setVersion(Long version) {
+    //        this.version = version;
+    //    }
 
     public Updated getUpdated() {
         return updated;
