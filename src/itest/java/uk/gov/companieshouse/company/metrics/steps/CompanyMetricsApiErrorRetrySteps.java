@@ -88,9 +88,4 @@ public class CompanyMetricsApiErrorRetrySteps {
         companyMetricsRepository.save(iTestUtil.createTestCompanyMetricsDocumentWithoutData(companyNumber));
         Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(true);
     }
-
-    @Given("An invalid metrics document exists for {string}")
-    public void anInvalidMetricsDocumentExistsFor(String arg0) {
-        companyMetricsRepository.save()
-    }
 }
