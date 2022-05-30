@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
+
 
 
 @RestController
@@ -54,7 +57,7 @@ public class CompanyMetricsController {
     @PostMapping ("/company/{company_number}/metrics/recalculate")
     public ResponseEntity<Void> recalculate(
              @PathVariable("company_number") String companyNumber,
-             @RequestBody MetricsRecalculateApi requestBody
+             @Valid @RequestBody MetricsRecalculateApi requestBody
     ) throws JsonProcessingException {
 
         // Check to see if mortgages flag is true then process further
