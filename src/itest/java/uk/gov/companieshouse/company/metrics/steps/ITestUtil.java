@@ -17,6 +17,7 @@ import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 
 @ExtendWith(SpringExtension.class)
@@ -111,6 +112,7 @@ public class ITestUtil {
         metricsRecalculateApi.setPersonsWithSignificantControl(false);
         InternalData internalData = new InternalData();
         internalData.setUpdatedBy("updatedBy");
+        internalData.setUpdatedAt(OffsetDateTime.now());
         metricsRecalculateApi.setInternalData(internalData);
 
         return metricsRecalculateApi;
