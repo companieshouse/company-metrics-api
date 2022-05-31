@@ -20,6 +20,8 @@ mongodb:
       transactions: ${TRANSACTIONS_ENABLED:false}
 
 spring:
+  jackson:
+    default-property-inclusion: NON_NULL
   data:
     mongodb:
       metrics:
