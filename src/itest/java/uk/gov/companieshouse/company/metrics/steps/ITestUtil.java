@@ -112,7 +112,6 @@ public class ITestUtil {
         metricsRecalculateApi.setPersonsWithSignificantControl(false);
         InternalData internalData = new InternalData();
         internalData.setUpdatedBy("updatedBy");
-        internalData.setUpdatedAt(OffsetDateTime.now());
         metricsRecalculateApi.setInternalData(internalData);
 
         return metricsRecalculateApi;
