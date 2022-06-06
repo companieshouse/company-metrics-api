@@ -8,7 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 
-@Document(collection = "company_mortgages")
+//@Document(collection = "company_mortgages")
+@Document(collection = "#{@environment.getProperty('mongodb.charges.collection.name')}")
 public class ChargesDocument {
 
     @Id

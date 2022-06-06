@@ -1,9 +1,6 @@
 logger:
   namespace: company-metrics-api
 
-mongo:
-  company-metrics-collection: company_metrics
-
 chs:
   kafka:
     api:
@@ -18,7 +15,12 @@ mongodb:
   company:
     metrics:
       transactions: ${TRANSACTIONS_ENABLED:false}
-
+  company-metrics:
+    collection:
+      name: ${COMPANY_METRICS_COLLECTION_NAME:company_metrics}
+  charges:
+    collection:
+      name: ${CHARGES_COLLECTION_NAME:company_mortgages}
 spring:
   jackson:
     default-property-inclusion: NON_NULL

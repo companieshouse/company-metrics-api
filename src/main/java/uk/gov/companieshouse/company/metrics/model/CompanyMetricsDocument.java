@@ -2,12 +2,12 @@ package uk.gov.companieshouse.company.metrics.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 
-@Document(collection = "company_metrics")
+//@Document(collection = "company_metrics")
+@Document(collection = "#{@environment.getProperty('mongodb.company-metrics.collection.name')}")
 public class CompanyMetricsDocument {
     @Id
     @Field("_id")
