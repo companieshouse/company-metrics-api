@@ -57,10 +57,9 @@ public class CompanyMetricsApiSteps {
 
     @Given("Company metrics api rest service is running")
     public void charges_delta_consumer_service_is_running() {
-
-        ResponseEntity<String> response = restTemplate.getForEntity("/healthcheck", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/company-metrics-api/healthcheck", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.valueOf(200));
-        assertThat(response.getBody()).isEqualTo("I am healthy");
+        assertThat(response.getBody()).isEqualTo("{\"status\":\"UP\"}");
     }
 
     @Given("the company charges database is down")

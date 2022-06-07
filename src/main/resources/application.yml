@@ -32,3 +32,15 @@ spring:
         uri: ${MONGODB_CHARGES_URL:mongodb://localhost:27017/company_mortgages}
         name: company_mortgages
         collection: ${CHARGES_COLLECTION_NAME:company_mortgages}
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      base-path: /company-metrics-api
+      path-mapping:
+        health: healthcheck
+  endpoint:
+    health:
+      show-details: never
+      enabled: true
