@@ -67,19 +67,19 @@ public class CompanyMetricsApiErrorRetrySteps {
 
     @Then("Rest endpoint returns http response code 500 'Internal Error' to the client")
     public void restEndpointReturnsCode500(){
-        Integer expectedStatusCode = CucumberContext.CONTEXT.get("statusCode");
+        Integer expectedStatusCode = (Integer) CucumberContext.CONTEXT.get("statusCode");
         Assertions.assertThat(expectedStatusCode).isEqualTo(500);
     }
 
     @Then("Rest endpoint returns http response code 503 'Service Unavailable' to the client")
     public void restEndpointReturnsCode503(){
-        Integer expectedStatusCode = CucumberContext.CONTEXT.get("statusCode");
+        Integer expectedStatusCode = (Integer) CucumberContext.CONTEXT.get("statusCode");
         Assertions.assertThat(expectedStatusCode).isEqualTo(503);
     }
 
     @Then("Rest endpoint returns http response code 400 'Bad Request' to the client")
     public void restEndpointReturnsHttpResponseCodeBadRequestToTheClient() {
-        Integer expectedStatusCode = CucumberContext.CONTEXT.get("statusCode");
+        Integer expectedStatusCode = (Integer) CucumberContext.CONTEXT.get("statusCode");
         Assertions.assertThat(expectedStatusCode).isEqualTo(400);
     }
 

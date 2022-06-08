@@ -16,16 +16,8 @@ public enum CucumberContext {
 
     private final ThreadLocal<Map<String, Object>> testContexts = ThreadLocal.withInitial(HashMap::new);
 
-    public ResponseEntity<?> getResponse() {
-        return get(RESPONSE);
-    }
-
-    public ResponseEntity<?> setResponse(ResponseEntity<?> response) {
-        return set(RESPONSE, response);
-    }
-
-    public <T> T get(String name) {
-        return (T) testContexts.get()
+    public Object get(String name) {
+        return testContexts.get()
                 .get(name);
     }
 
