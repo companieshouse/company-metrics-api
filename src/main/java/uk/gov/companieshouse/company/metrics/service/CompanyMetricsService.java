@@ -135,9 +135,25 @@ public class CompanyMetricsService {
      *  @return Integer
      */
     public Integer queryCompanyMortgages(String companyNumber, String status) {
-        return status.equalsIgnoreCase("none") ? chargesRepository.getTotalCharges(companyNumber) :
-                chargesRepository.getPartOrFullSatisfiedCharges(companyNumber, status);
+        return status.equalsIgnoreCase("none")
+                ? chargesRepository.getTotalCharges(companyNumber) :
+                chargesRepository.getPartSatisfiedCharges(companyNumber, status);
 
+    }
+
+    /**
+     *  Query company metrics collection.
+     *
+     *  @param companyNumber companyNumber
+     *  @param satisfied satisfied
+     *  @param fullySatisfied fullySatisfied
+     *  @return Integer
+     */
+    public Integer queryCompanySatisfiedMortgages(String companyNumber,
+                                                  String satisfied,
+                                                  String fullySatisfied) {
+        return chargesRepository.getSatisfiedAndFullSatisfiedCharges(companyNumber,
+                satisfied, fullySatisfied);
     }
 
     private CompanyMetricsDocument populateCompanyMetrics(String id,

@@ -12,6 +12,11 @@ public interface ChargesRepository extends MongoRepository<ChargesDocument, Stri
     Integer getTotalCharges(String companyNumber);
 
     @Query(value = "{'company_number': ?0, 'data.status': ?1}",count = true)
-    Integer getPartOrFullSatisfiedCharges(String companyNumber, String status);
+    Integer getPartSatisfiedCharges(String companyNumber, String status);
+
+    @Query(value = "{'company_number': ?0, $or :[{'data.status': ?1 }, "
+            + "{'data.status': ?2}]}", count = true)
+    Integer getSatisfiedAndFullSatisfiedCharges(String companyNumber,
+                                                String satisfied, String fullySatisfied);
 
 }

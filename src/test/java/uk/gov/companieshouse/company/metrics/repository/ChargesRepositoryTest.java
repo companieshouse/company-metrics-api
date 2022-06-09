@@ -18,7 +18,9 @@ import static org.mockito.Mockito.when;
 public class ChargesRepositoryTest {
 
     private static final String MOCK_COMPANY_NUMBER = "12345678";
-
+    private static final String SATISFIED_STATUS="satisfied";
+    private static final String FULLY_SATISFIED_STATUS="fully-satisfied";
+    private static final String PART_SATISFIED_STATUS="part-satisfied";
 
     @Mock
     ChargesRepository chargesRepository;
@@ -33,14 +35,18 @@ public class ChargesRepositoryTest {
 
         when(chargesRepository.getTotalCharges(MOCK_COMPANY_NUMBER))
                 .thenReturn(20);
-        when(chargesRepository.getPartOrFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"satisfied"))
+        when(chargesRepository.getSatisfiedAndFullSatisfiedCharges(MOCK_COMPANY_NUMBER,SATISFIED_STATUS, FULLY_SATISFIED_STATUS))
                 .thenReturn(10);
-        when(chargesRepository.getPartOrFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"part-satisfied"))
+        when(chargesRepository.getPartSatisfiedCharges(MOCK_COMPANY_NUMBER,PART_SATISFIED_STATUS))
+                .thenReturn(10);
+
+        when(chargesRepository.getSatisfiedAndFullSatisfiedCharges(MOCK_COMPANY_NUMBER,SATISFIED_STATUS,
+                FULLY_SATISFIED_STATUS))
                 .thenReturn(10);
 
         assertEquals(20, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"));
-        assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"satisfied"));
         assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"));
+        assertEquals(10, companyMetricsService.queryCompanySatisfiedMortgages(MOCK_COMPANY_NUMBER,"satisfied","fully-satisfied"));
 
     }
 

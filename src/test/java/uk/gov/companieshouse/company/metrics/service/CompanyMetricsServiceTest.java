@@ -91,13 +91,13 @@ class CompanyMetricsServiceTest {
 
         when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"))
                 .thenReturn(20);
-        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"satisfied"))
+        when(companyMetricsService.queryCompanySatisfiedMortgages(MOCK_COMPANY_NUMBER,"satisfied","fully-satisfied"))
                 .thenReturn(10);
         when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"))
                 .thenReturn(10);
 
         assertEquals(20, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"));
-        assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"satisfied"));
+        assertEquals(10, companyMetricsService.queryCompanySatisfiedMortgages(MOCK_COMPANY_NUMBER,"satisfied","fully-satisfied"));
         assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"));
 
     }
