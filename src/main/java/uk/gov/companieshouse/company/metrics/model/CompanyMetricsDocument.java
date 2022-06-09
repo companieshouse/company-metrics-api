@@ -2,13 +2,13 @@ package uk.gov.companieshouse.company.metrics.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 
-@Document(collection = "company_metrics")
+@Document(collection = "#{@environment.getProperty('mongodb.company-metrics.collection.name')}")
 public class CompanyMetricsDocument {
+
     @Id
     @Field("_id")
     private String id;
@@ -16,10 +16,6 @@ public class CompanyMetricsDocument {
     @Field("data")
     @JsonProperty("data")
     private MetricsApi companyMetrics;
-
-    // Versioning not yet configures, removed to solve issue DSND-891
-    //    @Version
-    //    private Long version;
 
     private Updated updated;
 
@@ -60,14 +56,6 @@ public class CompanyMetricsDocument {
         this.companyMetrics = companyMetrics;
         return this.companyMetrics;
     }
-    // removed to solve issue DSND-891
-    //    public Long getVersion() {
-    //        return version;
-    //    }
-    //
-    //    public void setVersion(Long version) {
-    //        this.version = version;
-    //    }
 
     public Updated getUpdated() {
         return updated;

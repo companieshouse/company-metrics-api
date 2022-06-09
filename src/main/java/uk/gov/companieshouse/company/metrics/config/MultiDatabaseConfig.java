@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,6 +29,9 @@ public class MultiDatabaseConfig {
     @Autowired
     private MongoCustomConversions mongoCustomConversions;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Primary
     @Bean(name = "metricsDatabase")
     @ConfigurationProperties(prefix = "spring.data.mongodb.metrics")
@@ -42,7 +46,7 @@ public class MultiDatabaseConfig {
     }
 
     /**
-     * create metricsMongoTemplate.
+     * Create metricsMongoTemplate.
      * @return MongoTemplate
      */
     @Primary
@@ -54,9 +58,16 @@ public class MultiDatabaseConfig {
                 getMongoConverter(metricsMongoDatabaseFactory));
     }
 
+    /**
+     * Create chargesMongoTemplate.
+     * @return MongoTemplate
+     */
     @Bean(name = "chargesMongoTemplate")
     public MongoTemplate chargesMongoTemplate() {
-        return new MongoTemplate(chargesMongoDatabaseFactory(getChargesProps()));
+        MongoDatabaseFactory chargesMongoDatabaseFactory =
+                chargesMongoDatabaseFactory(getChargesProps());
+        return new MongoTemplate(chargesMongoDatabaseFactory,
+                getMongoConverter(chargesMongoDatabaseFactory));
     }
 
     /**
@@ -96,7 +107,9 @@ public class MultiDatabaseConfig {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
         MongoMappingContext mappingContext = new MongoMappingContext();
         mappingContext.setSimpleTypeHolder(mongoCustomConversions.getSimpleTypeHolder());
+        mappingContext.setApplicationContext(applicationContext);
         mappingContext.afterPropertiesSet();
+
         MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, mappingContext);
         converter.setCustomConversions(mongoCustomConversions);
         converter.afterPropertiesSet();
