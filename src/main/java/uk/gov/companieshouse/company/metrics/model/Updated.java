@@ -59,31 +59,4 @@ public class Updated {
     public void setType(String type) {
         this.type = type;
     }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("Updated{");
-        sb.append("at=").append(at);
-        sb.append(", type=").append(type);
-        sb.append(", by=").append(by);
-        sb.append('}');
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        Updated updated = (Updated) obj;
-        return at.equals(updated.at) && type.equals(updated.type) && by.equals(updated.by);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(at, type, by);
-    }
 }
