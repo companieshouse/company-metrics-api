@@ -1,11 +1,13 @@
 package uk.gov.companieshouse.company.metrics.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
+
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.format.annotation.DateTimeFormat;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 
 @Document(collection = "company_mortgages")
@@ -20,10 +22,31 @@ public class ChargesDocument {
 
     private ChargeApi data;
 
+    private OffsetDateTime deltaAt;
+
     private Updated updated;
 
-    @Version
-    private Long version;
+    /**
+     * default constructor.
+     */
+    public ChargesDocument() {
+    }
+
+    /**
+     * Argument constructor.
+     *
+     * @param id            id.
+     * @param companyNumber company number.
+     * @param data          data.
+     * @param updated       updated.
+     */
+    public ChargesDocument(String id, String companyNumber,
+                           ChargeApi data, Updated updated) {
+        this.id = id;
+        this.companyNumber = companyNumber;
+        this.data = data;
+        this.updated = updated;
+    }
 
     public String getId() {
         return id;
@@ -52,6 +75,15 @@ public class ChargesDocument {
         return this;
     }
 
+    public OffsetDateTime getDeltaAt() {
+        return deltaAt;
+    }
+
+    public ChargesDocument setDeltaAt(OffsetDateTime deltaAt) {
+        this.deltaAt = deltaAt;
+        return this;
+    }
+
     public Updated getUpdated() {
         return updated;
     }
@@ -59,18 +91,6 @@ public class ChargesDocument {
     public ChargesDocument setUpdated(Updated updated) {
         this.updated = updated;
         return this;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("ChargesDocument{");
-        sb.append("id=").append(id);
-        sb.append(", company_number=").append(companyNumber);
-        sb.append(", data=").append(data.toString());
-        sb.append(", updated=").append(updated.toString());
-        sb.append(", version=").append(version);
-        sb.append('}');
-        return sb.toString();
     }
 
     @Override
@@ -82,14 +102,11 @@ public class ChargesDocument {
             return false;
         }
         ChargesDocument that = (ChargesDocument) obj;
-        return id.equals(that.id) && companyNumber.equals(that.companyNumber) && data.equals(
-                that.data)
-                && updated.equals(that.updated)
-                && version.equals(that.version);
+        return id.equals(that.id) && companyNumber.equals(that.companyNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, companyNumber, data, updated, version);
+        return Objects.hash(id, companyNumber);
     }
 }
