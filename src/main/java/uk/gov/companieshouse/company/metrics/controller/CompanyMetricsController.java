@@ -25,6 +25,9 @@ import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 public class CompanyMetricsController {
 
     private final CompanyMetricsService companyMetricsService;
+    private static final String SATISFIED_STATUS = "satisfied";
+    private static final String FULLY_SATISFIED_STATUS = "fully-satisfied";
+    private static final String PART_SATISFIED_STATUS = "part-satisfied";
 
     public CompanyMetricsController(CompanyMetricsService companyMetricsService) {
         this.companyMetricsService = companyMetricsService;
@@ -64,10 +67,10 @@ public class CompanyMetricsController {
         if (requestBody != null && BooleanUtils.isTrue(requestBody.getMortgage())) {
             // query the mongodb to get a charges counts from company_mortgages
             int totalCount  = companyMetricsService.queryCompanyMortgages(companyNumber, "none");
-            int satisfiedCount =   companyMetricsService.queryCompanyMortgages(
-                     companyNumber, "satisfied");
+            int satisfiedCount =   companyMetricsService.queryCompanySatisfiedMortgages(
+                     companyNumber, SATISFIED_STATUS,FULLY_SATISFIED_STATUS);
             int partSatisfiedCount = companyMetricsService.queryCompanyMortgages(
-                     companyNumber, "part-satisfied");
+                     companyNumber, PART_SATISFIED_STATUS);
             String updatedBy =  requestBody.getInternalData() != null
                       ? requestBody.getInternalData().getUpdatedBy() : null;
 

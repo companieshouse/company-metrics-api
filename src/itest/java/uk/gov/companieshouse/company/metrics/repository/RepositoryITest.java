@@ -132,8 +132,8 @@ public class RepositoryITest  {
     this.chargesRepository.saveAll(documentList);
 
      assertEquals(4, this.chargesRepository.getTotalCharges(MOCK_COMPANY_NUMBER));
-     assertEquals(1, this.chargesRepository.getPartOrFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"satisfied"));
-     assertEquals(1, this.chargesRepository.getPartOrFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"part-satisfied"));
+     assertEquals(2, this.chargesRepository.getSatisfiedAndFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"satisfied","fully-satisfied"));
+     assertEquals(1, this.chargesRepository.getPartSatisfiedCharges(MOCK_COMPANY_NUMBER,"part-satisfied"));
 
   }
 
