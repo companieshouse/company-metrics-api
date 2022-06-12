@@ -2,9 +2,7 @@ package uk.gov.companieshouse.company.metrics.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
