@@ -12,9 +12,6 @@ springfox:
     auto-startup: false
 
 mongodb:
-  company:
-    metrics:
-      transactions: ${TRANSACTIONS_ENABLED:false}
   company-metrics:
     collection:
       name: ${COMPANY_METRICS_COLLECTION_NAME:company_metrics}

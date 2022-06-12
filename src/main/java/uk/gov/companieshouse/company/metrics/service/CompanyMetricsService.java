@@ -69,7 +69,6 @@ public class CompanyMetricsService {
      * @param partSatisfiedCount   part_satisfied_count.
      * @param companyMetricsDocument   CompanyMetricsDocument.
      */
-    @Transactional
     public void upsertMetrics(Integer totalCount, Integer satisfiedCount,
                               Integer partSatisfiedCount, String updatedBy,
                               CompanyMetricsDocument companyMetricsDocument) {
@@ -109,7 +108,6 @@ public class CompanyMetricsService {
      * @param partSatisfiedCount   part_satisfied_count.
      * @param updatedBy   updatedBy.
      */
-    @Transactional
     public void insertMetrics(String id, Integer totalCount, Integer satisfiedCount,
                               Integer partSatisfiedCount, String updatedBy) {
 
