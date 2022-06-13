@@ -65,12 +65,12 @@ class CompanyMetricsControllerTest {
 
     @Test
     @DisplayName(
-            "Given a company number with no matching company metrics return a not found response")
+            "Given a company number with no matching company metrics return a gone response")
     void getCompanyMetricsNotFound() throws Exception {
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
         mockMvc.perform(get(COMPANY_URL))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isGone())
                 .andExpect(content().string(""));
     }
 

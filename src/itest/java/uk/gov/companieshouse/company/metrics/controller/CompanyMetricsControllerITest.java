@@ -65,13 +65,13 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
 
     @Test
     @DisplayName(
-            "Given a company number with no matching company metrics return a not found response")
+            "Given a company number with no matching company metrics return a gone response")
     void getCompanyMetricsNotFound() throws Exception {
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
         ResponseEntity<MetricsApi> responseEntity =
                 restTemplate.getForEntity(COMPANY_URL, MetricsApi.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.GONE);
         assertThat(responseEntity.getBody()).isNull();
     }
 
