@@ -2,11 +2,7 @@ package uk.gov.companieshouse.company.metrics.exception;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,10 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.server.ResponseStatusException;
 import uk.gov.companieshouse.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -78,7 +72,7 @@ class ControllerExceptionHandlerTest {
             }
         };
         HttpMessageNotReadableException exp = new HttpMessageNotReadableException("some error", inputMessage);
-        ResponseEntity<Object> response = controllerExceptionHandler.handleException(exp, request);
+        ResponseEntity<Object> response = controllerExceptionHandler.handleExceptionForBadRequest(exp, request);
         assertEquals(400, response.getStatusCodeValue());
     }
 
