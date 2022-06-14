@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.company.metrics.steps;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -17,7 +18,6 @@ import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Collections;
 
 @ExtendWith(SpringExtension.class)
@@ -116,11 +116,12 @@ public class ITestUtil {
 
         return metricsRecalculateApi;
     }
-
     public HttpHeaders populateHttpHeaders(String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.set("ERIC-Identity" , "SOME_IDENTITY");
+        headers.set("ERIC-Identity-Type", "key");
         headers.set("x-request-id", id);
         return headers;
     }
