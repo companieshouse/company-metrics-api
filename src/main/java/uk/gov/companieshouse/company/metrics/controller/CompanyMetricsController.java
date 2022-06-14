@@ -47,7 +47,7 @@ public class CompanyMetricsController {
                         new ResponseEntity<>(
                                 companyMetricsDocument.getCompanyMetrics(),
                                 HttpStatus.OK))
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.status(HttpStatus.GONE).build());
     }
 
     /**
