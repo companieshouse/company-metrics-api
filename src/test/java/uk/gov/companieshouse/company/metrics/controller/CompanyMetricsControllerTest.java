@@ -17,10 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.company.metrics.config.ApplicationConfig;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
+import uk.gov.companieshouse.logging.Logger;
 
 import java.io.IOException;
 import java.util.Optional;
-import uk.gov.companieshouse.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,11 +39,11 @@ class CompanyMetricsControllerTest {
     private static final String COMPANY_URL = String.format("/company/%s/metrics", MOCK_COMPANY_NUMBER);
     private static final String RECALCULATE_URL = String.format("/company/%s/metrics/recalculate", MOCK_COMPANY_NUMBER);
 
-    @Autowired
-    private MockMvc mockMvc;
-
     @MockBean
     private Logger logger;
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -115,10 +115,10 @@ class CompanyMetricsControllerTest {
         when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
 
         mockMvc.perform(post(RECALCULATE_URL)
-                        .contentType(APPLICATION_JSON)
-                        .header("x-request-id", "5342342")
-                        .header("ERIC-Identity" , "SOME_IDENTITY")
-                        .header("ERIC-Identity-Type", "key")
+                         .contentType(APPLICATION_JSON)
+                         .header("x-request-id", "5342342")
+                         .header("ERIC-Identity" , "SOME_IDENTITY")
+                         .header("ERIC-Identity-Type", "key")
                          .content(gson.toJson(testData.populateMetricsRecalculateApi())))
                          .andExpect(status().isCreated());
     }

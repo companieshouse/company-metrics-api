@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -105,8 +107,9 @@ class CompanyMetricsServiceTest {
     @Test
     @DisplayName("When upsert method is invoked with total, satisfied, part-satisfied count then save those in metrics")
     void upsertMetrics() throws IOException {
+        when(companyMetricsRepository.save((any()))).thenReturn(testData.populateCompanyMetricsDocument());
 
-        companyMetricsService.upsertMetrics(20,10, 10,
+        companyMetricsService.upsertMetrics("12345", 20,10, 10,
                 "updatedBy", testData.populateCompanyMetricsDocument());
 
         Mockito.verify(companyMetricsRepository, Mockito.times(1)).save(Mockito.any());
@@ -117,7 +120,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("When insert method is invoked with id, total, satisfied, part-satisfied count and updated by then save those in metrics")
     void insertMetrics() {
 
-        companyMetricsService.insertMetrics("12345", 20,10,
+        companyMetricsService.insertMetrics("123456", "12345", 20,10,
                 10, "updatedBy");
         Mockito.verify(companyMetricsRepository, Mockito.times(1)).save(Mockito.any());
 

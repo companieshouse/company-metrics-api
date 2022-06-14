@@ -58,8 +58,12 @@ public class CompanyMetricsApiErrorRetrySteps {
     @When("I send POST a metrics recalculate request {string}")
     public void iSendPOSTRequestWithAnInvalidPayloadThatCausesANPE(String companyNumber) {
         MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(true);
-        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi,
-            iTestUtil.populateHttpHeaders(companyNumber));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-request-id", "5234234234");
+        headers.set("ERIC-Identity" , "SOME_IDENTITY");
+        headers.set("ERIC-Identity-Type", "key");
+        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi, headers);
 
         String uri = "/company/{company_number}/metrics/recalculate";
         ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class, companyNumber);

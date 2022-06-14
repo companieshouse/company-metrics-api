@@ -9,10 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
@@ -124,8 +121,12 @@ public class CompanyMetricsApiSteps {
     public void i_send_post_request_with_company_number(String companyNumber) throws IOException {
 
         MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(true);
-        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi,
-                iTestUtil.populateHttpHeaders("1234567"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-request-id", "5234234234");
+        headers.set("ERIC-Identity" , "SOME_IDENTITY");
+        headers.set("ERIC-Identity-Type", "key");
+        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi, headers);
 
         String uri = "/company/{company_number}/metrics/recalculate";
         ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class, companyNumber);
@@ -152,8 +153,12 @@ public class CompanyMetricsApiSteps {
     public void i_send_post_request_with_company_number_and_mortgage_flag_null(String companyNumber) throws IOException {
 
         MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(null);
-        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi,
-                iTestUtil.populateHttpHeaders("1234567"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-request-id", "5234234234");
+        headers.set("ERIC-Identity" , "SOME_IDENTITY");
+        headers.set("ERIC-Identity-Type", "key");
+        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi, headers);
 
         String uri = "/company/{company_number}/metrics/recalculate";
         ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class, companyNumber);
