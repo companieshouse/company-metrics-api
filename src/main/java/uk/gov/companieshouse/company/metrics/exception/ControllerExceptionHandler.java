@@ -99,35 +99,16 @@ public class ControllerExceptionHandler {
      * @param ex      exception to handle.
      * @return error response to return.
      */
-    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
-    public ResponseEntity<Object> handleException(HttpMessageNotReadableException ex,
-            WebRequest request) {
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class,
+            MethodArgumentNotValidException.class, BadRequestException.class})
+    public ResponseEntity<Object> handleExceptionForBadRequest(Exception ex,
+                                                               WebRequest request) {
         var correlationId = generateShortCorrelationId();
         logger.error(String.format("Started: handleException: %s Generating error response ",
                 correlationId), ex);
         Map<String, Object> responseBody = new LinkedHashMap<>();
         populateResponseBody(responseBody, correlationId);
         request.setAttribute("javax.servlet.error.exception", ex, 0);
-
-        return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Runtime exception handler MethodArgumentNotValidException.
-     *
-     * @param ex      exception to handle.
-     * @param request request.
-     * @return error response to return.
-     */
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
-    public ResponseEntity<Object> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException ex,
-            WebRequest request) {
-        var correlationId = generateShortCorrelationId();
-        logger.error(String.format("Started: handleException: %s Generating error response ",
-                correlationId), ex);
-        Map<String, Object> responseBody = new LinkedHashMap<>();
-        populateResponseBody(responseBody, correlationId);
 
         return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }

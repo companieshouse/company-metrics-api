@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
+import uk.gov.companieshouse.company.metrics.exception.BadRequestException;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 
@@ -61,7 +62,7 @@ public class CompanyMetricsController {
     public ResponseEntity<Void> recalculate(
              @PathVariable("company_number") String companyNumber,
              @Valid @RequestBody MetricsRecalculateApi requestBody
-    ) throws JsonProcessingException {
+    ) throws JsonProcessingException, BadRequestException {
 
         // Check to see if mortgages flag is true then process further
         if (requestBody != null && BooleanUtils.isTrue(requestBody.getMortgage())) {
@@ -88,8 +89,10 @@ public class CompanyMetricsController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } else {
-            // mortgage flag is null or false in payload hence returning 400 bad request
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            // mortgage flag is null or false in payload hence throwing BadRequestException
+            throw new BadRequestException(String.format("Invalid Request Received. %s ",
+                    requestBody.toString()));
+
         }
     }
 
