@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
@@ -17,6 +19,7 @@ import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 
 import java.util.Optional;
+import uk.gov.companieshouse.company.metrics.steps.ITestUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +40,8 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
 
     private TestData testData;
 
+    private final ITestUtil iTestUtil = new ITestUtil();
+
     @BeforeEach
     void setUp() {
         testData = new TestData();
@@ -56,8 +61,9 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
 
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(companyMetricsDocument));
 
-        ResponseEntity<MetricsApi> responseEntity =
-                restTemplate.getForEntity(COMPANY_URL, MetricsApi.class);
+        HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
+        ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
+                MetricsApi.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).usingRecursiveComparison()
                 .isEqualTo(companyMetricsDocument.getCompanyMetrics());
@@ -69,8 +75,9 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     void getCompanyMetricsNotFound() throws Exception {
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
-        ResponseEntity<MetricsApi> responseEntity =
-                restTemplate.getForEntity(COMPANY_URL, MetricsApi.class);
+        HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
+        ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
+                MetricsApi.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.GONE);
         assertThat(responseEntity.getBody()).isNull();
     }
@@ -79,9 +86,10 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     @DisplayName("When calling get company metrics - returns a 500 INTERNAL SERVER ERROR")
     void getCompanyMetricsInternalServerError() throws Exception {
         when(companyMetricsService.get(any())).thenThrow(RuntimeException.class);
+        HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
+        ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
+                MetricsApi.class);
 
-        ResponseEntity<MetricsApi> responseEntity =
-                restTemplate.getForEntity(COMPANY_URL, MetricsApi.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

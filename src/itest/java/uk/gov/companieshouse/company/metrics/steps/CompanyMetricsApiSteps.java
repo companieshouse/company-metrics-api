@@ -97,7 +97,8 @@ public class CompanyMetricsApiSteps {
     @When("I send GET request with company number {string}")
     public void i_send_get_request_with_company_number(String companyNumber) {
         String uri = "/company/{company_number}/metrics";
-        ResponseEntity<MetricsApi> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+        HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
+        ResponseEntity<MetricsApi> response = restTemplate.exchange(uri, HttpMethod.GET, request,
                 MetricsApi.class, companyNumber);
 
         CucumberContext.CONTEXT.set("statusCode", response.getStatusCodeValue());

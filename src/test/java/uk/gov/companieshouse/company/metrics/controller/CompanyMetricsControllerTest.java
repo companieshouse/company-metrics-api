@@ -9,15 +9,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import uk.gov.companieshouse.company.metrics.config.ApplicationConfig;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 
 import java.io.IOException;
 import java.util.Optional;
+import uk.gov.companieshouse.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = CompanyMetricsController.class)
 @ContextConfiguration(classes = CompanyMetricsController.class)
+@Import({ApplicationConfig.class})
 class CompanyMetricsControllerTest {
     private static final String MOCK_COMPANY_NUMBER = "12345678";
     private static final String COMPANY_URL = String.format("/company/%s/metrics", MOCK_COMPANY_NUMBER);
@@ -37,6 +41,9 @@ class CompanyMetricsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private Logger logger;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -58,7 +65,11 @@ class CompanyMetricsControllerTest {
     void getCompanyMetrics() throws Exception {
 
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
-        mockMvc.perform(get(COMPANY_URL))
+        mockMvc.perform(get(COMPANY_URL)
+                        .contentType(APPLICATION_JSON)
+                        .header("x-request-id", "5342342")
+                        .header("ERIC-Identity" , "SOME_IDENTITY")
+                        .header("ERIC-Identity-Type", "key"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(testData.populateCompanyMetricsDocument().getCompanyMetrics())));
     }
@@ -69,7 +80,11 @@ class CompanyMetricsControllerTest {
     void getCompanyMetricsNotFound() throws Exception {
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get(COMPANY_URL))
+        mockMvc.perform(get(COMPANY_URL)
+                        .contentType(APPLICATION_JSON)
+                        .header("x-request-id", "5342342")
+                        .header("ERIC-Identity" , "SOME_IDENTITY")
+                        .header("ERIC-Identity-Type", "key"))
                 .andExpect(status().isGone())
                 .andExpect(content().string(""));
     }
@@ -80,7 +95,11 @@ class CompanyMetricsControllerTest {
         when(companyMetricsService.get(any())).thenThrow(RuntimeException.class);
 
         assertThatThrownBy(() ->
-                mockMvc.perform(get(COMPANY_URL))
+                mockMvc.perform(get(COMPANY_URL)
+                                .contentType(APPLICATION_JSON)
+                                .header("x-request-id", "5342342")
+                                .header("ERIC-Identity" , "SOME_IDENTITY")
+                                .header("ERIC-Identity-Type", "key"))
                         .andExpect(status().isInternalServerError())
                         .andExpect(content().string(""))
         ).hasCause(new RuntimeException());
@@ -96,7 +115,10 @@ class CompanyMetricsControllerTest {
         when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
 
         mockMvc.perform(post(RECALCULATE_URL)
-                         .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .header("x-request-id", "5342342")
+                        .header("ERIC-Identity" , "SOME_IDENTITY")
+                        .header("ERIC-Identity-Type", "key")
                          .content(gson.toJson(testData.populateMetricsRecalculateApi())))
                          .andExpect(status().isCreated());
     }
