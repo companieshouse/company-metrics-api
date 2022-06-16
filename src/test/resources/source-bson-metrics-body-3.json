@@ -1,0 +1,41 @@
+{
+  "_id" : "00006400",
+  "data" : {
+    "counts" : {
+      "appointments" : {
+        "active_directors_count" : 13,
+        "total_count" : 63,
+        "active_count" : 14,
+        "active_secretaries_count" : 1,
+        "resigned_count" : 49,
+        "active_llp_members_count" : 0
+      },
+      "persons-with-significant-control" : {
+        "active_pscs_count" : 0,
+        "active_statements_count" : 0,
+        "pscs_count" : 1,
+        "total_count" : 1,
+        "withdrawn_statements_count" : 0,
+        "ceased_pscs_count" : 1,
+        "statements_count" : 0
+      }
+    },
+    "etag" : "d9c0b4ab7fd4e88ad1fa691840134a4ad41b4ed0",
+    "mortgage" : {
+      "total_count" : 14,
+      "satisfied_count" : 14,
+      "part_satisfied_count" : 0
+    },
+    "registers" : {
+      "directors" : {
+        "register_moved_to" : "public-register",
+        "moved_on" : "2022-03-02T11:16:19.000Z"
+      }
+    }
+  },
+  "updated" : {
+    "at" : "2021-03-08T12:20:56.208Z",
+    "by" : "6046169cb4bf533b0dc227b9",
+    "type" : "company_metrics"
+  }
+}

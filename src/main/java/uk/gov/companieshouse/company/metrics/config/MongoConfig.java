@@ -8,18 +8,27 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import uk.gov.companieshouse.api.charges.ScottishAlterationsApi;
+import uk.gov.companieshouse.api.charges.TransactionsLinks;
 import uk.gov.companieshouse.company.metrics.converter.CompanyMetricsReadConverter;
 import uk.gov.companieshouse.company.metrics.converter.CompanyMetricsWriteConverter;
 import uk.gov.companieshouse.company.metrics.converter.EnumConverters;
+import uk.gov.companieshouse.company.metrics.converter.OffsetDateTimeReadConverter;
+import uk.gov.companieshouse.company.metrics.converter.OffsetDateTimeWriteConverter;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateDeSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateTimeDeSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateTimeSerializer;
+import uk.gov.companieshouse.company.metrics.serialization.NonBlankStringSerializer;
+import uk.gov.companieshouse.company.metrics.serialization.NotNullFieldObjectSerializer;
+import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeDeSerializer;
+import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeSerializer;
 
 
 @Configuration
@@ -35,7 +44,8 @@ public class MongoConfig {
         return new MongoCustomConversions(List.of(new CompanyMetricsReadConverter(objectMapper),
                 new EnumConverters.StringToEnum(),
                 new EnumConverters.EnumToString(),
-                new CompanyMetricsWriteConverter(objectMapper)));
+                new CompanyMetricsWriteConverter(objectMapper), new OffsetDateTimeReadConverter(),
+                new OffsetDateTimeWriteConverter()));
     }
 
     /**
@@ -53,6 +63,11 @@ public class MongoConfig {
         module.addDeserializer(LocalDate.class, new LocalDateDeSerializer());
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeSerializer());
+        module.addSerializer(String.class, new NonBlankStringSerializer());
+        module.addSerializer(ScottishAlterationsApi.class, new NotNullFieldObjectSerializer());
+        module.addSerializer(TransactionsLinks.class, new NotNullFieldObjectSerializer());
+        module.addSerializer(OffsetDateTime.class, new OffsetDateTimeSerializer());
+        module.addDeserializer(OffsetDateTime.class, new OffsetDateTimeDeSerializer());
         objectMapper.registerModule(module);
         return objectMapper;
     }
