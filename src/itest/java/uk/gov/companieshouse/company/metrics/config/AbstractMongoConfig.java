@@ -1,10 +1,14 @@
 package uk.gov.companieshouse.company.metrics.config;
 
+import java.time.Duration;
+
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 /**
  * Mongodb configuration runs on test container.
@@ -16,8 +20,14 @@ public class AbstractMongoConfig {
 
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.metrics.uri", mongoDBContainer::getReplicaSetUrl);
-        registry.add("spring.data.mongodb.charges.uri", mongoDBContainer::getReplicaSetUrl);
+        mongoDBContainer.setWaitStrategy(Wait.defaultWaitStrategy()
+                .withStartupTimeout(Duration.of(300, SECONDS)));
+        registry.add("spring.data.mongodb.metrics.uri", (() -> mongoDBContainer.getReplicaSetUrl() +
+                "?serverSelectionTimeoutMS=100&connectTimeoutMS=100"));
+
+        registry.add("spring.data.mongodb.charges.uri", (() -> mongoDBContainer.getReplicaSetUrl() +
+                "?serverSelectionTimeoutMS=100&connectTimeoutMS=100"));
+
         mongoDBContainer.start();
     }
 }

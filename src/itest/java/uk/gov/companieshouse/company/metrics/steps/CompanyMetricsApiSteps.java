@@ -47,7 +47,7 @@ public class CompanyMetricsApiSteps {
 
     @Before
     public void dbCleanUp(){
-        if (!mongoDBContainer.isRunning()) {
+        if (mongoDBContainer.getContainerId() == null) {
             mongoDBContainer.start();
         }
         chargesRepository.deleteAll();
@@ -66,7 +66,6 @@ public class CompanyMetricsApiSteps {
     public void the_company_charges_db_is_down() {
         mongoDBContainer.stop();
     }
-
 
     @Given("the company metrics exists for {string}")
     public void the_company_metrics_exists_for(String companyNumber) {

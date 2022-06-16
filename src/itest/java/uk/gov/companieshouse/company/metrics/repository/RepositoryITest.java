@@ -17,6 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.company.metrics.AbstractIntegrationTest;
 import uk.gov.companieshouse.company.metrics.config.TestConfig;
 import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
@@ -37,20 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Import(TestConfig.class)
-@Testcontainers
-@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RepositoryITest  {
-
-  public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(
-          DockerImageName.parse("mongo:4.0.10"));
-
-  @DynamicPropertySource
-  static void setProperties(DynamicPropertyRegistry registry) {
-    registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl );
-    mongoDBContainer.start();
-  }
+public class RepositoryITest extends AbstractIntegrationTest {
 
   @Autowired
   private CompanyMetricsRepository companyMetricsRepository;
@@ -65,7 +53,7 @@ public class RepositoryITest  {
   private CompanyMetricsService companyMetricsService;
 
   @Mock
-  Logger logger;
+  private Logger logger;
 
   @BeforeAll
   static void setup(){
@@ -77,17 +65,17 @@ public class RepositoryITest  {
     this.companyMetricsRepository.deleteAll();
     this.testData = new TestData();
     this.chargesRepository.deleteAll();
-    this.companyMetricsService = new CompanyMetricsService(logger,companyMetricsRepository,chargesRepository );
-  }
-
-  @Test
-  void should_return_mongodb_as_running() {
-    assertTrue(mongoDBContainer.isRunning());
+    this.companyMetricsService = new CompanyMetricsService(logger, companyMetricsRepository, chargesRepository);
   }
 
   @AfterAll
   static void tear(){
     mongoDBContainer.stop();
+  }
+
+  @Test
+  void should_return_mongodb_as_running() {
+    assertTrue(mongoDBContainer.isRunning());
   }
 
   @Test
