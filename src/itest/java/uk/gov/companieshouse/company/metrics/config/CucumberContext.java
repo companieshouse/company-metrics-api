@@ -12,8 +12,6 @@ public enum CucumberContext {
 
     CONTEXT;
 
-    private static final String RESPONSE = "RESPONSE";
-
     private final ThreadLocal<Map<String, Object>> testContexts = ThreadLocal.withInitial(HashMap::new);
 
     public Object get(String name) {

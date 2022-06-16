@@ -29,9 +29,6 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     private static final String MOCK_COMPANY_NUMBER = "12345678";
     private static final String COMPANY_URL = String.format("/company/%s/metrics", MOCK_COMPANY_NUMBER);
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private CompanyMetricsService companyMetricsService;
 
@@ -82,7 +79,7 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
         assertThat(responseEntity.getBody()).isNull();
     }
 
-    @Test()
+    @Test
     @DisplayName("When calling get company metrics - returns a 500 INTERNAL SERVER ERROR")
     void getCompanyMetricsInternalServerError() throws Exception {
         when(companyMetricsService.get(any())).thenThrow(RuntimeException.class);

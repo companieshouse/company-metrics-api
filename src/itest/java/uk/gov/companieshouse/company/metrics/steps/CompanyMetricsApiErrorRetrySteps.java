@@ -1,42 +1,28 @@
 package uk.gov.companieshouse.company.metrics.steps;
 
-import static org.mockito.Mockito.mock;
-import static uk.gov.companieshouse.company.metrics.config.AbstractMongoConfig.mongoDBContainer;
+import java.util.Collections;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.MongoClient;
-import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.Collections;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.config.CucumberContext;
-import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 
 
 public class CompanyMetricsApiErrorRetrySteps {
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private TestRestTemplate restTemplate;
-
-    @Autowired
-    private ChargesRepository chargesRepository;
 
     @Autowired
     private CompanyMetricsRepository companyMetricsRepository;
