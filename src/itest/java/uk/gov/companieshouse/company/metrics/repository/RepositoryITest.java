@@ -134,7 +134,7 @@ public class RepositoryITest extends AbstractIntegrationTest {
             createUpdated("source-metrics-updated-body-1.json");
     CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsDocument(metricsApi, updated);
     companyMetricsDocument.setId(MOCK_COMPANY_NUMBER);
-    companyMetricsService.upsertMetrics(4,1,1,"updatedBy", companyMetricsDocument );
+    companyMetricsService.upsertMetrics("1234", 4,1,1,"updatedBy", companyMetricsDocument );
 
     Optional<CompanyMetricsDocument>  document = companyMetricsRepository.findById(MOCK_COMPANY_NUMBER);
     assertEquals( MOCK_COMPANY_NUMBER, document.get().getId());
@@ -147,7 +147,7 @@ public class RepositoryITest extends AbstractIntegrationTest {
   @Test
   void should_insert_company_metrics_collection_with_mortgage_details() throws IOException {
 
-    companyMetricsService.insertMetrics(MOCK_COMPANY_NUMBER,4,1,1,"updatedBy" );
+    companyMetricsService.insertMetrics("1234", MOCK_COMPANY_NUMBER,4,1,1,"updatedBy" );
 
     Optional<CompanyMetricsDocument>  document = companyMetricsRepository.findById(MOCK_COMPANY_NUMBER);
     assertEquals( MOCK_COMPANY_NUMBER, document.get().getId());

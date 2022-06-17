@@ -67,7 +67,8 @@ public class CompanyMetricsService {
      * @param partSatisfiedCount   part_satisfied_count.
      * @param companyMetricsDocument   CompanyMetricsDocument.
      */
-    public void upsertMetrics(Integer totalCount, Integer satisfiedCount,
+    public void upsertMetrics(String contextId, Integer totalCount,
+                              Integer satisfiedCount,
                               Integer partSatisfiedCount, String updatedBy,
                               CompanyMetricsDocument companyMetricsDocument) {
         logger.debug(String.format("Started : Save or Update Company_Metrics with totalCount %s "
@@ -89,11 +90,11 @@ public class CompanyMetricsService {
         }
 
         logger.debug("Started : Saving charges in DB ");
-        companyMetricsRepository.save(companyMetricsDocument);
-        logger.debug(String.format("Finished : Save or Update Company_Metrics "
-                        + "with totalCount %s "
-                        + "and satisfiedCount %s and  partSatisfiedCount %s",
-                totalCount, satisfiedCount , partSatisfiedCount));
+        CompanyMetricsDocument savedCompanyMetrics =
+                companyMetricsRepository.save(companyMetricsDocument);
+        logger.info(String.format("Company metrics  updated for context id %s "
+                        + "with id %s",
+                contextId, savedCompanyMetrics.getId()));
 
     }
 
@@ -106,7 +107,8 @@ public class CompanyMetricsService {
      * @param partSatisfiedCount   part_satisfied_count.
      * @param updatedBy   updatedBy.
      */
-    public void insertMetrics(String id, Integer totalCount, Integer satisfiedCount,
+    public void insertMetrics(String contextId, String id,
+                              Integer totalCount, Integer satisfiedCount,
                               Integer partSatisfiedCount, String updatedBy) {
 
         logger.info("companyMetricsDocument with id not found hence creating "
@@ -117,9 +119,9 @@ public class CompanyMetricsService {
 
         logger.debug("Started : inserting a new record in metrics collection ");
         companyMetricsRepository.save(companyMetricsDocument);
-        logger.debug("Finished : added a record into "
-                + "Company_Metrics with id " + id);
-
+        logger.info(String.format("Company metrics added for context id %s "
+                        + "with id %s",
+                contextId, id));
     }
 
 
