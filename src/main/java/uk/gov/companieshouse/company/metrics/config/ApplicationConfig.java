@@ -45,7 +45,8 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         this.logger.debug("Start: configure Http Security");
         http.httpBasic().disable()
-                .csrf().disable()
+                //REST APIs not enabled for cross site script headers
+                .csrf().disable() //NOSONAR
                 .formLogin().disable()
                 .logout().disable()
                 .sessionManagement()
