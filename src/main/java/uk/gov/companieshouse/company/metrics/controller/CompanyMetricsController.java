@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.company.metrics.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -67,7 +65,7 @@ public class CompanyMetricsController {
             @RequestHeader("x-request-id") String contextId,
              @PathVariable("company_number") String companyNumber,
              @Valid @RequestBody MetricsRecalculateApi requestBody
-    ) throws JsonProcessingException, BadRequestException {
+    ) throws BadRequestException {
         logger.info(String.format(
                 "Payload Successfully received on POST with context id %s and company number %s",
                 contextId,
@@ -104,7 +102,7 @@ public class CompanyMetricsController {
                     contextId,
                     companyNumber));
             throw new BadRequestException(String.format("Invalid Request Received. %s ",
-                    requestBody.toString()));
+                    requestBody == null ? null : requestBody.toString()));
         }
     }
 
