@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.company.metrics.exception;
+package uk.gov.companieshouse.company.metrics.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,23 +26,23 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class ControllerExceptionHandlerTest {
+class ExceptionHandlerConfigTest {
 
     @Mock
     private WebRequest request;
 
-    private ControllerExceptionHandler controllerExceptionHandler;
+    private ExceptionHandlerConfig exceptionHandlerConfig;
 
     @BeforeEach
     void setUp() {
-        this.controllerExceptionHandler = new ControllerExceptionHandler(mock(Logger.class));
+        this.exceptionHandlerConfig = new ExceptionHandlerConfig(mock(Logger.class));
     }
 
     @Test
     void testHandleException() {
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
         WebRequest webRequest = new ServletWebRequest(servletRequest);
-        ResponseEntity<Object> entity = controllerExceptionHandler.
+        ResponseEntity<Object> entity = exceptionHandlerConfig.
                 handleException(new Exception(), webRequest);
 
         assertNotNull(entity);
@@ -51,15 +51,15 @@ class ControllerExceptionHandlerTest {
 
     @Test
     @DisplayName("Handle Generic Exception")
-    public void handleGenericExceptionTest() {
+    void handleGenericExceptionTest() {
         Exception exp = new Exception("some error");
-        ResponseEntity<Object> response = controllerExceptionHandler.handleException(exp, request);
+        ResponseEntity<Object> response = exceptionHandlerConfig.handleException(exp, request);
         assertEquals(500, response.getStatusCodeValue());
     }
 
     @Test
     @DisplayName("Handle HttpMessageNotReadableException thown when payload not deserialised")
-    public void handleHttpMessageNotReadableExceptionTest() {
+    void handleHttpMessageNotReadableExceptionTest() {
         HttpInputMessage inputMessage = new HttpInputMessage() {
             @Override
             public HttpHeaders getHeaders() {
@@ -72,23 +72,23 @@ class ControllerExceptionHandlerTest {
             }
         };
         HttpMessageNotReadableException exp = new HttpMessageNotReadableException("some error", inputMessage);
-        ResponseEntity<Object> response = controllerExceptionHandler.handleExceptionForBadRequest(exp, request);
+        ResponseEntity<Object> response = exceptionHandlerConfig.handleBadRequestException(exp, request);
         assertEquals(400, response.getStatusCodeValue());
     }
 
     @Test
     @DisplayName("Handle mongo data API exception")
-    public void handleExceptionKafkaNon200ResponseTest() {
+    void handleExceptionKafkaNon200ResponseTest() {
         InvalidDataAccessApiUsageException exp = new InvalidDataAccessApiUsageException("Mongo test exception");
-        ResponseEntity<Object> response = controllerExceptionHandler.handleException(exp, request);
-        assertEquals(510, response.getStatusCodeValue());
+        ResponseEntity<Object> response = exceptionHandlerConfig.handleServiceUnavailableException(exp, request);
+        assertEquals(503, response.getStatusCodeValue());
     }
 
     @Test
     @DisplayName("Handle DataAccessException")
-    public void handleCausedByDataAccessExceptionTest() {
+    void handleCausedByDataAccessExceptionTest() {
         DataAccessResourceFailureException exp = new DataAccessResourceFailureException("Test exception");
-        ResponseEntity<Object> response = controllerExceptionHandler.handleException(exp, request);
+        ResponseEntity<Object> response = exceptionHandlerConfig.handleServiceUnavailableException(exp, request);
         assertEquals(503, response.getStatusCodeValue());
     }
 
