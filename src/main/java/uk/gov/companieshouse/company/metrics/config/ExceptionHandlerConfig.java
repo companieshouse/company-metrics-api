@@ -85,7 +85,7 @@ public class ExceptionHandlerConfig {
     public ResponseEntity<Object> handleDocumentGoneException(Exception ex,
                                                               WebRequest request) {
         return new ResponseEntity<>(responseAndLogBuilderHandler(ex, request),
-                HttpStatus.GONE);
+                HttpStatus.NOT_FOUND);
     }
 
     /**
