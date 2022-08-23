@@ -85,7 +85,7 @@ class CompanyMetricsControllerTest {
                         .header("x-request-id", "5342342")
                         .header("ERIC-Identity" , "SOME_IDENTITY")
                         .header("ERIC-Identity-Type", "key"))
-                .andExpect(status().isGone())
+                .andExpect(status().isNotFound())
                 .andExpect(content().string(""));
     }
 
