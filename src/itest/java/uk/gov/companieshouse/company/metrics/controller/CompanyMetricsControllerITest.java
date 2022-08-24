@@ -75,7 +75,7 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
         HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
         ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
                 MetricsApi.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.GONE);
         assertThat(responseEntity.getBody()).isNull();
     }
 
