@@ -76,7 +76,7 @@ class CompanyMetricsControllerTest {
 
     @Test
     @DisplayName(
-            "Given a company number with no matching company metrics return a gone response")
+            "Given a company number with no matching company metrics return a NOT FOUND response")
     void getCompanyMetricsNotFound() throws Exception {
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
@@ -85,7 +85,7 @@ class CompanyMetricsControllerTest {
                         .header("x-request-id", "5342342")
                         .header("ERIC-Identity" , "SOME_IDENTITY")
                         .header("ERIC-Identity-Type", "key"))
-                .andExpect(status().isGone())
+                .andExpect(status().isNotFound())
                 .andExpect(content().string(""));
     }
 
