@@ -18,7 +18,7 @@ Feature: Process company metrics error and retry
   Scenario: Request without authentication headers fails to process
     Given Company metrics api rest service is running
     When I send POST request with an no auth header
-    Then Rest endpoint returns http response code 403 'Forbidden' to the client
+    Then Rest endpoint returns http response code 401 'Unauthorised' to the client
 
   Scenario Outline: Non recoverable NPE returns 500 response
     Given Company metrics api rest service is running

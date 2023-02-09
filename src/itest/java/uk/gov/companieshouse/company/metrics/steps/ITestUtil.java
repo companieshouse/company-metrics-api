@@ -123,7 +123,7 @@ public class ITestUtil {
         headers.set("ERIC-Identity" , "SOME_IDENTITY");
         headers.set("ERIC-Identity-Type", "key");
         headers.set("x-request-id", id);
+        headers.set("ERIC-Authorised-Key-Privileges", "internal-app");
         return headers;
     }
-
 }
