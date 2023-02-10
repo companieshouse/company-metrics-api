@@ -63,13 +63,13 @@ class CompanyMetricsControllerTest {
     @Test
     @DisplayName("Retrieve company metrics for a given company number")
     void getCompanyMetrics() throws Exception {
-
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
+
         mockMvc.perform(get(COMPANY_URL)
-                        .contentType(APPLICATION_JSON)
-                        .header("x-request-id", "5342342")
-                        .header("ERIC-Identity" , "SOME_IDENTITY")
-                        .header("ERIC-Identity-Type", "key"))
+                .contentType(APPLICATION_JSON)
+                    .header("x-request-id", "5342342")
+                    .header("ERIC-Identity" , "SOME_IDENTITY")
+                    .header("ERIC-Identity-Type", "key"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(testData.populateCompanyMetricsDocument().getCompanyMetrics())));
     }
@@ -81,10 +81,10 @@ class CompanyMetricsControllerTest {
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
         mockMvc.perform(get(COMPANY_URL)
-                        .contentType(APPLICATION_JSON)
-                        .header("x-request-id", "5342342")
-                        .header("ERIC-Identity" , "SOME_IDENTITY")
-                        .header("ERIC-Identity-Type", "key"))
+                .contentType(APPLICATION_JSON)
+                    .header("x-request-id", "5342342")
+                    .header("ERIC-Identity" , "SOME_IDENTITY")
+                    .header("ERIC-Identity-Type", "key"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(""));
     }
@@ -96,10 +96,10 @@ class CompanyMetricsControllerTest {
 
         assertThatThrownBy(() ->
                 mockMvc.perform(get(COMPANY_URL)
-                                .contentType(APPLICATION_JSON)
-                                .header("x-request-id", "5342342")
-                                .header("ERIC-Identity" , "SOME_IDENTITY")
-                                .header("ERIC-Identity-Type", "key"))
+                        .contentType(APPLICATION_JSON)
+                            .header("x-request-id", "5342342")
+                            .header("ERIC-Identity" , "SOME_IDENTITY")
+                            .header("ERIC-Identity-Type", "key"))
                         .andExpect(status().isInternalServerError())
                         .andExpect(content().string(""))
         ).hasCause(new RuntimeException());
@@ -115,12 +115,86 @@ class CompanyMetricsControllerTest {
         when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
 
         mockMvc.perform(post(RECALCULATE_URL)
-                         .contentType(APPLICATION_JSON)
-                         .header("x-request-id", "5342342")
-                         .header("ERIC-Identity" , "SOME_IDENTITY")
-                         .header("ERIC-Identity-Type", "key")
-                         .content(gson.toJson(testData.populateMetricsRecalculateApi())))
-                         .andExpect(status().isCreated());
+                .contentType(APPLICATION_JSON)
+                    .header("x-request-id", "5342342")
+                    .header("ERIC-Identity" , "SOME_IDENTITY")
+                    .header("ERIC-Identity-Type", "key")
+                    .header("ERIC-Authorised-Key-Privileges", "internal-app")
+                    .content(gson.toJson(testData.populateMetricsRecalculateApi())))
+                .andExpect(status().isCreated());
     }
 
+    @Test
+    @DisplayName("Metrics recalculation POST request fails with missing ERIC-Authorised-Key-Privilege")
+    void postRecalculateCompanyChargesMissingAuthorisation() throws Exception {
+
+        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "none")).thenReturn(20);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "satisfied")).thenReturn(10);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
+
+        mockMvc.perform(post(RECALCULATE_URL)
+                .contentType(APPLICATION_JSON)
+                    .header("x-request-id", "5342342")
+                    .header("ERIC-Identity" , "SOME_IDENTITY")
+                    .header("ERIC-Identity-Type", "key")
+                    .content(gson.toJson(testData.populateMetricsRecalculateApi())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Metrics recalculation POST request fails with incorrect privileges")
+    void postRecalculateCompanyChargesIncorrectPrivileges() throws Exception {
+
+        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "none")).thenReturn(20);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "satisfied")).thenReturn(10);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
+
+        mockMvc.perform(post(RECALCULATE_URL)
+                .contentType(APPLICATION_JSON)
+                    .header("x-request-id", "5342342")
+                    .header("ERIC-Identity" , "SOME_IDENTITY")
+                    .header("ERIC-Identity-Type", "key")
+                    .header("ERIC-Authorised-Key-Privileges", "incorrect-privileges")
+                    .content(gson.toJson(testData.populateMetricsRecalculateApi())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Metrics recalculation POST request fails with OAuth2 authorisation")
+    void postRecalculateCompanyChargesIncorrectAuthorisation() throws Exception {
+
+        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "none")).thenReturn(20);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "satisfied")).thenReturn(10);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
+
+        mockMvc.perform(post(RECALCULATE_URL)
+                .contentType(APPLICATION_JSON)
+                    .header("x-request-id", "5342342")
+                    .header("ERIC-Identity" , "SOME_IDENTITY")
+                    .header("ERIC-Identity-Type", "oauth2")
+                    .content(gson.toJson(testData.populateMetricsRecalculateApi())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Metrics recalculation POST request fails with OAuth2 authorisation and internal app privileges")
+    void postRecalculateCompanyChargesIncorrectAuthorisationWithPrivileges() throws Exception {
+
+        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(testData.populateCompanyMetricsDocument()));
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "none")).thenReturn(20);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "satisfied")).thenReturn(10);
+        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER, "part-satisfied")).thenReturn(10);
+
+        mockMvc.perform(post(RECALCULATE_URL)
+                .contentType(APPLICATION_JSON)
+                    .header("x-request-id", "5342342")
+                    .header("ERIC-Identity" , "SOME_IDENTITY")
+                    .header("ERIC-Identity-Type", "oauth2")
+                    .header("ERIC-Authorised-Key-Privileges", "internal-app")
+                    .content(gson.toJson(testData.populateMetricsRecalculateApi())))
+                .andExpect(status().isForbidden());
+    }
 }

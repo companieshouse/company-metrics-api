@@ -126,6 +126,7 @@ public class CompanyMetricsApiSteps {
         headers.set("x-request-id", "5234234234");
         headers.set("ERIC-Identity" , "SOME_IDENTITY");
         headers.set("ERIC-Identity-Type", "key");
+        headers.set("ERIC-Authorised-Key-Privileges", "internal-app");
         HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi, headers);
 
         String uri = "/company/{company_number}/metrics/recalculate";
@@ -158,6 +159,7 @@ public class CompanyMetricsApiSteps {
         headers.set("x-request-id", "5234234234");
         headers.set("ERIC-Identity" , "SOME_IDENTITY");
         headers.set("ERIC-Identity-Type", "key");
+        headers.set("ERIC-Authorised-Key-Privileges", "internal-app");
         HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi, headers);
 
         String uri = "/company/{company_number}/metrics/recalculate";
