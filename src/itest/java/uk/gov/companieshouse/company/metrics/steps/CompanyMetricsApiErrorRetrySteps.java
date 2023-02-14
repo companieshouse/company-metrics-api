@@ -55,7 +55,7 @@ public class CompanyMetricsApiErrorRetrySteps {
         CucumberContext.CONTEXT.set("statusCode", response.getStatusCodeValue());
     }
 
-    @When("I send POST a metrics recalculate request {string}")
+    @When("I send POST a charges metrics recalculate request {string}")
     public void iSendPOSTRequestWithAnInvalidPayloadThatCausesANPE(String companyNumber) {
         MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(true);
         HttpHeaders headers = new HttpHeaders();

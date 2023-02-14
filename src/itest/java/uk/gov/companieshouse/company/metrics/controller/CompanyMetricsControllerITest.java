@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.company.metrics.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,7 +68,7 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     @Test
     @DisplayName(
             "Given a company number with no matching company metrics return a NOT FOUND response")
-    void getCompanyMetricsNotFound() throws Exception {
+    void getCompanyMetricsNotFound() {
         when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
         HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
@@ -81,7 +80,7 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
 
     @Test
     @DisplayName("When calling get company metrics - returns a 500 INTERNAL SERVER ERROR")
-    void getCompanyMetricsInternalServerError() throws Exception {
+    void getCompanyMetricsInternalServerError() {
         when(companyMetricsService.get(any())).thenThrow(RuntimeException.class);
         HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
         ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
