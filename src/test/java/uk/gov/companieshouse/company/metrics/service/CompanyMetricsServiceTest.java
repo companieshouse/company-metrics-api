@@ -1,19 +1,16 @@
 package uk.gov.companieshouse.company.metrics.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
-import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
 
@@ -21,36 +18,39 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class CompanyMetricsServiceTest {
-    private static final String MOCK_COMPANY_NUMBER = "12345678";
+
+    private static final String COMPANY_NUMBER = "12345678";
+    public static final String CONTEXT_ID = "12345";
+    public static final String UPDATED_BY = "updatedBy";
+    public static final String COMPANY_METRICS = "company_metrics";
 
     @Mock
     CompanyMetricsRepository companyMetricsRepository;
 
     @Mock
-    ChargesRepository chargesRepository;
+    ChargesCountService chargesCountService;
 
     @Mock
     Logger logger;
 
+    ArgumentCaptor<CompanyMetricsDocument> companyMetricsDocumentCaptor = ArgumentCaptor.forClass(CompanyMetricsDocument.class);
+
     @InjectMocks
     CompanyMetricsService companyMetricsService;
 
-    private TestData testData;
-
-    @BeforeEach
-    void setUp() {
-        testData = new TestData();
-    }
+    private final TestData testData = new TestData();
 
     @Test
     @DisplayName("When company metrics is retrieved successfully then it is returned")
@@ -68,10 +68,10 @@ class CompanyMetricsServiceTest {
                 .thenReturn(Optional.of(companyMetricsDocument));
 
         Optional<CompanyMetricsDocument> companyMetricsActual =
-                companyMetricsService.get(MOCK_COMPANY_NUMBER);
+                companyMetricsService.get(COMPANY_NUMBER);
 
         assertThat(companyMetricsActual.get()).isSameAs(companyMetricsDocument);
-        verify(logger, times(2)).trace(anyString());
+        verify(companyMetricsRepository).findById(COMPANY_NUMBER);
     }
 
     @Test
@@ -81,48 +81,73 @@ class CompanyMetricsServiceTest {
                 .thenReturn(Optional.empty());
 
         Optional<CompanyMetricsDocument> companyMetricsActual =
-                companyMetricsService.get(MOCK_COMPANY_NUMBER);
+                companyMetricsService.get(COMPANY_NUMBER);
 
         assertTrue(companyMetricsActual.isEmpty());
-        verify(logger, times(2)).trace(anyString());
+        verify(companyMetricsRepository).findById(COMPANY_NUMBER);
     }
 
     @Test
-    @DisplayName("When queryCompanyMetrics method is invoked with company number and status then return the count")
-    void invokeQueryCompanyMetrics() throws IOException {
+    @DisplayName("Should update existing charges metrics")
+    void shouldUpdateExistingChargesMetrics() throws IOException {
+        CompanyMetricsDocument companyMetricsDocument = testData.populateCompanyMetricsDocument();
+        String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
+        doReturn(Optional.of(companyMetricsDocument))
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
 
-        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"))
-                .thenReturn(20);
-        when(companyMetricsService.queryCompanySatisfiedMortgages(MOCK_COMPANY_NUMBER,"satisfied","fully-satisfied"))
-                .thenReturn(10);
-        when(companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"))
-                .thenReturn(10);
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForCharges());
 
-        assertEquals(20, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"none"));
-        assertEquals(10, companyMetricsService.queryCompanySatisfiedMortgages(MOCK_COMPANY_NUMBER,"satisfied","fully-satisfied"));
-        assertEquals(10, companyMetricsService.queryCompanyMortgages(MOCK_COMPANY_NUMBER,"part-satisfied"));
+        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                companyMetricsDocument.getCompanyMetrics());
 
+        verify(companyMetricsRepository).save(companyMetricsDocument);
+
+        Updated updated = companyMetricsDocument.getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+        assertThat(metricsApi.getMortgage()).isNotNull();
+        assertThat(metricsApi.getMortgage()).isNotNull();
+        assertThat(metricsApi.getEtag()).isNotEqualTo(initialETTag);
     }
 
     @Test
-    @DisplayName("When upsert method is invoked with total, satisfied, part-satisfied count then save those in metrics")
-    void upsertMetrics() throws IOException {
-        when(companyMetricsRepository.save((any()))).thenReturn(testData.populateCompanyMetricsDocument());
+    @DisplayName("Should set charges metrics on a new document")
+    void shouldSetChargesMetricsOnNewDocument() {
+        doReturn(Optional.empty())
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
 
-        companyMetricsService.upsertMetrics("12345", 20,10, 10,
-                "updatedBy", testData.populateCompanyMetricsDocument());
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForCharges());
 
-        Mockito.verify(companyMetricsRepository, Mockito.times(1)).save(Mockito.any());
+        verify(chargesCountService).recalculateMetrics(eq(CONTEXT_ID), eq(COMPANY_NUMBER),
+                any());
 
+        verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
+
+        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        assertThat(metricsApi.getMortgage()).isNotNull();
+        assertThat(metricsApi.getMortgage()).isNotNull();
+        assertThat(metricsApi.getEtag()).isNotNull();
     }
 
     @Test
-    @DisplayName("When insert method is invoked with id, total, satisfied, part-satisfied count and updated by then save those in metrics")
-    void insertMetrics() {
+    @DisplayName("Should Fail with Bad Request (400) when no count type is set")
+    void shouldFailWithBadRequestWhenNoCountTypeIsSet() {
+        doReturn(Optional.empty())
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
 
-        companyMetricsService.insertMetrics("123456", "12345", 20,10,
-                10, "updatedBy");
-        Mockito.verify(companyMetricsRepository, Mockito.times(1)).save(Mockito.any());
+        assertThatThrownBy(() ->companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateEmptyMetricsRecalculateApi()))
+                .isInstanceOf(IllegalArgumentException.class);
 
+        verify(chargesCountService, never()).recalculateMetrics(any(), any(), any());
+        verify(companyMetricsRepository, never()).save(any());
     }
 }

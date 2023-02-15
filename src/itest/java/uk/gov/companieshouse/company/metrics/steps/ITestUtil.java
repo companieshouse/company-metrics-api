@@ -1,11 +1,9 @@
 package uk.gov.companieshouse.company.metrics.steps;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.FileCopyUtils;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;

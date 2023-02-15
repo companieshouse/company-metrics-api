@@ -58,7 +58,7 @@ class ExceptionHandlerConfigTest {
     }
 
     @Test
-    @DisplayName("Handle HttpMessageNotReadableException thown when payload not deserialised")
+    @DisplayName("Handle HttpMessageNotReadableException thrown when payload not deserialised")
     void handleHttpMessageNotReadableExceptionTest() {
         HttpInputMessage inputMessage = new HttpInputMessage() {
             @Override
@@ -91,6 +91,4 @@ class ExceptionHandlerConfigTest {
         ResponseEntity<Object> response = exceptionHandlerConfig.handleServiceUnavailableException(exp, request);
         assertEquals(503, response.getStatusCodeValue());
     }
-
-
 }

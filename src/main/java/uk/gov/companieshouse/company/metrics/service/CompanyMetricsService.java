@@ -2,35 +2,37 @@ package uk.gov.companieshouse.company.metrics.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
-import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
-
 
 @Service
 public class CompanyMetricsService {
 
+    private static final String COMPANY_METRICS_TYPE = "company_metrics";
+
     private final Logger logger;
 
-    private final CompanyMetricsRepository companyMetricsRepository;
+    private final ChargesCountService chargesCountService;
 
-    private final ChargesRepository chargesRepository;
+    private final CompanyMetricsRepository companyMetricsRepository;
 
     /**
      * Constructor.
      */
     public CompanyMetricsService(Logger logger,
-                                 CompanyMetricsRepository companyMetricsRepository,
-                                 ChargesRepository chargesRepository) {
+            ChargesCountService chargesCountService,
+            CompanyMetricsRepository companyMetricsRepository) {
         this.logger = logger;
+        this.chargesCountService = chargesCountService;
         this.companyMetricsRepository = companyMetricsRepository;
-        this.chargesRepository = chargesRepository;
     }
 
     /**
@@ -41,133 +43,58 @@ public class CompanyMetricsService {
      *     optional
      */
     public Optional<CompanyMetricsDocument> get(String companyNumber) {
-        logger.trace(String.format("DSND-526: GET company metrics with number %s", companyNumber));
-        Optional<CompanyMetricsDocument> companyMetricsDocument = companyMetricsRepository
-                .findById(companyNumber);
-
-        companyMetricsDocument.ifPresentOrElse(
-                companyMetrics -> logger.trace(
-                        String.format(
-                                "DSND-526: Company metrics with company number %s retrieved: %s",
-                                companyNumber, companyMetrics)),
-                () -> logger.trace(
-                        String.format("DSND-526: Company metrics with company number %s not found",
-                                companyNumber))
-        );
-
-        return companyMetricsDocument;
+        return companyMetricsRepository.findById(companyNumber);
     }
 
-
     /**
-     * Save or Update company_metrics.
+     * Save or Update company_metrics for charges.
      *
-     * @param totalCount total_count.
-     * @param satisfiedCount   satisfied_count.
-     * @param partSatisfiedCount   part_satisfied_count.
-     * @param companyMetricsDocument   CompanyMetricsDocument.
+     * @param contextId Request context ID
+     * @param companyNumber The ID of the company to update metrics for
+     * @param metricsRecalculateApi Request data that determines which metrics to update
      */
-    public void upsertMetrics(String contextId, Integer totalCount,
-                              Integer satisfiedCount,
-                              Integer partSatisfiedCount, String updatedBy,
-                              CompanyMetricsDocument companyMetricsDocument) {
-        logger.debug(String.format("Started : Save or Update Company_Metrics with totalCount %s "
-                        + "and satisfiedCount %s and  partSatisfiedCount %s ",
-                         totalCount, satisfiedCount, partSatisfiedCount));
+    public void recalculateMetrics(String contextId,
+            String companyNumber,
+            MetricsRecalculateApi metricsRecalculateApi) {
 
+        CompanyMetricsDocument companyMetricsDocument = get(companyNumber)
+                .orElseGet(() -> getCompanyMetricsDocument(companyNumber));
         MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
-        companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
-        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
 
-        if (metricsApi.getMortgage() != null) {
-            metricsApi.getMortgage().setTotalCount(totalCount);
-            metricsApi.getMortgage().setSatisfiedCount(satisfiedCount);
-            metricsApi.getMortgage().setPartSatisfiedCount(partSatisfiedCount);
+        if (BooleanUtils.isTrue(metricsRecalculateApi.getMortgage())) {
+            if (metricsApi.getMortgage() == null) {
+                metricsApi.setMortgage(new MortgageApi());
+            }
+            chargesCountService.recalculateMetrics(contextId, companyNumber, metricsApi);
         } else {
-            metricsApi.setMortgage(populateMortgageApi(
-                    totalCount, satisfiedCount,partSatisfiedCount));
-
+            throw new IllegalArgumentException(String.format(
+                    "Unable to process payload with context id %s and company number %s",
+                    contextId, companyNumber));
         }
 
-        logger.debug("Started : Saving charges in DB ");
-        CompanyMetricsDocument savedCompanyMetrics =
-                companyMetricsRepository.save(companyMetricsDocument);
-        logger.info(String.format("Company metrics  updated for context id %s "
-                        + "with id %s",
-                contextId, savedCompanyMetrics.getId()));
-
-    }
-
-    /**
-     * Add or Insert company_metrics.
-     *
-     * @param id id.
-     * @param totalCount total_count.
-     * @param satisfiedCount      satisfied_count.
-     * @param partSatisfiedCount   part_satisfied_count.
-     * @param updatedBy   updatedBy.
-     */
-    public void insertMetrics(String contextId, String id,
-                              Integer totalCount, Integer satisfiedCount,
-                              Integer partSatisfiedCount, String updatedBy) {
-
-        logger.info("companyMetricsDocument with id not found hence creating "
-                + "a new record in the company_metrics collection with id: %s " + id);
-
-        var companyMetricsDocument =
-                populateCompanyMetrics(id,totalCount,satisfiedCount,partSatisfiedCount,updatedBy);
-
-        logger.debug("Started : inserting a new record in metrics collection ");
-        companyMetricsRepository.save(companyMetricsDocument);
-        logger.info(String.format("Company metrics added for context id %s "
-                        + "with id %s",
-                contextId, id));
-    }
-
-
-    /**
-     *  Query company metrics collection.
-     *
-     *  @param companyNumber companyNumber
-     *  @param status status
-     *  @return Integer
-     */
-    public Integer queryCompanyMortgages(String companyNumber, String status) {
-        return status.equalsIgnoreCase("none")
-                ? chargesRepository.getTotalCharges(companyNumber) :
-                chargesRepository.getPartSatisfiedCharges(companyNumber, status);
-
-    }
-
-    /**
-     *  Query company metrics collection.
-     *
-     *  @param companyNumber companyNumber
-     *  @param satisfied satisfied
-     *  @param fullySatisfied fullySatisfied
-     *  @return Integer
-     */
-    public Integer queryCompanySatisfiedMortgages(String companyNumber,
-                                                  String satisfied,
-                                                  String fullySatisfied) {
-        return chargesRepository.getSatisfiedAndFullSatisfiedCharges(companyNumber,
-                satisfied, fullySatisfied);
-    }
-
-    private CompanyMetricsDocument populateCompanyMetrics(String id,
-                             Integer totalCount, Integer satisfiedCount,
-                             Integer partSatisfiedCount, String updatedBy) {
-        var companyMetricsDocument  = new CompanyMetricsDocument();
-        companyMetricsDocument.setId(id);
-        var metricsApi = new MetricsApi();
-        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
-        var mortgageApi = populateMortgageApi(
-                totalCount,satisfiedCount,partSatisfiedCount);
-        metricsApi.setMortgage(mortgageApi);
-
+        String updatedBy =  metricsRecalculateApi.getInternalData() != null
+                ? metricsRecalculateApi.getInternalData().getUpdatedBy() : null;
         companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
-        companyMetricsDocument.setCompanyMetrics(metricsApi);
 
+        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+
+        companyMetricsRepository.save(companyMetricsDocument);
+
+        logger.info(String.format("Company metrics updated for context id %s with id %s",
+                contextId, companyMetricsDocument.getId()));
+    }
+
+    private CompanyMetricsDocument getCompanyMetricsDocument(String companyNumber) {
+
+        CompanyMetricsDocument companyMetricsDocument = get(companyNumber)
+                .orElseGet(() -> {
+                    CompanyMetricsDocument document = new CompanyMetricsDocument();
+                    document.setId(companyNumber);
+                    return document;
+                });
+        MetricsApi metricsApi = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
+                .orElse(new MetricsApi());
+        companyMetricsDocument.setCompanyMetrics(metricsApi);
         return companyMetricsDocument;
     }
 
@@ -176,19 +103,7 @@ public class CompanyMetricsService {
         Updated updated = new Updated();
         updated.setBy(updatedBy);
         updated.setAt(LocalDateTime.now());
-        updated.setType("company_metrics");
+        updated.setType(COMPANY_METRICS_TYPE);
         return updated;
     }
-
-    private MortgageApi populateMortgageApi(Integer totalCount, Integer satisfiedCount,
-                                             Integer partSatisfiedCount) {
-        var mortgageApi = new MortgageApi();
-
-        mortgageApi.setTotalCount(totalCount);
-        mortgageApi.setSatisfiedCount(satisfiedCount);
-        mortgageApi.setPartSatisfiedCount(partSatisfiedCount);
-
-        return mortgageApi;
-    }
-
 }

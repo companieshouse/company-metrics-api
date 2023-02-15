@@ -18,8 +18,8 @@ Feature: Process company metrics recalculate
     Given Company metrics api rest service is running
     And no company metrics exists for "<id>"
     And the company charges entries exists for "<companyNumber>"
-    When I send POST request with company number "<companyNumber>"
-    Then I should receive 201 status code
+    When I send POST request with company number "<companyNumber>" to update charges metrics
+    Then I should receive 200 status code
     And company metrics exists for "<id>" in company_metrics db with total mortgage count "<number>"
 
     Examples:
@@ -32,8 +32,8 @@ Feature: Process company metrics recalculate
     Given Company metrics api rest service is running
     And the company metrics exists for "<companyNumber>"
     And multiple company charges entries exists for "<companyNumber>"
-    When I send POST request with company number "<companyNumber>"
-    Then I should receive 201 status code
+    When I send POST request with company number "<companyNumber>" to update charges metrics
+    Then I should receive 200 status code
     And company metrics exists for "<id>" in company_metrics db with total mortgage count "<number>"
 
     Examples:

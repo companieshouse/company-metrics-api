@@ -39,7 +39,6 @@ public class CompanyMetricsApiSteps {
     @Autowired
     private CompanyMetricsRepository companyMetricsRepository;
 
-
     private ITestUtil iTestUtil;
 
     @Before
@@ -76,13 +75,13 @@ public class CompanyMetricsApiSteps {
         Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(false);
     }
     @Given("the company charges entries exists for {string}")
-    public void company_charges_exists_for(String companyNumber) throws IOException {
+    public void company_charges_exists_for(String companyNumber) {
         chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "123456789==", ChargeApi.StatusEnum.FULLY_SATISFIED));
         Assertions.assertThat(chargesRepository.getTotalCharges(companyNumber)).isEqualTo(1);
     }
 
     @Given("multiple company charges entries exists for {string}")
-    public void multiple_company_charges_exists_for(String companyNumber) throws IOException {
+    public void multiple_company_charges_exists_for(String companyNumber) {
         chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "123456789==", ChargeApi.StatusEnum.FULLY_SATISFIED));
         chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "1234567==", ChargeApi.StatusEnum.SATISFIED));
         chargesRepository.save(iTestUtil.createChargesDocument(companyNumber, "123456==", ChargeApi.StatusEnum.PART_SATISFIED));
@@ -117,8 +116,8 @@ public class CompanyMetricsApiSteps {
         Assertions.assertThat(expectedStatusCode).isEqualTo(statusCode);
     }
 
-    @When("I send POST request with company number {string}")
-    public void i_send_post_request_with_company_number(String companyNumber) throws IOException {
+    @When("I send POST request with company number {string} to update charges metrics")
+    public void i_send_post_request_with_company_number_for_charges(String companyNumber) {
 
         MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(true);
         HttpHeaders headers = new HttpHeaders();
@@ -142,7 +141,7 @@ public class CompanyMetricsApiSteps {
     }
 
     @Then("company metrics exists for {string} in company_metrics db with total mortgage count {string}")
-    public void company_metrics_exists_for(String companyNumber, String number) throws IOException {
+    public void company_metrics_exists_for(String companyNumber, String number) {
         Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(true);
         CompanyMetricsDocument companyMetricsDocument = companyMetricsRepository.findById(companyNumber).get();
         assertThat(companyMetricsDocument.getId()).isEqualTo(companyNumber);
@@ -151,7 +150,7 @@ public class CompanyMetricsApiSteps {
     }
 
     @When("I send POST request with company number {string} and mortgage flag null in request")
-    public void i_send_post_request_with_company_number_and_mortgage_flag_null(String companyNumber) throws IOException {
+    public void i_send_post_request_with_company_number_and_mortgage_flag_null(String companyNumber) {
 
         MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(null);
         HttpHeaders headers = new HttpHeaders();

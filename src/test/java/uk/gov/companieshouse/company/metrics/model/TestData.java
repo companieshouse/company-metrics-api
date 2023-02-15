@@ -46,12 +46,22 @@ public class TestData {
         return objectMapper;
     }
 
-    public MetricsRecalculateApi populateMetricsRecalculateApi() {
+    public MetricsRecalculateApi populateMetricsRecalculateApiForCharges() {
 
         MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();
         metricsRecalculateApi.setAppointments(false);
         metricsRecalculateApi.setMortgage(true);
         metricsRecalculateApi.setPersonsWithSignificantControl(false);
+        InternalData internalData = new InternalData();
+        internalData.setUpdatedBy("updatedBy");
+        metricsRecalculateApi.setInternalData(internalData);
+
+        return metricsRecalculateApi;
+    }
+
+    public MetricsRecalculateApi populateEmptyMetricsRecalculateApi() {
+
+        MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();
         InternalData internalData = new InternalData();
         internalData.setUpdatedBy("updatedBy");
         metricsRecalculateApi.setInternalData(internalData);
