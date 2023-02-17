@@ -59,6 +59,19 @@ public class TestData {
         return metricsRecalculateApi;
     }
 
+    public MetricsRecalculateApi populateMetricsRecalculateApiForAppointments() {
+
+        MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();
+        metricsRecalculateApi.setAppointments(true);
+        metricsRecalculateApi.setMortgage(false);
+        metricsRecalculateApi.setPersonsWithSignificantControl(false);
+        InternalData internalData = new InternalData();
+        internalData.setUpdatedBy("updatedBy");
+        metricsRecalculateApi.setInternalData(internalData);
+
+        return metricsRecalculateApi;
+    }
+
     public MetricsRecalculateApi populateEmptyMetricsRecalculateApi() {
 
         MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();
@@ -78,4 +91,8 @@ public class TestData {
         return new CompanyMetricsDocument(metricsApi, updated);
     }
 
+    public CompanyMetricsDocument populateFullCompanyMetricsDocument () throws IOException {
+        String content = loadTestDataFile("full-company-metrics-document.json");
+        return getObjectMapper().readValue(content, CompanyMetricsDocument.class);
+    }
 }

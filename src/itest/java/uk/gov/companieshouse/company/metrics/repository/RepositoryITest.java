@@ -12,6 +12,7 @@ import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
+import uk.gov.companieshouse.company.metrics.repository.charges.ChargesCounts;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class RepositoryITest extends AbstractIntegrationTest {
 
   private static final String MOCK_COMPANY_NUMBER = "12345678";
 
-  private TestData testData;
+  private final TestData testData = new TestData();
 
   @BeforeAll
   static void setup(){
@@ -45,7 +46,6 @@ public class RepositoryITest extends AbstractIntegrationTest {
   @BeforeEach
   void setupForEach() {
     this.companyMetricsRepository.deleteAll();
-    this.testData = new TestData();
     this.chargesRepository.deleteAll();
   }
 
@@ -100,10 +100,10 @@ public class RepositoryITest extends AbstractIntegrationTest {
 
     this.chargesRepository.saveAll(documentList);
 
-     assertEquals(4, this.chargesRepository.getTotalCharges(MOCK_COMPANY_NUMBER));
-     assertEquals(2, this.chargesRepository.getSatisfiedAndFullSatisfiedCharges(MOCK_COMPANY_NUMBER,"satisfied","fully-satisfied"));
-     assertEquals(1, this.chargesRepository.getPartSatisfiedCharges(MOCK_COMPANY_NUMBER,"part-satisfied"));
-
+    ChargesCounts chargesCounts = chargesRepository.getCounts(MOCK_COMPANY_NUMBER);
+    assertEquals(4, chargesCounts.getTotalCount());
+    assertEquals(2, chargesCounts.getSatisfiedOrFullySatisfied());
+    assertEquals(1, chargesCounts.getPartSatisfied());
   }
 
   @Test
@@ -147,5 +147,4 @@ public class RepositoryITest extends AbstractIntegrationTest {
     updated.setType("company_metrics");
     return updated;
   }
-
 }
