@@ -5,18 +5,22 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
 import uk.gov.companieshouse.api.metrics.CountsApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.company.metrics.model.AppointmentsCounts;
+import uk.gov.companieshouse.company.metrics.repository.metrics.AppointmentRepository;
 import uk.gov.companieshouse.logging.Logger;
 
 @Service
 public class AppointmentsCountService {
 
     private final Logger logger;
+    private final AppointmentRepository appointmentsRepository;
 
     /**
      * Constructor.
      */
-    public AppointmentsCountService(Logger logger) {
+    public AppointmentsCountService(Logger logger, AppointmentRepository appointmentsRepository) {
         this.logger = logger;
+        this.appointmentsRepository = appointmentsRepository;
     }
 
     /**
@@ -37,18 +41,15 @@ public class AppointmentsCountService {
                     metricsApi.setCounts(counts);
                     return counts;
                 });
-        AppointmentsApi appointmentsApi = Optional.ofNullable(countsApi.getAppointments())
-                .orElseGet(() -> {
-                    AppointmentsApi appointments = new AppointmentsApi();
-                    countsApi.setAppointments(appointments);
-                    return appointments;
-                });
+        AppointmentsCounts appointmentsCounts = appointmentsRepository.getCounts(companyNumber);
 
-        appointmentsApi.setActiveCount(0);
-        appointmentsApi.setTotalCount(0);
-        appointmentsApi.setResignedCount(0);
-        appointmentsApi.setActiveDirectorsCount(0);
-        appointmentsApi.setActiveSecretariesCount(0);
-        appointmentsApi.setActiveLlpMembersCount(0);
+        AppointmentsApi appointmentsApi = new AppointmentsApi();
+        appointmentsApi.setTotalCount(appointmentsCounts.getTotalCount());
+        appointmentsApi.setActiveCount(appointmentsCounts.getActiveCount());
+        appointmentsApi.setActiveDirectorsCount(appointmentsCounts.getActiveDirectorsCount());
+        appointmentsApi.setActiveSecretariesCount(appointmentsCounts.getActiveSecretariesCount());
+        appointmentsApi.setActiveLlpMembersCount(appointmentsCounts.getActiveLlpMembersCount());
+        appointmentsApi.setResignedCount(appointmentsCounts.getResignedCount());
+        countsApi.setAppointments(appointmentsApi);
     }
 }

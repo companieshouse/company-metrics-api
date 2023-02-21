@@ -1,5 +1,10 @@
 package uk.gov.companieshouse.company.metrics.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,13 +21,7 @@ import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
-
-import java.util.Optional;
 import uk.gov.companieshouse.company.metrics.steps.ITestUtil;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     private static final String MOCK_COMPANY_NUMBER = "12345678";

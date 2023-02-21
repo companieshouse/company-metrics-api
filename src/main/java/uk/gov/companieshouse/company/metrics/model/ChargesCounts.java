@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.company.metrics.repository.charges;
+package uk.gov.companieshouse.company.metrics.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;

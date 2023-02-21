@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
-import uk.gov.companieshouse.company.metrics.repository.charges.ChargesCounts;
+import uk.gov.companieshouse.company.metrics.model.ChargesCounts;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.logging.Logger;
 
