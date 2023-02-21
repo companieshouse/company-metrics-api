@@ -35,12 +35,6 @@ public class AppointmentsCountService {
         logger.debug(String.format("Recalculating appointments metrics for %s with context-id %s",
                 companyNumber, contextId));
 
-        CountsApi countsApi = Optional.ofNullable(metricsApi.getCounts())
-                .orElseGet(() -> {
-                    CountsApi counts = new CountsApi();
-                    metricsApi.setCounts(counts);
-                    return counts;
-                });
         AppointmentsCounts appointmentsCounts = appointmentsRepository.getCounts(companyNumber);
 
         AppointmentsApi appointmentsApi = new AppointmentsApi();
@@ -50,6 +44,13 @@ public class AppointmentsCountService {
         appointmentsApi.setActiveSecretariesCount(appointmentsCounts.getActiveSecretariesCount());
         appointmentsApi.setActiveLlpMembersCount(appointmentsCounts.getActiveLlpMembersCount());
         appointmentsApi.setResignedCount(appointmentsCounts.getResignedCount());
+
+        CountsApi countsApi = Optional.ofNullable(metricsApi.getCounts())
+                .orElseGet(() -> {
+                    CountsApi counts = new CountsApi();
+                    metricsApi.setCounts(counts);
+                    return counts;
+                });
         countsApi.setAppointments(appointmentsApi);
     }
 }
