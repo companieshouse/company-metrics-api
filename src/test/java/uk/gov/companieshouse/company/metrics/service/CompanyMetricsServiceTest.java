@@ -304,7 +304,7 @@ class CompanyMetricsServiceTest {
     }
 
     @Test
-    @DisplayName("Should clean-up metrics document when count field has no data ")
+    @DisplayName("Should clean-up metrics document when count field has no data")
     void shouldCleanUpMetricsDocumentWhenCountsHasNoData() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
         companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
@@ -330,6 +330,25 @@ class CompanyMetricsServiceTest {
         MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getCounts()).isNull();
         assertThat(metricsApi.getEtag()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Should delete metrics document with no metrics data")
+    void shouldDeleteMetricsDocumentWithNoMetricsData() {
+        CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsDocument();
+        doReturn(Optional.of(companyMetricsDocument))
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+
+        when(appointmentsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(ZERO_APPOINTMENTS);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForAppointments());
+
+        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
+
+        verify(companyMetricsRepository).delete(companyMetricsDocumentCaptor.capture());
     }
 
     @Test

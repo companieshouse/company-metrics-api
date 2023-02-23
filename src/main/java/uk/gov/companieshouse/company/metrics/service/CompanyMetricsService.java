@@ -85,17 +85,22 @@ public class CompanyMetricsService {
         if (updatedMetrics.getCounts() != null //NOSONAR
                 || updatedMetrics.getMortgage() != null
                 || updatedMetrics.getRegisters() != null) {
+
             updatedMetrics.setEtag(GenerateEtagUtil.generateEtag());
+            companyMetricsDocument.setCompanyMetrics(updatedMetrics);
+
+            String updatedBy = recalculateRequest.getInternalData() != null
+                    ? recalculateRequest.getInternalData().getUpdatedBy() : null;
+            companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
+
+            companyMetricsRepository.save(companyMetricsDocument);
+            logger.info(String.format("Company metrics updated for context id %s with id %s",
+                    contextId, companyMetricsDocument.getId()));
+        } else {
+            companyMetricsRepository.delete(companyMetricsDocument);
+            logger.info(String.format("Empty company metrics deleted for context id %s with id %s",
+                    contextId, companyMetricsDocument.getId()));
         }
-        companyMetricsDocument.setCompanyMetrics(updatedMetrics);
-
-        String updatedBy = recalculateRequest.getInternalData() != null
-                ? recalculateRequest.getInternalData().getUpdatedBy() : null;
-        companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
-        companyMetricsRepository.save(companyMetricsDocument);
-
-        logger.info(String.format("Company metrics updated for context id %s with id %s",
-                contextId, companyMetricsDocument.getId()));
     }
 
     private void recalculateAppointments(String contextId, String companyNumber,
