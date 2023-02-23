@@ -6,9 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document
 public class ChargesCounts {
 
-    public ChargesCounts() {
-    }
-
     @Field(value = "total_count")
     private Integer totalCount;
     @Field(value = "part_satisfied")

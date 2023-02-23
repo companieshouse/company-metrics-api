@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,7 +19,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.api.metrics.AppointmentsApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
+import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
@@ -28,30 +30,53 @@ import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRe
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unused")
 class CompanyMetricsServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
-    public static final String CONTEXT_ID = "12345";
-    public static final String UPDATED_BY = "updatedBy";
-    public static final String COMPANY_METRICS = "company_metrics";
+    private static final String CONTEXT_ID = "12345";
+    private static final String UPDATED_BY = "updatedBy";
+    private static final String COMPANY_METRICS = "company_metrics";
+    private static final AppointmentsApi ZERO_APPOINTMENTS = new AppointmentsApi()
+            .totalCount(0)
+            .activeCount(0)
+            .activeDirectorsCount(0)
+            .activeSecretariesCount(0)
+            .activeLlpMembersCount(0)
+            .resignedCount(0);
+    private static final AppointmentsApi APPOINTMENTS = new AppointmentsApi()
+            .totalCount(1)
+            .activeCount(1)
+            .activeDirectorsCount(1)
+            .activeSecretariesCount(0)
+            .activeLlpMembersCount(0)
+            .resignedCount(0);
+    private static final MortgageApi ZERO_MORTGAGES = new MortgageApi()
+            .totalCount(0)
+            .satisfiedCount(0)
+            .partSatisfiedCount(0);
+    private static final MortgageApi MORTGAGES = new MortgageApi()
+            .totalCount(1)
+            .satisfiedCount(1)
+            .partSatisfiedCount(0);
 
     @Mock
-    CompanyMetricsRepository companyMetricsRepository;
+    private CompanyMetricsRepository companyMetricsRepository;
 
     @Mock
-    ChargesCountService chargesCountService;
+    private ChargesCountService chargesCountService;
 
     @Mock
-    AppointmentsCountService appointmentsCountService;
+    private AppointmentsCountService appointmentsCountService;
 
     @Mock
-    Logger logger;
+    private Logger logger;
 
-    ArgumentCaptor<CompanyMetricsDocument> companyMetricsDocumentCaptor = ArgumentCaptor.forClass(
+    private final ArgumentCaptor<CompanyMetricsDocument> companyMetricsDocumentCaptor = ArgumentCaptor.forClass(
             CompanyMetricsDocument.class);
 
     @InjectMocks
-    CompanyMetricsService companyMetricsService;
+    private CompanyMetricsService companyMetricsService;
 
     private final TestData testData = new TestData();
 
@@ -74,7 +99,8 @@ class CompanyMetricsServiceTest {
         Optional<CompanyMetricsDocument> companyMetricsActual =
                 companyMetricsService.get(COMPANY_NUMBER);
 
-        assertThat(companyMetricsActual.get()).isSameAs(companyMetricsDocument);
+        assertTrue(companyMetricsActual.isPresent());
+        assertThat(companyMetricsActual).containsSame(companyMetricsDocument);
         verify(companyMetricsRepository).findById(COMPANY_NUMBER);
     }
 
@@ -98,13 +124,14 @@ class CompanyMetricsServiceTest {
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(chargesCountService.recalculateMetrics(any(), any()))
+                .thenReturn(MORTGAGES);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForCharges());
 
-        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
-                companyMetricsDocument.getCompanyMetrics());
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any(), any());
+        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -118,19 +145,75 @@ class CompanyMetricsServiceTest {
     }
 
     @Test
+    @DisplayName("Should not save charges metrics when no charges in DB")
+    void shouldNotSaveChargesMetricsWhenNoChargesInDB() throws IOException {
+        CompanyMetricsDocument companyMetricsDocument = testData.populateCompanyMetricsDocument();
+        String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
+        doReturn(Optional.of(companyMetricsDocument))
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(chargesCountService.recalculateMetrics(any(), any()))
+                .thenReturn(ZERO_MORTGAGES);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForCharges());
+
+        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+
+        verify(companyMetricsRepository).save(companyMetricsDocument);
+
+        Updated updated = companyMetricsDocument.getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+        assertThat(metricsApi.getMortgage()).isNull();
+        assertThat(metricsApi.getEtag()).isNotEqualTo(initialETTag);
+    }
+
+
+    @Test
     @DisplayName("Should update existing appointments metrics")
     void shouldUpdateExistingAppointmentsMetrics() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(appointmentsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
-                companyMetricsDocument.getCompanyMetrics());
-        verify(chargesCountService, never()).recalculateMetrics(any(), any(), any());
+        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
+
+        verify(companyMetricsRepository).save(companyMetricsDocument);
+
+        Updated updated = companyMetricsDocument.getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+        assertThat(metricsApi.getMortgage()).isNotNull();
+        assertThat(metricsApi.getEtag()).isNotEqualTo(initialETTag);
+    }
+
+    @Test
+    @DisplayName("Should not save appointments metrics when no appointments in DB")
+    void shouldNotSaveAppointmentsMetricsWhenNoAppointmentsInDB() throws IOException {
+        CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
+        doReturn(Optional.of(companyMetricsDocument))
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(appointmentsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(ZERO_APPOINTMENTS);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForAppointments());
+
+        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -148,13 +231,14 @@ class CompanyMetricsServiceTest {
     void shouldSetChargesMetricsOnNewDocument() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(chargesCountService.recalculateMetrics(any(), any()))
+                .thenReturn(MORTGAGES);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForCharges());
 
-        verify(chargesCountService).recalculateMetrics(eq(CONTEXT_ID), eq(COMPANY_NUMBER),
-                any());
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any(), any());
+        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -172,13 +256,14 @@ class CompanyMetricsServiceTest {
     void shouldSetAppointmentsMetricsOnNewDocument() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(appointmentsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(eq(CONTEXT_ID), eq(COMPANY_NUMBER),
-                any());
-        verify(chargesCountService, never()).recalculateMetrics(any(), any(), any());
+        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -197,13 +282,14 @@ class CompanyMetricsServiceTest {
     void shouldSetAppointmentsMetricsOnDocumentWithoutAppointments() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
         companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
+        when(appointmentsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(eq(CONTEXT_ID), eq(COMPANY_NUMBER),
-                any());
-        verify(chargesCountService, never()).recalculateMetrics(any(), any(), any());
+        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -218,18 +304,47 @@ class CompanyMetricsServiceTest {
     }
 
     @Test
+    @DisplayName("Should clean-up metrics document when count field has no data ")
+    void shouldCleanUpMetricsDocumentWhenCountsHasNoData() throws IOException {
+        CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
+        companyMetricsDocument.getCompanyMetrics().getCounts().setPersonsWithSignificantControl(null);
+        doReturn(Optional.of(companyMetricsDocument))
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+
+        when(appointmentsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(ZERO_APPOINTMENTS);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForAppointments());
+
+        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
+
+        verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
+
+        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        assertThat(metricsApi.getCounts()).isNull();
+        assertThat(metricsApi.getEtag()).isNotNull();
+    }
+
+    @Test
     @DisplayName("Should Fail with Bad Request (400) when no count type is set")
     void shouldFailWithBadRequestWhenNoCountTypeIsSet() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
 
+        MetricsRecalculateApi request = testData.populateEmptyMetricsRecalculateApi();
         assertThatThrownBy(
-                () -> companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
-                        testData.populateEmptyMetricsRecalculateApi()))
+                () -> companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER, request))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        verify(chargesCountService, never()).recalculateMetrics(any(), any(), any());
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any(), any());
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
         verify(companyMetricsRepository, never()).save(any());
     }
 }

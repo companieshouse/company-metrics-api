@@ -2,7 +2,6 @@ package uk.gov.companieshouse.company.metrics.controller;
 
 import static org.springframework.http.HttpHeaders.LOCATION;
 
-import java.net.URI;
 import javax.validation.Valid;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.exceptions.BadRequestException;
@@ -71,15 +69,9 @@ public class CompanyMetricsController {
         try {
             companyMetricsService.recalculateMetrics(contextId, companyNumber, requestBody);
 
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentContextPath()
-                    .path("/company/{company_number}/metrics")
-                    .buildAndExpand(companyNumber)
-                    .toUri();
-
             return ResponseEntity
                     .ok()
-                    .header(LOCATION, location.toString())
+                    .header(LOCATION, String.format("/company/%s/metrics", companyNumber))
                     .build();
         } catch (DataAccessResourceFailureException ex) {
             throw new ServiceUnavailableException("Database unavailable");

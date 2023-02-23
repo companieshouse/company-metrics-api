@@ -37,6 +37,7 @@ import uk.gov.companieshouse.logging.Logger;
 @WebMvcTest(controllers = CompanyMetricsController.class)
 @ContextConfiguration(classes = CompanyMetricsController.class)
 @Import({ApplicationConfig.class})
+@SuppressWarnings("unused")
 class CompanyMetricsControllerTest {
 
     private static final String MOCK_COMPANY_NUMBER = "12345678";
@@ -143,8 +144,7 @@ class CompanyMetricsControllerTest {
                         .header(ERIC_AUTHORISED_KEY_PRIVILEGES, "internal-app")
                         .content(gson.toJson(requestBody)))
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.LOCATION,
-                        "http://localhost/company/12345678/metrics"));
+                .andExpect(header().string(HttpHeaders.LOCATION, "/company/12345678/metrics"));
         verify(companyMetricsService).recalculateMetrics(eq("5342342"), eq(MOCK_COMPANY_NUMBER),
                 any());
     }

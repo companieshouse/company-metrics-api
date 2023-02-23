@@ -18,7 +18,7 @@ import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 
-public class CompanyMetricsDocumentRepositoryITest extends AbstractIntegrationTest {
+class CompanyMetricsDocumentRepositoryITest extends AbstractIntegrationTest {
 
     private static final String MOCK_COMPANY_NUMBER = "12345678";
     private final TestData testData = new TestData();

@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.company.metrics.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 
-public class ChargesRepositoryITest extends AbstractIntegrationTest {
+class ChargesRepositoryITest extends AbstractIntegrationTest {
 
     @Autowired
     private CompanyMetricsRepository companyMetricsRepository;
@@ -56,14 +57,10 @@ public class ChargesRepositoryITest extends AbstractIntegrationTest {
     void should_return_mortgages_for_existing_company_number() {
 
         List<ChargesDocument> documentList = new ArrayList<>();
-        documentList.add(populateChargesDocument("1234", MOCK_COMPANY_NUMBER,
-                ChargeApi.StatusEnum.FULLY_SATISFIED));
-        documentList.add(populateChargesDocument("12345", MOCK_COMPANY_NUMBER,
-                ChargeApi.StatusEnum.SATISFIED));
-        documentList.add(populateChargesDocument("123456", MOCK_COMPANY_NUMBER,
-                ChargeApi.StatusEnum.PART_SATISFIED));
-        documentList.add(populateChargesDocument("1234567", MOCK_COMPANY_NUMBER,
-                ChargeApi.StatusEnum.OUTSTANDING));
+        documentList.add(populateChargesDocument("1234", ChargeApi.StatusEnum.FULLY_SATISFIED));
+        documentList.add(populateChargesDocument("12345", ChargeApi.StatusEnum.SATISFIED));
+        documentList.add(populateChargesDocument("123456", ChargeApi.StatusEnum.PART_SATISFIED));
+        documentList.add(populateChargesDocument("1234567", ChargeApi.StatusEnum.OUTSTANDING));
 
         this.chargesRepository.saveAll(documentList);
 
@@ -88,25 +85,22 @@ public class ChargesRepositoryITest extends AbstractIntegrationTest {
 
         Optional<CompanyMetricsDocument> document = companyMetricsRepository.findById(
                 MOCK_COMPANY_NUMBER);
+        assertTrue(document.isPresent());
         assertEquals(MOCK_COMPANY_NUMBER, document.get().getId());
         assertEquals(51, document.get().getCompanyMetrics().getMortgage().getTotalCount());
         assertEquals(42, document.get().getCompanyMetrics().getMortgage().getSatisfiedCount());
         assertEquals(0, document.get().getCompanyMetrics().getMortgage().getPartSatisfiedCount());
     }
 
-    private ChargesDocument populateChargesDocument(String id, String companyNumber,
-            ChargeApi.StatusEnum status) {
+    private ChargesDocument populateChargesDocument(String id, ChargeApi.StatusEnum status) {
 
         ChargeApi chargeApi = new ChargeApi();
         chargeApi.setStatus(status);
         chargeApi.setId(id);
 
-        var chargesDocument =
-                new ChargesDocument().setCompanyNumber(companyNumber)
+        return new ChargesDocument().setCompanyNumber(MOCK_COMPANY_NUMBER)
                         .setId(id).setData(chargeApi)
                         .setUpdated(populateUpdateObject("updatedBy"));
-
-        return chargesDocument;
     }
 
     private Updated populateUpdateObject(String updatedBy) {

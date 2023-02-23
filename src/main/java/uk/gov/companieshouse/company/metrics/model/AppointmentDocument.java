@@ -5,13 +5,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "#{@environment.getProperty('mongodb.appointments.collection.name')}")
 public class AppointmentDocument {
-    @Field("data")
     private Officer data;
     @Field("company_number")
     private String companyNumber;
-
-    public AppointmentDocument() {
-    }
 
     public Officer getData() {
         return data;

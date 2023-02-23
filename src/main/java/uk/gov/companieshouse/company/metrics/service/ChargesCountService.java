@@ -1,8 +1,6 @@
 package uk.gov.companieshouse.company.metrics.service;
 
-import java.util.Optional;
 import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.company.metrics.model.ChargesCounts;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
@@ -27,22 +25,17 @@ public class ChargesCountService {
      *
      * @param contextId     Request context ID
      * @param companyNumber The ID of the company to update metrics for
-     * @param metricsApi    to update
+     * @return Recalculated charges metrics
      */
-    public void recalculateMetrics(String contextId, String companyNumber, MetricsApi metricsApi) {
+    public MortgageApi recalculateMetrics(String contextId, String companyNumber) {
 
         logger.debug(String.format("Recalculating charges metrics for %s with context-id %s",
                 companyNumber, contextId));
-        MortgageApi mortgageApi = Optional.ofNullable(metricsApi.getMortgage())
-                .orElseGet(() -> {
-                    MortgageApi api = new MortgageApi();
-                    metricsApi.setMortgage(api);
-                    return api;
-                });
 
         ChargesCounts chargesCounts = chargesRepository.getCounts(companyNumber);
-        mortgageApi.setTotalCount(chargesCounts.getTotalCount());
-        mortgageApi.setSatisfiedCount(chargesCounts.getSatisfiedOrFullySatisfied());
-        mortgageApi.setPartSatisfiedCount(chargesCounts.getPartSatisfied());
+        return new MortgageApi()
+                .totalCount(chargesCounts.getTotalCount())
+                .satisfiedCount(chargesCounts.getSatisfiedOrFullySatisfied())
+                .partSatisfiedCount(chargesCounts.getPartSatisfied());
     }
 }

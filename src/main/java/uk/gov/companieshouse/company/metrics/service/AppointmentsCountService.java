@@ -1,10 +1,7 @@
 package uk.gov.companieshouse.company.metrics.service;
 
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
-import uk.gov.companieshouse.api.metrics.CountsApi;
-import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.company.metrics.model.AppointmentsCounts;
 import uk.gov.companieshouse.company.metrics.repository.metrics.AppointmentRepository;
 import uk.gov.companieshouse.logging.Logger;
@@ -28,29 +25,20 @@ public class AppointmentsCountService {
      *
      * @param contextId     Request context ID
      * @param companyNumber The ID of the company to update metrics for
-     * @param metricsApi    to update
      */
-    public void recalculateMetrics(String contextId, String companyNumber, MetricsApi metricsApi) {
+    public AppointmentsApi recalculateMetrics(String contextId, String companyNumber) {
 
         logger.debug(String.format("Recalculating appointments metrics for %s with context-id %s",
                 companyNumber, contextId));
 
         AppointmentsCounts appointmentsCounts = appointmentsRepository.getCounts(companyNumber);
 
-        AppointmentsApi appointmentsApi = new AppointmentsApi();
-        appointmentsApi.setTotalCount(appointmentsCounts.getTotalCount());
-        appointmentsApi.setActiveCount(appointmentsCounts.getActiveCount());
-        appointmentsApi.setActiveDirectorsCount(appointmentsCounts.getActiveDirectorsCount());
-        appointmentsApi.setActiveSecretariesCount(appointmentsCounts.getActiveSecretariesCount());
-        appointmentsApi.setActiveLlpMembersCount(appointmentsCounts.getActiveLlpMembersCount());
-        appointmentsApi.setResignedCount(appointmentsCounts.getResignedCount());
-
-        CountsApi countsApi = Optional.ofNullable(metricsApi.getCounts())
-                .orElseGet(() -> {
-                    CountsApi counts = new CountsApi();
-                    metricsApi.setCounts(counts);
-                    return counts;
-                });
-        countsApi.setAppointments(appointmentsApi);
+        return new AppointmentsApi()
+                .totalCount(appointmentsCounts.getTotalCount())
+                .activeCount(appointmentsCounts.getActiveCount())
+                .activeDirectorsCount(appointmentsCounts.getActiveDirectorsCount())
+                .activeSecretariesCount(appointmentsCounts.getActiveSecretariesCount())
+                .activeLlpMembersCount(appointmentsCounts.getActiveLlpMembersCount())
+                .resignedCount(appointmentsCounts.getResignedCount());
     }
 }

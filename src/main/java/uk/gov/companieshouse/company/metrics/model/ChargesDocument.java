@@ -24,12 +24,6 @@ public class ChargesDocument {
 
     private Updated updated;
 
-    /**
-     * default constructor.
-     */
-    public ChargesDocument() {
-    }
-
     public String getId() {
         return id;
     }

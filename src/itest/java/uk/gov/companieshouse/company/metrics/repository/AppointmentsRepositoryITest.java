@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +15,7 @@ import uk.gov.companieshouse.company.metrics.model.AppointmentDocument;
 import uk.gov.companieshouse.company.metrics.model.Officer;
 import uk.gov.companieshouse.company.metrics.repository.metrics.AppointmentRepository;
 
-public class AppointmentsRepositoryITest extends AbstractIntegrationTest {
+class AppointmentsRepositoryITest extends AbstractIntegrationTest {
 
     private static final String COMPANY_NUMBER = "OC312300";
     private static final String DIRECTOR = "director";
@@ -26,8 +25,6 @@ public class AppointmentsRepositoryITest extends AbstractIntegrationTest {
 
     @Autowired
     private AppointmentRepository appointmentsRepository;
-
-    Optional resignationDate = Optional.of(Instant.now().minus(10, ChronoUnit.DAYS));
 
     @BeforeAll
     static void setup() {
@@ -48,12 +45,12 @@ public class AppointmentsRepositoryITest extends AbstractIntegrationTest {
     void shouldReturnAppointmentsForExistingCompanyNumber() {
 
         List<AppointmentDocument> documents = List.of(
-                buildAppointment(COMPANY_NUMBER, DIRECTOR, Optional.empty()),
-                buildAppointment(COMPANY_NUMBER, DIRECTOR, Optional.empty()),
-                buildAppointment(COMPANY_NUMBER, SECRETARY, Optional.empty()),
-                buildAppointment(COMPANY_NUMBER, LLP_MEMBER, Optional.empty()),
-                buildAppointment(COMPANY_NUMBER, CORPORATE_LLP_MEMBER, Optional.empty()),
-                buildAppointment(COMPANY_NUMBER, DIRECTOR, resignationDate));
+                buildAppointment(DIRECTOR),
+                buildAppointment(DIRECTOR),
+                buildAppointment(SECRETARY),
+                buildAppointment(LLP_MEMBER),
+                buildAppointment(CORPORATE_LLP_MEMBER),
+                buildResignedAppointment(DIRECTOR));
 
         this.appointmentsRepository.saveAll(documents);
 
@@ -67,16 +64,22 @@ public class AppointmentsRepositoryITest extends AbstractIntegrationTest {
         assertEquals(1, result.getResignedCount());
     }
 
-    private AppointmentDocument buildAppointment(String companyNumber, String role,
-            Optional<Instant> resigned) {
+    private AppointmentDocument buildAppointment(String role) {
 
-        Officer officer = new Officer();
-        officer.setOfficerRole(role);
-        officer.setCompanyNumber(companyNumber);
-        resigned.ifPresent(date -> officer.setResignedOn(date));
+        Officer officer = new Officer()
+            .setOfficerRole(role)
+            .setCompanyNumber(COMPANY_NUMBER);
 
         return new AppointmentDocument()
-                .setCompanyNumber(companyNumber)
+                .setCompanyNumber(COMPANY_NUMBER)
                 .setData(officer);
+    }
+
+    private AppointmentDocument buildResignedAppointment(String role) {
+
+        AppointmentDocument appointmentDocument = buildAppointment(role);
+        appointmentDocument.getData()
+                .setResignedOn(Instant.now().minus(10, ChronoUnit.DAYS));
+        return appointmentDocument;
     }
 }
