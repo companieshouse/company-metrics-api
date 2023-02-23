@@ -10,8 +10,6 @@ public class Officer {
 
     @Field("resigned_on")
     private Instant resignedOn;
-    @Field("company_number")
-    private String companyNumber;
 
     public String getOfficerRole() {
         return officerRole;
@@ -28,15 +26,6 @@ public class Officer {
 
     public Officer setResignedOn(Instant resignedOn) {
         this.resignedOn = resignedOn;
-        return this;
-    }
-
-    public String getCompanyNumber() {
-        return companyNumber;
-    }
-
-    public Officer setCompanyNumber(String companyNumber) {
-        this.companyNumber = companyNumber;
         return this;
     }
 }

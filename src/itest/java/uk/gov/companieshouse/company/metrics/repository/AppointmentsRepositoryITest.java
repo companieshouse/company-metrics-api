@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.companieshouse.company.metrics.AbstractIntegrationTest;
 import uk.gov.companieshouse.company.metrics.model.AppointmentDocument;
 import uk.gov.companieshouse.company.metrics.model.Officer;
-import uk.gov.companieshouse.company.metrics.repository.metrics.AppointmentRepository;
+import uk.gov.companieshouse.company.metrics.repository.appointments.AppointmentRepository;
 
 class AppointmentsRepositoryITest extends AbstractIntegrationTest {
 
@@ -67,8 +67,7 @@ class AppointmentsRepositoryITest extends AbstractIntegrationTest {
     private AppointmentDocument buildAppointment(String role) {
 
         Officer officer = new Officer()
-            .setOfficerRole(role)
-            .setCompanyNumber(COMPANY_NUMBER);
+            .setOfficerRole(role);
 
         return new AppointmentDocument()
                 .setCompanyNumber(COMPANY_NUMBER)

@@ -3,7 +3,7 @@ package uk.gov.companieshouse.company.metrics.service;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
 import uk.gov.companieshouse.company.metrics.model.AppointmentsCounts;
-import uk.gov.companieshouse.company.metrics.repository.metrics.AppointmentRepository;
+import uk.gov.companieshouse.company.metrics.repository.appointments.AppointmentRepository;
 import uk.gov.companieshouse.logging.Logger;
 
 @Service

@@ -36,7 +36,7 @@ spring:
         name: company_mortgages
         collection: ${CHARGES_COLLECTION_NAME:company_mortgages}
       appointments:
-        uri: ${MONGODB_CHARGES_URL:mongodb://localhost:27017/appointments}
+        uri: ${MONGODB_APPOINTMENTS_URL:mongodb://localhost:27017/appointments}
         name: appointments
         collection: ${APPOINTMENTS_COLLECTION_NAME:appointments}
 

@@ -45,6 +45,24 @@ public class MultiDatabaseConfig {
         return new MongoProperties();
     }
 
+    @Bean(name = "appointmentsDatabase")
+    @ConfigurationProperties(prefix = "spring.data.mongodb.appointments")
+    public MongoProperties getAppointmentsProps() {
+        return new MongoProperties();
+    }
+
+    /**
+     * Create appointmentsMongoTemplate.
+     * @return MongoTemplate
+     */
+    @Bean(name = "appointmentsMongoTemplate")
+    public MongoTemplate appointmentsMongoTemplate() {
+        MongoDatabaseFactory metricsMongoDatabaseFactory =
+                metricsMongoDatabaseFactory(getAppointmentsProps());
+        return new MongoTemplate(metricsMongoDatabaseFactory,
+                getMongoConverter(metricsMongoDatabaseFactory));
+    }
+
     /**
      * Create metricsMongoTemplate.
      * @return MongoTemplate
@@ -68,6 +86,19 @@ public class MultiDatabaseConfig {
                 chargesMongoDatabaseFactory(getChargesProps());
         return new MongoTemplate(chargesMongoDatabaseFactory,
                 getMongoConverter(chargesMongoDatabaseFactory));
+    }
+
+    /**
+     * appointmentsMongoDatabaseFactory.
+     *
+     * @param  mongo  mongo
+     * @return  MongoDatabaseFactory
+     */
+    @Bean
+    public MongoDatabaseFactory appointmentsMongoDatabaseFactory(MongoProperties mongo) {
+        return new SimpleMongoClientDatabaseFactory(
+                mongo.getUri()
+        );
     }
 
     /**
