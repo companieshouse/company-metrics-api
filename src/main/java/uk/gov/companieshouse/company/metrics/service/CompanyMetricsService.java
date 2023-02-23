@@ -124,18 +124,13 @@ public class CompanyMetricsService {
 
     private MetricsApi cleanupMetricsContent(MetricsApi metrics) {
         CountsApi counts = metrics.getCounts();
-        MetricsApi cleanedMetrics;
 
         if (counts != null && counts.getAppointments() == null  // NOSONAR
-                    && counts.getPersonsWithSignificantControl() == null) { //NOSONAR
-            cleanedMetrics = new MetricsApi();
-            cleanedMetrics.setMortgage(metrics.getMortgage());
-            cleanedMetrics.setRegisters(metrics.getRegisters());
-        } else {
-            cleanedMetrics = metrics;
+                && counts.getPersonsWithSignificantControl() == null) { //NOSONAR
+            metrics.setCounts(null);
         }
 
-        return cleanedMetrics;
+        return metrics;
     }
 
     private CompanyMetricsDocument getCompanyMetricsDocument(String companyNumber) {
