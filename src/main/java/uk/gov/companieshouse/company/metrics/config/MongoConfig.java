@@ -5,15 +5,19 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
-
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.DbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import uk.gov.companieshouse.api.charges.ScottishAlterationsApi;
 import uk.gov.companieshouse.api.charges.TransactionsLinks;
 import uk.gov.companieshouse.company.metrics.converter.CompanyMetricsReadConverter;
@@ -30,8 +34,6 @@ import uk.gov.companieshouse.company.metrics.serialization.NotNullFieldObjectSer
 import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeDeSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.OffsetDateTimeSerializer;
 
-
-@Configuration
 public class MongoConfig {
 
     /**
@@ -49,9 +51,30 @@ public class MongoConfig {
     }
 
     /**
+     * This method takes in custom conversions and created MongoConverter, so that MongoConverter
+     * can be passed onto MongoTemplate.
+     *
+     * @param factory MongoDatabaseFactory
+     * @return MongoConverter
+     */
+    protected MongoConverter getMongoConverter(ApplicationContext applicationContext,
+            MongoDatabaseFactory factory) {
+        DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
+        MongoMappingContext mappingContext = new MongoMappingContext();
+        mappingContext.setSimpleTypeHolder(mongoCustomConversions() .getSimpleTypeHolder());
+        mappingContext.setApplicationContext(applicationContext);
+        mappingContext.afterPropertiesSet();
+
+        MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, mappingContext);
+        converter.setCustomConversions(mongoCustomConversions());
+        converter.afterPropertiesSet();
+        return converter;
+    }
+
+    /**
      * Custom object mapper with custom settings.
      */
-    public ObjectMapper customMapper() {
+    private ObjectMapper customMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         // Exclude properties with null values from being serialised
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -71,5 +94,4 @@ public class MongoConfig {
         objectMapper.registerModule(module);
         return objectMapper;
     }
-
 }
