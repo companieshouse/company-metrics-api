@@ -26,6 +26,7 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.config.CucumberContext;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
+import uk.gov.companieshouse.company.metrics.repository.appointments.AppointmentRepository;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 
@@ -43,6 +44,9 @@ public class CompanyMetricsApiSteps {
     @Autowired
     private CompanyMetricsRepository companyMetricsRepository;
 
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
     private ITestUtil iTestUtil;
 
     @Before
@@ -52,6 +56,7 @@ public class CompanyMetricsApiSteps {
         }
         chargesRepository.deleteAll();
         companyMetricsRepository.deleteAll();
+        appointmentRepository.deleteAll();
         iTestUtil = new ITestUtil();
     }
 
