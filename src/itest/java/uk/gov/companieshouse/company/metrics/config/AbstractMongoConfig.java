@@ -33,6 +33,4 @@ public class AbstractMongoConfig {
 
         mongoDBContainer.start();
     }
-
-
 }
