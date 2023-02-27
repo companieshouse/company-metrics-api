@@ -31,7 +31,6 @@ public class ChargesCountService {
 
         logger.debug(String.format("Recalculating charges metrics for %s with context-id %s",
                 companyNumber, contextId));
-
         ChargesCounts chargesCounts = chargesRepository.getCounts(companyNumber);
         return new MortgageApi()
                 .totalCount(chargesCounts.getTotalCount())

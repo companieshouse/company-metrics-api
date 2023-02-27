@@ -68,7 +68,6 @@ public class CompanyMetricsController {
 
         try {
             companyMetricsService.recalculateMetrics(contextId, companyNumber, requestBody);
-
             return ResponseEntity
                     .ok()
                     .header(LOCATION, String.format("/company/%s/metrics", companyNumber))
