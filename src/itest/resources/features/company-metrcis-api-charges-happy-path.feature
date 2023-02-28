@@ -1,4 +1,4 @@
-Feature: Process company metrics recalculate
+Feature: Process company charges metrics recalculate
 
   Scenario Outline: retrieve company metrics document successfully
 

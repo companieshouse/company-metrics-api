@@ -1,7 +1,8 @@
 package uk.gov.companieshouse.company.metrics.controller;
 
-import javax.validation.Valid;
+import static org.springframework.http.HttpHeaders.LOCATION;
 
+import javax.validation.Valid;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +68,10 @@ public class CompanyMetricsController {
 
         try {
             companyMetricsService.recalculateMetrics(contextId, companyNumber, requestBody);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity
+                    .ok()
+                    .header(LOCATION, String.format("/company/%s/metrics", companyNumber))
+                    .build();
         } catch (DataAccessResourceFailureException ex) {
             throw new ServiceUnavailableException("Database unavailable");
         } catch (IllegalArgumentException ex) {

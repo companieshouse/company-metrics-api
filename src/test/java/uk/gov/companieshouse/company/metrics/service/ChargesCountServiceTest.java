@@ -8,67 +8,52 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
+import uk.gov.companieshouse.company.metrics.model.ChargesCounts;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unused")
 class ChargesCountServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
     public static final String CONTEXT_ID = "12345";
-    public static final String E_TAG = "etag";
-    private static final String SATISFIED_STATUS = "satisfied";
-    private static final String FULLY_SATISFIED_STATUS = "fully-satisfied";
-    private static final String PART_SATISFIED_STATUS = "part-satisfied";
+
+    private final ChargesCounts chargesCounts = new ChargesCounts()
+            .setTotalCount(30)
+            .setPartSatisfied(20)
+            .setSatisfiedOrFullySatisfied(10);
 
     @Mock
-    Logger logger;
+    private Logger logger;
 
     @Mock
-    ChargesRepository chargesRepository;
+    private ChargesRepository chargesRepository;
 
     @InjectMocks
-    ChargesCountService chargesCountService;
+    private ChargesCountService chargesCountService;
 
     @Test
     void shouldRecalculateMetricsWhenMortgageApiElementExists() {
-        MetricsApi metricsApi = new MetricsApi();
-        metricsApi.setEtag(E_TAG);
 
-        MortgageApi mortgageApi = new MortgageApi();
-        mortgageApi.setTotalCount(1);
-        mortgageApi.setSatisfiedCount(2);
-        mortgageApi.setPartSatisfiedCount(0);
-        metricsApi.setMortgage(mortgageApi);
+        when(chargesRepository.getCounts(COMPANY_NUMBER)).thenReturn(chargesCounts);
 
-        when(chargesRepository.getTotalCharges(COMPANY_NUMBER)).thenReturn(30);
-        when(chargesRepository.getPartSatisfiedCharges(COMPANY_NUMBER, PART_SATISFIED_STATUS)).thenReturn(20);
-        when(chargesRepository.getSatisfiedAndFullSatisfiedCharges(COMPANY_NUMBER,
-                SATISFIED_STATUS, FULLY_SATISFIED_STATUS)).thenReturn(10);
+        MortgageApi mortgages = chargesCountService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
 
-        chargesCountService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER, metricsApi);
-
-        assertThat(metricsApi.getMortgage().getTotalCount()).isEqualTo(30);
-        assertThat(metricsApi.getMortgage().getSatisfiedCount()).isEqualTo(10);
-        assertThat(metricsApi.getMortgage().getPartSatisfiedCount()).isEqualTo(20);
+        assertThat(mortgages.getTotalCount()).isEqualTo(30);
+        assertThat(mortgages.getSatisfiedCount()).isEqualTo(10);
+        assertThat(mortgages.getPartSatisfiedCount()).isEqualTo(20);
     }
 
     @Test
     void shouldRecalculateMetricsWhenMortgageApiElementDoesNotExists() {
-        MetricsApi metricsApi = new MetricsApi();
-        metricsApi.setEtag(E_TAG);
+        when(chargesRepository.getCounts(COMPANY_NUMBER)).thenReturn(chargesCounts);
 
-        when(chargesRepository.getTotalCharges(COMPANY_NUMBER)).thenReturn(30);
-        when(chargesRepository.getPartSatisfiedCharges(COMPANY_NUMBER, PART_SATISFIED_STATUS)).thenReturn(20);
-        when(chargesRepository.getSatisfiedAndFullSatisfiedCharges(COMPANY_NUMBER,
-                SATISFIED_STATUS, FULLY_SATISFIED_STATUS)).thenReturn(10);
+        MortgageApi mortgages = chargesCountService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
 
-        chargesCountService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER, metricsApi);
-
-        assertThat(metricsApi.getMortgage().getTotalCount()).isEqualTo(30);
-        assertThat(metricsApi.getMortgage().getSatisfiedCount()).isEqualTo(10);
-        assertThat(metricsApi.getMortgage().getPartSatisfiedCount()).isEqualTo(20);
+        assertThat(mortgages.getTotalCount()).isEqualTo(30);
+        assertThat(mortgages.getSatisfiedCount()).isEqualTo(10);
+        assertThat(mortgages.getPartSatisfiedCount()).isEqualTo(20);
     }
 }

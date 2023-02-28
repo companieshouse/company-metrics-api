@@ -19,13 +19,3 @@ Feature: Process company metrics error and retry
     Given Company metrics api rest service is running
     When I send POST request with an no auth header
     Then Rest endpoint returns http response code 401 'Unauthorised' to the client
-
-  Scenario Outline: Non recoverable NPE returns 500 response
-    Given Company metrics api rest service is running
-    And A metrics document exists for "<companyNumber>" without data
-    When I send POST a charges metrics recalculate request "<companyNumber>"
-    Then Rest endpoint returns http response code 500 'Internal Error' to the client
-
-    Examples:
-      | companyNumber |
-      | 12345678      |

@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.metrics.AppointmentsApi;
+import uk.gov.companieshouse.api.metrics.CountsApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
@@ -21,6 +23,7 @@ public class CompanyMetricsService {
     private final Logger logger;
 
     private final ChargesCountService chargesCountService;
+    private final AppointmentsCountService appointmentsCountService;
 
     private final CompanyMetricsRepository companyMetricsRepository;
 
@@ -29,9 +32,11 @@ public class CompanyMetricsService {
      */
     public CompanyMetricsService(Logger logger,
             ChargesCountService chargesCountService,
+            AppointmentsCountService appointmentsCountService,
             CompanyMetricsRepository companyMetricsRepository) {
         this.logger = logger;
         this.chargesCountService = chargesCountService;
+        this.appointmentsCountService = appointmentsCountService;
         this.companyMetricsRepository = companyMetricsRepository;
     }
 
@@ -40,48 +45,92 @@ public class CompanyMetricsService {
      *
      * @param companyNumber the company number
      * @return company metrics, if one with such a company number exists, otherwise an empty
-     *     optional
+     *         optional
      */
     public Optional<CompanyMetricsDocument> get(String companyNumber) {
         return companyMetricsRepository.findById(companyNumber);
     }
 
     /**
-     * Save or Update company_metrics for charges.
+     * Save or Update company_metrics.
      *
-     * @param contextId Request context ID
-     * @param companyNumber The ID of the company to update metrics for
-     * @param metricsRecalculateApi Request data that determines which metrics to update
+     * @param contextId             Request context ID
+     * @param companyNumber         The ID of the company to update metrics for
+     * @param recalculateRequest Request data that determines which metrics to update
      */
     public void recalculateMetrics(String contextId,
             String companyNumber,
-            MetricsRecalculateApi metricsRecalculateApi) {
+            MetricsRecalculateApi recalculateRequest) {
 
         CompanyMetricsDocument companyMetricsDocument = get(companyNumber)
                 .orElseGet(() -> getCompanyMetricsDocument(companyNumber));
-        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+        MetricsApi metrics = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
+                .orElse(new MetricsApi());
 
-        if (BooleanUtils.isTrue(metricsRecalculateApi.getMortgage())) {
-            if (metricsApi.getMortgage() == null) {
-                metricsApi.setMortgage(new MortgageApi());
-            }
-            chargesCountService.recalculateMetrics(contextId, companyNumber, metricsApi);
+        if (BooleanUtils.isTrue(recalculateRequest.getMortgage())) {
+
+            recalculateCharges(contextId, companyNumber, metrics);
+
+        } else if (BooleanUtils.isTrue(recalculateRequest.getAppointments())) {
+
+            recalculateAppointments(contextId, companyNumber, metrics);
+
         } else {
             throw new IllegalArgumentException(String.format(
                     "Unable to process payload with context id %s and company number %s",
                     contextId, companyNumber));
         }
 
-        String updatedBy =  metricsRecalculateApi.getInternalData() != null
-                ? metricsRecalculateApi.getInternalData().getUpdatedBy() : null;
-        companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
+        MetricsApi updatedMetrics = cleanupMetricsContent(metrics);
+        if (updatedMetrics.getCounts() != null //NOSONAR
+                || updatedMetrics.getMortgage() != null
+                || updatedMetrics.getRegisters() != null) {
 
-        metricsApi.setEtag(GenerateEtagUtil.generateEtag());
+            updatedMetrics.setEtag(GenerateEtagUtil.generateEtag());
+            companyMetricsDocument.setCompanyMetrics(updatedMetrics);
 
-        companyMetricsRepository.save(companyMetricsDocument);
+            String updatedBy = recalculateRequest.getInternalData() != null
+                    ? recalculateRequest.getInternalData().getUpdatedBy() : null;
+            companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
 
-        logger.info(String.format("Company metrics updated for context id %s with id %s",
-                contextId, companyMetricsDocument.getId()));
+            companyMetricsRepository.save(companyMetricsDocument);
+            logger.info(String.format("Company metrics updated for context id %s with id %s",
+                    contextId, companyMetricsDocument.getId()));
+        } else {
+            companyMetricsRepository.delete(companyMetricsDocument);
+            logger.info(String.format("Empty company metrics deleted for context id %s with id %s",
+                    contextId, companyMetricsDocument.getId()));
+        }
+    }
+
+    private void recalculateAppointments(String contextId, String companyNumber,
+            MetricsApi metrics) {
+        AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(contextId,
+                companyNumber);
+        if (appointments.getTotalCount() > 0) {
+            CountsApi counts = Optional.ofNullable(metrics.getCounts())
+                    .orElse(new CountsApi());
+            counts.setAppointments(appointments);
+            metrics.setCounts(counts);
+        } else if (metrics.getCounts() != null) { // NOSONAR
+            metrics.getCounts().setAppointments(null);
+        }
+    }
+
+    private void recalculateCharges(String contextId, String companyNumber, MetricsApi metrics) {
+        MortgageApi mortgages = chargesCountService.recalculateMetrics(contextId, companyNumber);
+        metrics.setMortgage(mortgages.getTotalCount() > 0 ? mortgages : null);  //NOSONAR
+    }
+
+    private MetricsApi cleanupMetricsContent(MetricsApi metrics) {
+        CountsApi counts = metrics.getCounts();
+
+        if (counts != null && counts.getAppointments() == null  // NOSONAR
+                && counts.getPersonsWithSignificantControl() == null) { //NOSONAR
+            metrics.setCounts(null);
+        }
+
+        return metrics;
     }
 
     private CompanyMetricsDocument getCompanyMetricsDocument(String companyNumber) {
