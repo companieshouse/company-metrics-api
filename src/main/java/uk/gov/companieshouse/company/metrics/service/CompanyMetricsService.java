@@ -58,7 +58,7 @@ public class CompanyMetricsService {
      * @param companyNumber         The ID of the company to update metrics for
      * @param recalculateRequest Request data that determines which metrics to update
      */
-    public void recalculateMetrics(String contextId,
+    public CompanyMetricsDocument recalculateMetrics(String contextId,
             String companyNumber,
             MetricsRecalculateApi recalculateRequest) {
 
@@ -93,13 +93,15 @@ public class CompanyMetricsService {
                     ? recalculateRequest.getInternalData().getUpdatedBy() : null;
             companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
 
-            companyMetricsRepository.save(companyMetricsDocument);
             logger.info(String.format("Company metrics updated for context id %s with id %s",
                     contextId, companyMetricsDocument.getId()));
+            companyMetricsRepository.save(companyMetricsDocument);
+            return companyMetricsDocument;
         } else {
             companyMetricsRepository.delete(companyMetricsDocument);
             logger.info(String.format("Empty company metrics deleted for context id %s with id %s",
                     contextId, companyMetricsDocument.getId()));
+            return null;
         }
     }
 
