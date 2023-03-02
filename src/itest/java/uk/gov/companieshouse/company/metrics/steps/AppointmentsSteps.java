@@ -102,37 +102,22 @@ public class AppointmentsSteps {
 
     @And("The user is authenticated and authorised with internal app privileges")
     public void userIsAuthenticatedAndAuthorisedWithInternalAppPrivileges() {
-        String contextId = UUID.randomUUID().toString();
-        CONTEXT.set(CONTEXT_ID, contextId);
-
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(X_REQUEST_ID, contextId);
         headers.set(ERIC_IDENTITY, "SOME_IDENTITY");
         headers.set(ERIC_IDENTITY_TYPE, IDENTITY_TYPE_KEY);
         headers.set(ERIC_AUTHORISED_KEY_PRIVILEGES, INTERNAL_APP_PRIVILEGES);
     }
 
-    @When("The recalculate endpoint is called by user {string}")
+    @When("The recalculate endpoint is called with a context ID of {string} but without an updatedBy value")
+    public void theRecalculateEndpointIsCalledWithoutUpdatedBy(String contextId) {
+        callRecalculateEndpoint(null, contextId);
+    }
+
+
+    @When("The recalculate endpoint is called with updatedBy as {string}")
     public void theRecalculateEndpointIsCalled(String updatedBy) {
-        MetricsRecalculateApi requestBody = new MetricsRecalculateApi()
-                .appointments(true)
-                .internalData(new InternalData()
-                        .updatedBy(updatedBy));
-
-        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<Void> response = restTemplate.exchange(RECALCULATE_URI, HttpMethod.POST,
-                request, Void.class, CONTEXT.get(COMPANY_NUMBER));
-        CONTEXT.set(RESPONSE_BODY, response.getBody());
-        CONTEXT.set(STATUS_CODE, response.getStatusCodeValue());
-
-        URI location = response.getHeaders().getLocation();
-        if (location != null) {
-            CONTEXT.set(LOCATION, location.toString());
-        }
-
-        CompanyMetricsDocument updatedDocument = companyMetricsRepository
-                .findById(CONTEXT.get(COMPANY_NUMBER).toString()).orElseGet(() -> null);
-        CONTEXT.set(UPDATED_DOC, updatedDocument);
+        String contextId = UUID.randomUUID().toString();
+        callRecalculateEndpoint(updatedBy, contextId);
     }
 
     @Then("The response code should be HTTP OK")
@@ -172,7 +157,7 @@ public class AppointmentsSteps {
                 .isNotEqualTo(CONTEXT.get(ORIGINAL_ETAG));
     }
 
-    @And("The updated object will have valid timestamp \\(UTC), type : {string} and by {string}")
+    @And("The updated object will have valid timestamp \\(UTC), type: {string} and by: {string}")
     public void theUpdatedObjectWillHaveValidValues(String type, String userId) {
         CompanyMetricsDocument updatedDocument = (CompanyMetricsDocument) CONTEXT.get(UPDATED_DOC);
         Updated updated = updatedDocument.getUpdated();
@@ -191,7 +176,7 @@ public class AppointmentsSteps {
 
         Updated updated = new Updated();
         updated.setAt(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
-        updated.setBy("Someone");
+        updated.setBy("stream-partition-offset");
         updated.setType(COMPANY_METRICS_TYPE);
 
         CompanyMetricsDocument document = new CompanyMetricsDocument();
@@ -382,6 +367,32 @@ public class AppointmentsSteps {
         CompanyMetricsDocument document = (CompanyMetricsDocument) CONTEXT.get(UPDATED_DOC);
         assertThat(document).isNull();
     }
+
+    public void callRecalculateEndpoint(String updatedBy, String contextId) {
+        CONTEXT.set(CONTEXT_ID, contextId);
+        headers.set(X_REQUEST_ID, contextId);
+
+        MetricsRecalculateApi requestBody = new MetricsRecalculateApi()
+                .appointments(true)
+                .internalData(new InternalData()
+                        .updatedBy(updatedBy));
+
+        HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<Void> response = restTemplate.exchange(RECALCULATE_URI, HttpMethod.POST,
+                request, Void.class, CONTEXT.get(COMPANY_NUMBER));
+        CONTEXT.set(RESPONSE_BODY, response.getBody());
+        CONTEXT.set(STATUS_CODE, response.getStatusCodeValue());
+
+        URI location = response.getHeaders().getLocation();
+        if (location != null) {
+            CONTEXT.set(LOCATION, location.toString());
+        }
+
+        CompanyMetricsDocument updatedDocument = companyMetricsRepository
+                .findById(CONTEXT.get(COMPANY_NUMBER).toString()).orElseGet(() -> null);
+        CONTEXT.set(UPDATED_DOC, updatedDocument);
+    }
+
 
     private AppointmentDocument buildAppointment(String companyNumber, String role) {
         Officer officer = new Officer()

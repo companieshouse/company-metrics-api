@@ -44,8 +44,7 @@ public class CompanyMetricsService {
      * Retrieve company metrics using its company number.
      *
      * @param companyNumber the company number
-     * @return company metrics, if one with such a company number exists, otherwise an empty
-     *         optional
+     * @return company metrics, if the company number exists, otherwise an empty optional
      */
     public Optional<CompanyMetricsDocument> get(String companyNumber) {
         return companyMetricsRepository.findById(companyNumber);
@@ -54,8 +53,8 @@ public class CompanyMetricsService {
     /**
      * Save or Update company_metrics.
      *
-     * @param contextId             Request context ID
-     * @param companyNumber         The ID of the company to update metrics for
+     * @param contextId          Request context ID
+     * @param companyNumber      The ID of the company to update metrics for
      * @param recalculateRequest Request data that determines which metrics to update
      */
     public CompanyMetricsDocument recalculateMetrics(String contextId,
@@ -91,7 +90,8 @@ public class CompanyMetricsService {
 
             String updatedBy = recalculateRequest.getInternalData() != null
                     ? recalculateRequest.getInternalData().getUpdatedBy() : null;
-            companyMetricsDocument.setUpdated(populateUpdated(updatedBy));
+            companyMetricsDocument.setUpdated(populateUpdated(
+                    updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 
             logger.info(String.format("Company metrics updated for context id %s with id %s",
                     contextId, companyMetricsDocument.getId()));
