@@ -389,7 +389,7 @@ public class AppointmentsSteps {
         }
 
         CompanyMetricsDocument updatedDocument = companyMetricsRepository
-                .findById(CONTEXT.get(COMPANY_NUMBER).toString()).orElseGet(() -> null);
+                .findById(CONTEXT.get(COMPANY_NUMBER).toString()).orElse(null);
         CONTEXT.set(UPDATED_DOC, updatedDocument);
     }
 

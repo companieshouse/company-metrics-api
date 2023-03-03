@@ -17,7 +17,6 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.exceptions.BadRequestException;
 import uk.gov.companieshouse.company.metrics.exceptions.ServiceUnavailableException;
-import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 import uk.gov.companieshouse.logging.Logger;
 
@@ -69,12 +68,9 @@ public class CompanyMetricsController {
 
         try {
             BodyBuilder responseBuilder = ResponseEntity.ok();
-            CompanyMetricsDocument document = companyMetricsService.recalculateMetrics(contextId,
-                    companyNumber, requestBody);
-            if (document != null) {
-                responseBuilder
-                        .header(LOCATION, String.format("/company/%s/metrics", companyNumber));
-            }
+            companyMetricsService.recalculateMetrics(contextId, companyNumber, requestBody)
+                    .ifPresent(companyMetricsDocument -> responseBuilder
+                            .header(LOCATION, String.format("/company/%s/metrics", companyNumber)));
             return responseBuilder.build();
         } catch (DataAccessResourceFailureException ex) {
             throw new ServiceUnavailableException("Database unavailable");

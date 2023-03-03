@@ -137,7 +137,7 @@ class CompanyMetricsControllerTest {
     void postRecalculateCompanyAppointments() throws Exception {
 
         when(companyMetricsService.recalculateMetrics(anyString(), anyString(), any()))
-                .thenReturn(new CompanyMetricsDocument());
+                .thenReturn(Optional.of(new CompanyMetricsDocument()));
 
         MetricsRecalculateApi requestBody = testData.populateMetricsRecalculateApiForAppointments();
 
