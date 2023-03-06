@@ -2,6 +2,7 @@ package uk.gov.companieshouse.company.metrics.controller;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -29,6 +30,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.config.ApplicationConfig;
+import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 import uk.gov.companieshouse.logging.Logger;
@@ -134,6 +136,9 @@ class CompanyMetricsControllerTest {
     @DisplayName("Post call to recalculate company appointments and update metrics")
     void postRecalculateCompanyAppointments() throws Exception {
 
+        when(companyMetricsService.recalculateMetrics(anyString(), anyString(), any()))
+                .thenReturn(Optional.of(new CompanyMetricsDocument()));
+
         MetricsRecalculateApi requestBody = testData.populateMetricsRecalculateApiForAppointments();
 
         mockMvc.perform(post(RECALCULATE_URL)
@@ -145,6 +150,25 @@ class CompanyMetricsControllerTest {
                         .content(gson.toJson(requestBody)))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.LOCATION, "/company/12345678/metrics"));
+        verify(companyMetricsService).recalculateMetrics(eq("5342342"), eq(MOCK_COMPANY_NUMBER),
+                any());
+    }
+
+    @Test
+    @DisplayName("Post call to recalculate metrics that results in empty metrics has an empty LOCATION header")
+    void postRecalculateCompanyMetricsWithEmptyResultsHasNoLocationHeader() throws Exception {
+
+        MetricsRecalculateApi requestBody = testData.populateMetricsRecalculateApiForAppointments();
+
+        mockMvc.perform(post(RECALCULATE_URL)
+                        .contentType(APPLICATION_JSON)
+                        .header(X_REQUEST_ID, "5342342")
+                        .header(ERIC_IDENTITY, "SOME_IDENTITY")
+                        .header(ERIC_IDENTITY_TYPE, "key")
+                        .header(ERIC_AUTHORISED_KEY_PRIVILEGES, "internal-app")
+                        .content(gson.toJson(requestBody)))
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist(HttpHeaders.LOCATION));
         verify(companyMetricsService).recalculateMetrics(eq("5342342"), eq(MOCK_COMPANY_NUMBER),
                 any());
     }
