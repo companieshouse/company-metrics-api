@@ -10,6 +10,7 @@ import uk.gov.companieshouse.api.metrics.CountsApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
+import uk.gov.companieshouse.api.metrics.PscApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
@@ -24,19 +25,21 @@ public class CompanyMetricsService {
 
     private final ChargesCountService chargesCountService;
     private final AppointmentsCountService appointmentsCountService;
-
+    private final PscCountService pscCountService;
     private final CompanyMetricsRepository companyMetricsRepository;
 
     /**
      * Constructor.
      */
     public CompanyMetricsService(Logger logger,
-            ChargesCountService chargesCountService,
-            AppointmentsCountService appointmentsCountService,
-            CompanyMetricsRepository companyMetricsRepository) {
+                                 ChargesCountService chargesCountService,
+                                 AppointmentsCountService appointmentsCountService,
+                                 PscCountService pscCountService,
+                                 CompanyMetricsRepository companyMetricsRepository) {
         this.logger = logger;
         this.chargesCountService = chargesCountService;
         this.appointmentsCountService = appointmentsCountService;
+        this.pscCountService = pscCountService;
         this.companyMetricsRepository = companyMetricsRepository;
     }
 
@@ -66,11 +69,19 @@ public class CompanyMetricsService {
         MetricsApi metrics = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
                 .orElse(new MetricsApi());
 
+        if (BooleanUtils.isTrue(recalculateRequest.getPersonsWithSignificantControl())) {
+
+            recalculatePscs(contextId, companyNumber, metrics);
+
+        }
+
         if (BooleanUtils.isTrue(recalculateRequest.getMortgage())) {
 
             recalculateCharges(contextId, companyNumber, metrics);
 
-        } else if (BooleanUtils.isTrue(recalculateRequest.getAppointments())) {
+        }
+
+        if (BooleanUtils.isTrue(recalculateRequest.getAppointments())) {
 
             recalculateAppointments(contextId, companyNumber, metrics);
 
@@ -79,6 +90,7 @@ public class CompanyMetricsService {
                     "Unable to process payload with context id %s and company number %s",
                     contextId, companyNumber));
         }
+
 
         MetricsApi updatedMetrics = cleanupMetricsContent(metrics);
         if (updatedMetrics.getCounts() != null //NOSONAR
@@ -133,6 +145,16 @@ public class CompanyMetricsService {
         }
 
         return metrics;
+    }
+
+    private void recalculatePscs(String contextId, String companyNumber, MetricsApi metrics) {
+        logger.info("recalculating pcs metrics");
+        PscApi pscs = pscCountService.recalculateMetrics(contextId, companyNumber);
+        metrics.getCounts().setPersonsWithSignificantControl(pscs);
+        CountsApi counts = Optional.ofNullable(metrics.getCounts())
+                .orElse(new CountsApi());
+        counts.setPersonsWithSignificantControl(pscs);
+        metrics.setCounts(counts);
     }
 
     private CompanyMetricsDocument getCompanyMetricsDocument(String companyNumber) {

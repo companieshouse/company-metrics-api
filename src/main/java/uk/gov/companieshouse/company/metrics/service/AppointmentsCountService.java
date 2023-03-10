@@ -33,6 +33,8 @@ public class AppointmentsCountService {
 
         AppointmentsCounts appointmentsCounts = appointmentsRepository.getCounts(companyNumber);
 
+        logger.debug("Retrieved appointments metrics from mongo");
+
         return new AppointmentsApi()
                 .totalCount(appointmentsCounts.getTotalCount())
                 .activeCount(appointmentsCounts.getActiveCount())

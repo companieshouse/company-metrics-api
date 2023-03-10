@@ -21,6 +21,9 @@ mongodb:
   appointments:
     collection:
       name: ${APPOINTMENTS_COLLECTION_NAME:appointments}
+  psc-statements:
+    collection:
+      name: ${PSC_STATEMENTS_COLLECTION_NAME:company_psc_statements}
 
 spring:
   jackson:
@@ -39,6 +42,10 @@ spring:
         uri: ${MONGODB_APPOINTMENTS_URL:mongodb://localhost:27017/appointments}
         name: appointments
         collection: ${APPOINTMENTS_COLLECTION_NAME:appointments}
+      psc-statements:
+        uri: ${MONGODB_PSC_STATEMENTS_URL:mongodb://localhost:27017/psc-statements}
+        name: psc-statements
+        collection: ${PSC_STATEMENTS_COLLECTION_NAME:psc-statements}
 
 management:
   endpoints:
