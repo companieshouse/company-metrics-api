@@ -11,7 +11,7 @@ public class PscStatementsCounts {
     @Field("withdrawn_statements_count")
     private Integer withdrawnStatementsCount;
     @Field("active_statements_count")
-    private Integer activeStatementCount;
+    private Integer activeStatementsCount;
     @Field("ceased_pscs_count")
     private Integer ceasedPscsCount;
 
@@ -21,6 +21,24 @@ public class PscStatementsCounts {
 
     public PscStatementsCounts setStatementsCount(Integer statementsCount) {
         this.statementsCount = statementsCount;
+        return this;
+    }
+
+    public Integer getActiveStatementsCount() {
+        return activeStatementsCount;
+    }
+
+    public PscStatementsCounts setActiveStatementsCount(Integer activeStatementsCount) {
+        this.activeStatementsCount = activeStatementsCount;
+        return this;
+    }
+
+    public Integer getWithdrawnStatementsCount() {
+        return withdrawnStatementsCount;
+    }
+
+    public PscStatementsCounts setWithdrawnStatementsCount(Integer withdrawnStatementsCount) {
+        this.withdrawnStatementsCount = withdrawnStatementsCount;
         return this;
     }
 

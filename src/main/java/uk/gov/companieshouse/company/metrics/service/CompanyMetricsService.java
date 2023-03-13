@@ -85,7 +85,11 @@ public class CompanyMetricsService {
 
             recalculateAppointments(contextId, companyNumber, metrics);
 
-        } else {
+        }
+
+        if (!BooleanUtils.isTrue(recalculateRequest.getPersonsWithSignificantControl())
+                && !BooleanUtils.isTrue(recalculateRequest.getMortgage())
+                && !BooleanUtils.isTrue(recalculateRequest.getAppointments())) {
             throw new IllegalArgumentException(String.format(
                     "Unable to process payload with context id %s and company number %s",
                     contextId, companyNumber));

@@ -38,6 +38,8 @@ public class PscCountService {
                 statementsCounts.getStatementsCount()));
 
         return new PscApi()
-                .statementsCount(statementsCounts.getStatementsCount());
+                .statementsCount(statementsCounts.getStatementsCount())
+                .activeStatementsCount(statementsCounts.getActiveStatementsCount())
+                .withdrawnStatementsCount(statementsCounts.getWithdrawnStatementsCount());
     }
 }

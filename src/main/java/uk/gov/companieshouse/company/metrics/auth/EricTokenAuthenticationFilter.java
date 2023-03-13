@@ -41,11 +41,11 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        /*if (!isKeyAuthorised(request, ericIdentityType)) {
+        if (!isKeyAuthorised(request, ericIdentityType)) {
             logger.info("Supplied key does not have sufficient privilege for the action");
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
-        }*/
+        }
 
         filterChain.doFilter(request,response);
     }

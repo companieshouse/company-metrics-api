@@ -14,13 +14,27 @@ public interface PscStatementsRepository extends MongoRepository<PscStatementDoc
             + "    $facet: {"
             + "        'total': ["
             + "            { $count: 'count' }"
-            + "        ]"
+            + "        ],"
+            + "        'active_statements': ["
+            + "            { $match: { 'data.ceased_on': {$exists: false} } },"
+            + "            { $count: 'count' }"
+            + "        ],"
+            + "        'withdrawn_statements': ["
+            + "            { $match: { 'data.ceased_on': {$exists: true} } },"
+            + "            { $count: 'count' }"
+            + "        ],"
             + "    }"
             + "}",
             "{ $unwind: { path: '$total', preserveNullAndEmptyArrays: true } }",
+            "{ $unwind: { path: '$active_statements', preserveNullAndEmptyArrays: true } }",
+            "{ $unwind: { path: '$withdrawn_statements', preserveNullAndEmptyArrays: true } }",
             "{"
             + "    $project: {"
-            + "        'statements_count': { $ifNull: ['$total.count', NumberInt(0)] }"
+            + "        'statements_count': { $ifNull: ['$total.count', NumberInt(0)] },"
+            + "        'active_statements_count': "
+                + "{ $ifNull: ['$active_statements.count', NumberInt(0)] },"
+            + "        'withdrawn_statements_count': "
+                + "{ $ifNull: ['$withdrawn_statements.count', NumberInt(0)] }"
             + "    }"
             + "}"})
     PscStatementsCounts getCounts(String companyNumber);
