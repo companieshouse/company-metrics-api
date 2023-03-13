@@ -91,6 +91,7 @@ public class CompanyMetricsService {
                     contextId, companyNumber));
         }
 
+        logger.info("metrics successfully found");
 
         MetricsApi updatedMetrics = cleanupMetricsContent(metrics);
         if (updatedMetrics.getCounts() != null //NOSONAR
@@ -98,10 +99,13 @@ public class CompanyMetricsService {
                 || updatedMetrics.getRegisters() != null) {
 
             updatedMetrics.setEtag(GenerateEtagUtil.generateEtag());
+            logger.info("etag set");
             companyMetricsDocument.setCompanyMetrics(updatedMetrics);
 
+            logger.info("metrics set");
             String updatedBy = recalculateRequest.getInternalData() != null
                     ? recalculateRequest.getInternalData().getUpdatedBy() : null;
+            logger.info("updated by set");
             companyMetricsDocument.setUpdated(populateUpdated(
                     updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 

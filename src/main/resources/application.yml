@@ -31,21 +31,21 @@ spring:
   data:
     mongodb:
       metrics:
-        uri: ${MONGODB_METRICS_URL:mongodb://localhost:27017/company_metrics}
+        uri: ${MONGODB_METRICS_URL:mongodb://mongo:27017/company_metrics}
         name: company_metrics
         collection: ${METRICS_COLLECTION_NAME:company_metrics}
       charges:
-        uri: ${MONGODB_CHARGES_URL:mongodb://localhost:27017/company_mortgages}
+        uri: ${MONGODB_CHARGES_URL:mongodb://mongo:27017/company_mortgages}
         name: company_mortgages
         collection: ${CHARGES_COLLECTION_NAME:company_mortgages}
       appointments:
-        uri: ${MONGODB_APPOINTMENTS_URL:mongodb://localhost:27017/appointments}
+        uri: ${MONGODB_APPOINTMENTS_URL:mongodb://mongo:27017/appointments}
         name: appointments
         collection: ${APPOINTMENTS_COLLECTION_NAME:appointments}
       psc-statements:
-        uri: ${MONGODB_PSC_STATEMENTS_URL:mongodb://localhost:27017/psc-statements}
-        name: psc-statements
-        collection: ${PSC_STATEMENTS_COLLECTION_NAME:psc-statements}
+        uri: ${MONGODB_PSC_STATEMENTS_URL:mongodb://mongo:27017/company_psc_statements}
+        name: company_psc_statements
+        collection: ${PSC_STATEMENTS_COLLECTION_NAME:company_psc_statements}
 
 management:
   endpoints:
