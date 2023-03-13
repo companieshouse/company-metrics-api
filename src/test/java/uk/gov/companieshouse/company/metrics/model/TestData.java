@@ -59,6 +59,19 @@ public class TestData {
         return metricsRecalculateApi;
     }
 
+    public MetricsRecalculateApi populateMetricsRecalculateApiForPscs() {
+
+        MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();
+        metricsRecalculateApi.setAppointments(false);
+        metricsRecalculateApi.setMortgage(false);
+        metricsRecalculateApi.setPersonsWithSignificantControl(true);
+        InternalData internalData = new InternalData();
+        internalData.setUpdatedBy("updatedBy");
+        metricsRecalculateApi.setInternalData(internalData);
+
+        return metricsRecalculateApi;
+    }
+
     public MetricsRecalculateApi populateMetricsRecalculateApiForAppointments() {
 
         MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();

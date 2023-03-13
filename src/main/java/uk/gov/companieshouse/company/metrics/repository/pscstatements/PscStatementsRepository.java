@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.company.metrics.repository.pscs;
+package uk.gov.companieshouse.company.metrics.repository.pscstatements;
 
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;

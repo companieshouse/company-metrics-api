@@ -158,7 +158,6 @@ public class CompanyMetricsService {
     private void recalculatePscs(String contextId, String companyNumber, MetricsApi metrics) {
         logger.info("recalculating pcs metrics");
         PscApi pscs = pscCountService.recalculateMetrics(contextId, companyNumber);
-        metrics.getCounts().setPersonsWithSignificantControl(pscs);
         CountsApi counts = Optional.ofNullable(metrics.getCounts())
                 .orElse(new CountsApi());
         counts.setPersonsWithSignificantControl(pscs);

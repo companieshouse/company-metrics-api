@@ -12,33 +12,33 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @Configuration
 @EnableMongoRepositories(basePackages =
-        {"uk.gov.companieshouse.company.metrics.repository.pscstatements"},
-        mongoTemplateRef = PscStatementsDatabaseConfig.MONGO_TEMPLATE)
-class PscStatementsDatabaseConfig extends MongoConfig {
+        {"uk.gov.companieshouse.company.metrics.repository.pscs"},
+        mongoTemplateRef = PscsDatabaseConfig.MONGO_TEMPLATE)
+class PscsDatabaseConfig extends MongoConfig {
 
-    protected static final String MONGO_TEMPLATE = "pscStatementsMongoTemplate";
+    protected static final String MONGO_TEMPLATE = "pscsMongoTemplate";
 
     private final ApplicationContext applicationContext;
 
-    PscStatementsDatabaseConfig(ApplicationContext applicationContext) {
+    PscsDatabaseConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.data.mongodb.psc-statements")
-    MongoProperties getPscStatementsProps() {
+    @ConfigurationProperties(prefix = "spring.data.mongodb.pscs")
+    MongoProperties getPscsProps() {
         return new MongoProperties();
     }
 
-    @Bean(name = "pscStatementsMongoTemplate")
-    MongoTemplate pscStatementsMongoTemplate() {
-        MongoDatabaseFactory databaseFactory = pscStatementsMongoDatabaseFactory();
+    @Bean(name = "pscsMongoTemplate")
+    MongoTemplate pscsMongoTemplate() {
+        MongoDatabaseFactory databaseFactory = pscsMongoDatabaseFactory();
         return new MongoTemplate(databaseFactory, getMongoConverter(applicationContext,
                 databaseFactory));
     }
 
     @Bean
-    MongoDatabaseFactory pscStatementsMongoDatabaseFactory() {
-        return new SimpleMongoClientDatabaseFactory(getPscStatementsProps().getUri());
+    MongoDatabaseFactory pscsMongoDatabaseFactory() {
+        return new SimpleMongoClientDatabaseFactory(getPscsProps().getUri());
     }
 }
