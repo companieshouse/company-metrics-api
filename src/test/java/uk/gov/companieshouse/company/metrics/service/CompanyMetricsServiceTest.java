@@ -62,14 +62,6 @@ class CompanyMetricsServiceTest {
             .ceasedPscsCount(1)
             .totalCount(6);
 
-    public static final PscApi ZERO_PSCS = new PscApi()
-            .statementsCount(0)
-            .activeStatementsCount(0)
-            .withdrawnStatementsCount(0)
-            .pscsCount(0)
-            .activePscsCount(0)
-            .ceasedPscsCount(0)
-            .totalCount(0);
     private static final MortgageApi ZERO_MORTGAGES = new MortgageApi()
             .totalCount(0)
             .satisfiedCount(0)
