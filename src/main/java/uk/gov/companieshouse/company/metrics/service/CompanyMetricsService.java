@@ -95,21 +95,16 @@ public class CompanyMetricsService {
                     contextId, companyNumber));
         }
 
-        logger.info("metrics successfully found");
-
         MetricsApi updatedMetrics = cleanupMetricsContent(metrics);
         if (updatedMetrics.getCounts() != null //NOSONAR
                 || updatedMetrics.getMortgage() != null
                 || updatedMetrics.getRegisters() != null) {
 
             updatedMetrics.setEtag(GenerateEtagUtil.generateEtag());
-            logger.info("etag set");
             companyMetricsDocument.setCompanyMetrics(updatedMetrics);
 
-            logger.info("metrics set");
             String updatedBy = recalculateRequest.getInternalData() != null
                     ? recalculateRequest.getInternalData().getUpdatedBy() : null;
-            logger.info("updated by set");
             companyMetricsDocument.setUpdated(populateUpdated(
                     updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 
@@ -156,12 +151,15 @@ public class CompanyMetricsService {
     }
 
     private void recalculatePscs(String contextId, String companyNumber, MetricsApi metrics) {
-        logger.info("recalculating pcs metrics");
         PscApi pscs = pscCountService.recalculateMetrics(contextId, companyNumber);
-        CountsApi counts = Optional.ofNullable(metrics.getCounts())
-                .orElse(new CountsApi());
-        counts.setPersonsWithSignificantControl(pscs);
-        metrics.setCounts(counts);
+        if (pscs.getTotalCount() > 0) { //NOSONAR
+            CountsApi counts = Optional.ofNullable(metrics.getCounts())
+                    .orElse(new CountsApi());
+            counts.setPersonsWithSignificantControl(pscs);
+            metrics.setCounts(counts);
+        } else if (metrics.getCounts() != null) { //NOSONAR
+            metrics.getCounts().setPersonsWithSignificantControl(null);
+        }
     }
 
     private CompanyMetricsDocument getCompanyMetricsDocument(String companyNumber) {

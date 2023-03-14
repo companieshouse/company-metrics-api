@@ -18,11 +18,21 @@ public class PscStatementDocument {
         return id;
     }
 
-    private StatementApi data;
+    private PscStatement data;
 
 
     public PscStatementDocument setId(String id) {
         this.id = id;
+        return this;
+    }
+
+    public PscStatementDocument setCompanyNumber(String companyNumber) {
+        this.companyNumber = companyNumber;
+        return this;
+    }
+
+    public PscStatementDocument setData(PscStatement data) {
+        this.data = data;
         return this;
     }
 

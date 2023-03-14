@@ -40,12 +40,6 @@ public class PscCountService {
 
         PscsCounts pscsCounts = pscRepository.getCounts(companyNumber);
 
-        logger.info(String.format("Found %s statements",
-                statementsCounts.getStatementsCount()));
-
-        logger.info(String.format("Found %s pscs",
-                pscsCounts.getCeasedPscsCount()));
-
         return new PscApi()
                 .statementsCount(statementsCounts.getStatementsCount())
                 .activeStatementsCount(statementsCounts.getActiveStatementsCount())
