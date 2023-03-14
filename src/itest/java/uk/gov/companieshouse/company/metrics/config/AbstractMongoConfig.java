@@ -31,6 +31,12 @@ public class AbstractMongoConfig {
         registry.add("spring.data.mongodb.appointments.uri", (() -> mongoDBContainer.getReplicaSetUrl() +
                 "?serverSelectionTimeoutMS=100&connectTimeoutMS=100"));
 
+        registry.add("spring.data.mongodb.psc-statements.uri", (() -> mongoDBContainer.getReplicaSetUrl() +
+                "?serverSelectionTimeoutMS=100&connectTimeoutMS=100"));
+
+        registry.add("spring.data.mongodb.pscs.uri", (() -> mongoDBContainer.getReplicaSetUrl() +
+                "?serverSelectionTimeoutMS=100&connectTimeoutMS=100"));
+
         mongoDBContainer.start();
     }
 }

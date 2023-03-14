@@ -23,6 +23,7 @@ import uk.gov.companieshouse.api.metrics.AppointmentsApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
+import uk.gov.companieshouse.api.metrics.PscApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
@@ -51,6 +52,16 @@ class CompanyMetricsServiceTest {
             .activeSecretariesCount(0)
             .activeLlpMembersCount(0)
             .resignedCount(0);
+
+    public static final PscApi PSCS = new PscApi()
+            .statementsCount(3)
+            .activeStatementsCount(2)
+            .withdrawnStatementsCount(1)
+            .pscsCount(3)
+            .activePscsCount(2)
+            .ceasedPscsCount(1)
+            .totalCount(6);
+
     private static final MortgageApi ZERO_MORTGAGES = new MortgageApi()
             .totalCount(0)
             .satisfiedCount(0)
@@ -68,6 +79,9 @@ class CompanyMetricsServiceTest {
 
     @Mock
     private AppointmentsCountService appointmentsCountService;
+
+    @Mock
+    private PscCountService pscsCountService;
 
     @Mock
     private Logger logger;
@@ -132,6 +146,7 @@ class CompanyMetricsServiceTest {
 
         verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -159,6 +174,7 @@ class CompanyMetricsServiceTest {
 
         verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -171,6 +187,33 @@ class CompanyMetricsServiceTest {
         assertThat(metricsApi.getEtag()).isNotEqualTo(initialETTag);
     }
 
+    @Test
+    @DisplayName("Should update existing pscs metrics")
+    void shouldUpdateExistingPscsMetrics() throws IOException {
+        CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
+        doReturn(Optional.of(companyMetricsDocument))
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(pscsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(PSCS);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForPscs());
+
+        verify(pscsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+
+        verify(companyMetricsRepository).save(companyMetricsDocument);
+
+        Updated updated = companyMetricsDocument.getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocument.getCompanyMetrics();
+        assertThat(metricsApi.getMortgage()).isNotNull();
+        assertThat(metricsApi.getEtag()).isNotEqualTo(initialETTag);
+    }
 
     @Test
     @DisplayName("Should update existing appointments metrics")
@@ -187,6 +230,8 @@ class CompanyMetricsServiceTest {
 
         verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -214,6 +259,8 @@ class CompanyMetricsServiceTest {
 
         verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -225,6 +272,8 @@ class CompanyMetricsServiceTest {
         assertThat(metricsApi.getMortgage()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotEqualTo(initialETTag);
     }
+
+
 
     @Test
     @DisplayName("Should set charges metrics on a new document")
@@ -239,6 +288,8 @@ class CompanyMetricsServiceTest {
 
         verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -264,6 +315,8 @@ class CompanyMetricsServiceTest {
 
         verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -274,6 +327,34 @@ class CompanyMetricsServiceTest {
         MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getCounts()).isNotNull();
         assertThat(metricsApi.getCounts().getAppointments()).isNotNull();
+        assertThat(metricsApi.getEtag()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Should set pscs metrics on a new document")
+    void shouldSetPscsMetricsOnNewDocument() {
+        doReturn(Optional.empty())
+                .when(companyMetricsRepository).findById(COMPANY_NUMBER);
+        when(pscsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(PSCS);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForPscs());
+
+        verify(pscsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+
+
+        verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
+
+        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        assertThat(metricsApi.getCounts()).isNotNull();
+        assertThat(metricsApi.getCounts().getPersonsWithSignificantControl()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
     }
 
@@ -290,6 +371,8 @@ class CompanyMetricsServiceTest {
 
         verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -300,6 +383,34 @@ class CompanyMetricsServiceTest {
         MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getCounts()).isNotNull();
         assertThat(metricsApi.getCounts().getAppointments()).isNotNull();
+        assertThat(metricsApi.getEtag()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Should set pscs metrics on a document without pscs counts")
+    void shouldSetPscsMetricsOnDocumentWithoutPscs() throws IOException {
+        CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.getCompanyMetrics().getCounts().setPersonsWithSignificantControl(null);
+        when(pscsCountService.recalculateMetrics(any(), any()))
+                .thenReturn(PSCS);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForPscs());
+
+        verify(pscsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+
+
+        verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
+
+        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        assertThat(metricsApi.getCounts()).isNotNull();
+        assertThat(metricsApi.getCounts().getPersonsWithSignificantControl()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
     }
 
@@ -320,6 +431,8 @@ class CompanyMetricsServiceTest {
 
         verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -347,6 +460,8 @@ class CompanyMetricsServiceTest {
 
         verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
 
         verify(companyMetricsRepository).delete(companyMetricsDocumentCaptor.capture());
     }
@@ -364,6 +479,8 @@ class CompanyMetricsServiceTest {
 
         verify(chargesCountService, never()).recalculateMetrics(any(), any());
         verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+
         verify(companyMetricsRepository, never()).save(any());
     }
 }

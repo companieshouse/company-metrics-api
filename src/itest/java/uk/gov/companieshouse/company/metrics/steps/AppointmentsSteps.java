@@ -94,11 +94,7 @@ public class AppointmentsSteps {
         CONTEXT.set(START_TIME, LocalDateTime.now());
     }
 
-    @Given("A company metrics resource does not exist for a company number of {string}")
-    public void companyMetricsResourceDoesNotExistsForTheGivenCompanyNumber(String companyNumber) {
-        CONTEXT.set(COMPANY_NUMBER, companyNumber);
-        CONTEXT.set(ORIGINAL_ETAG, "");
-    }
+
 
     @And("The user is authenticated and authorised with internal app privileges")
     public void userIsAuthenticatedAndAuthorisedWithInternalAppPrivileges() {
@@ -120,25 +116,11 @@ public class AppointmentsSteps {
         callRecalculateEndpoint(updatedBy, contextId);
     }
 
-    @Then("The response code should be HTTP OK")
-    public void theResponseCodeShouldBeHttpOK() {
-        assertThat(CONTEXT.get(STATUS_CODE)).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @And("The location response header should be {string}")
-    public void theLocationResponseHeaderShouldBeCompanyCompany_numberMetrics(String uri) {
-        assertThat(CONTEXT.get(LOCATION)).isEqualTo(uri);
-    }
-
     @And("The response should not include a location header")
     public void theResponseShouldNotIncludeALocationHeader() {
         assertThat(CONTEXT.get(LOCATION)).isNull();
     }
 
-    @And("The response body should be empty")
-    public void theResponseBodyShouldBeEmpty() {
-        assertThat(CONTEXT.get(RESPONSE_BODY)).isNull();
-    }
 
     @And("The metrics resource has a count.appointments object")
     public void aNewMetricsResourceWithACountAppointmentsObjectShouldBeCreated() {
@@ -148,64 +130,6 @@ public class AppointmentsSteps {
         assertThat(updatedDocument.getCompanyMetrics().getCounts().getAppointments()).isNotNull();
     }
 
-    @And("The etag should be updated")
-    public void theEtagShouldBeUpdated() {
-        CompanyMetricsDocument updatedDocument = (CompanyMetricsDocument) CONTEXT.get(UPDATED_DOC);
-        String eTag = updatedDocument.getCompanyMetrics().getEtag();
-        assertThat(eTag)
-                .isNotNull()
-                .isNotEqualTo(CONTEXT.get(ORIGINAL_ETAG));
-    }
-
-    @And("The updated object will have valid timestamp \\(UTC), type: {string} and by: {string}")
-    public void theUpdatedObjectWillHaveValidValues(String type, String userId) {
-        CompanyMetricsDocument updatedDocument = (CompanyMetricsDocument) CONTEXT.get(UPDATED_DOC);
-        Updated updated = updatedDocument.getUpdated();
-
-        assertThat(updated.getAt()).isAfterOrEqualTo((LocalDateTime) CONTEXT.get(START_TIME));
-        assertThat(updated.getBy()).isEqualTo(userId);
-        assertThat(updated.getType()).isEqualTo(type);
-    }
-
-    @Given("A company metrics resource exists for a company number of {string}")
-    public void aCompanyMetricsResourceExistsForACompanyNumberOf(String companyNumber) {
-        CONTEXT.set(COMPANY_NUMBER, companyNumber);
-
-        String eTag = UUID.randomUUID().toString();
-        CONTEXT.set(ORIGINAL_ETAG, eTag);
-
-        Updated updated = new Updated();
-        updated.setAt(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
-        updated.setBy("stream-partition-offset");
-        updated.setType(COMPANY_METRICS_TYPE);
-
-        CompanyMetricsDocument document = new CompanyMetricsDocument();
-        document.setId(companyNumber);
-        document.setCompanyMetrics(new MetricsApi()
-                .etag(eTag)
-                .counts(new CountsApi()
-                        .appointments(new AppointmentsApi()
-                                .activeCount(0)
-                                .activeDirectorsCount(1)
-                                .activeLlpMembersCount(0)
-                                .totalCount(0)
-                                .activeSecretariesCount(0)
-                                .resignedCount(0))
-                        .personsWithSignificantControl(new PscApi()
-                                .totalCount(0)
-                                .activePscsCount(0)
-                                .activeStatementsCount(0)
-                                .pscsCount(0)
-                                .statementsCount(0)
-                                .ceasedPscsCount(0)
-                                .withdrawnStatementsCount(0)))
-                .mortgage(new MortgageApi()
-                        .partSatisfiedCount(0)
-                        .satisfiedCount(1)
-                        .totalCount(1)));
-        document.setUpdated(updated);
-        companyMetricsRepository.save(document);
-    }
 
     @And("The company has ACTIVE appointments for {int} directors, {int} secretaries, {int} LLP members, {int} Corp. LLP members")
     public void theCompanyHasACTIVEAppointmentsFor(int activeDirectors, int activeSecretaries,
