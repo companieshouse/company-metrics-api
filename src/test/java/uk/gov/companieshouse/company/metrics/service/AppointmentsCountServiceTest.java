@@ -3,6 +3,7 @@ package uk.gov.companieshouse.company.metrics.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -46,7 +47,7 @@ class AppointmentsCountServiceTest {
 
     @Test
     void shouldRecalculateAppointmentsMetrics() {
-
+        Assertions.fail();
         when(appointmentsRepository.getCounts(COMPANY_NUMBER)).thenReturn(counts);
 
         AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(CONTEXT_ID,
