@@ -10,7 +10,7 @@ import uk.gov.companieshouse.logging.Logger;
 public class AppointmentsCountService {
 
     private final Logger logger;
-    private final AppointmentRepository appointmentsRepository;
+    //private final AppointmentRepository appointmentsRepository;
 
     /**
      * Constructor.
