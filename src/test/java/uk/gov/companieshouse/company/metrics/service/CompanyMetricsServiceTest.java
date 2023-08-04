@@ -111,7 +111,7 @@ class CompanyMetricsServiceTest {
                 .thenReturn(Optional.of(companyMetricsDocument));
 
         Optional<CompanyMetricsDocument> companyMetricsActual =
-                companyMetricsService.get(COMPANY_NUMBER);
+                companyMetricsService.getMetrics(COMPANY_NUMBER);
 
         assertTrue(companyMetricsActual.isPresent());
         assertThat(companyMetricsActual).containsSame(companyMetricsDocument);
@@ -125,7 +125,7 @@ class CompanyMetricsServiceTest {
                 .thenReturn(Optional.empty());
 
         Optional<CompanyMetricsDocument> companyMetricsActual =
-                companyMetricsService.get(COMPANY_NUMBER);
+                companyMetricsService.getMetrics(COMPANY_NUMBER);
 
         assertTrue(companyMetricsActual.isEmpty());
         verify(companyMetricsRepository).findById(COMPANY_NUMBER);

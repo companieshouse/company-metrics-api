@@ -49,7 +49,7 @@ public class CompanyMetricsService {
      * @param companyNumber the company number
      * @return company metrics, if the company number exists, otherwise an empty optional
      */
-    public Optional<CompanyMetricsDocument> get(String companyNumber) {
+    public Optional<CompanyMetricsDocument> getMetrics(String companyNumber) {
         return companyMetricsRepository.findById(companyNumber);
     }
 
@@ -64,7 +64,7 @@ public class CompanyMetricsService {
             String companyNumber,
             MetricsRecalculateApi recalculateRequest) {
 
-        CompanyMetricsDocument companyMetricsDocument = get(companyNumber)
+        CompanyMetricsDocument companyMetricsDocument = getMetrics(companyNumber)
                 .orElseGet(() -> getCompanyMetricsDocument(companyNumber));
         MetricsApi metrics = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
                 .orElse(new MetricsApi());
@@ -164,7 +164,7 @@ public class CompanyMetricsService {
 
     private CompanyMetricsDocument getCompanyMetricsDocument(String companyNumber) {
 
-        CompanyMetricsDocument companyMetricsDocument = get(companyNumber)
+        CompanyMetricsDocument companyMetricsDocument = getMetrics(companyNumber)
                 .orElseGet(() -> {
                     CompanyMetricsDocument document = new CompanyMetricsDocument();
                     document.setId(companyNumber);
