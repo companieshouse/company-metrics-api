@@ -8,6 +8,5 @@ public class CompanyMetricsApiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CompanyMetricsApiApplication.class, args);
-        System.out.println("APPLICATION RUNNING");
     }
 }

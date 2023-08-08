@@ -22,7 +22,11 @@ public interface AppointmentRepository extends MongoRepository<AppointmentDocume
             + "                $match:"
             + "                    {"
             + "                        $and: ["
-            + "                            { 'data.officer_role': /director/ },"
+            + "                            { 'data.officer_role': { "
+                    +
+                    "$in: ['corporate-director', 'corporate-nominee-director', "
+                    +
+                    "'director', 'nominee-director'] } },"
             + "                            { 'data.resigned_on': {$exists: false} }]"
             + "                    }"
             + "            },"
@@ -37,7 +41,11 @@ public interface AppointmentRepository extends MongoRepository<AppointmentDocume
             + "                $match:"
             + "                    {"
             + "                        $and: ["
-            + "                            { 'data.officer_role': /secretary/ },"
+            + "                            { 'data.officer_role': { "
+            +
+                    "$in: ['corporate-nominee-secretary', 'corporate-secretary', "
+            +
+                    "'nominee-secretary', 'secretary'] } },"
             + "                            { 'data.resigned_on': {$exists: false} }]"
             + "                    }"
             + "            },"
@@ -48,7 +56,13 @@ public interface AppointmentRepository extends MongoRepository<AppointmentDocume
             + "                $match:"
             + "                    {"
             + "                        $and: ["
-            + "                            { 'data.officer_role': /llp/ },"
+            + "                            { 'data.officer_role': { "
+                    +
+                    "$in: [ 'corporate-llp-designated-member', 'corporate-llp-member', "
+                    +
+                    "'limited-partner-in-a-limited-partnership', 'llp-designated-member', "
+                    +
+                    "'llp-member' ] } },"
             + "                            { 'data.resigned_on': {$exists: false} }]"
             + "                    }"
             + "            },"
