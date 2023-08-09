@@ -62,7 +62,6 @@ public interface AppointmentRepository extends MongoRepository<AppointmentDocume
             + "                                 $in: ["
             + "                                     'corporate-llp-designated-member', "
             + "                                     'corporate-llp-member', "
-            + "                                     'limited-partner-in-a-limited-partnership',"
             + "                                     'llp-designated-member', "
             + "                                     'llp-member' ] } },"
             + "                            { 'data.resigned_on': {$exists: false} }]"
