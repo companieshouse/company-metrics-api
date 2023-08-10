@@ -20,7 +20,7 @@ mongodb:
       name: ${CHARGES_CHARGES_COLLECTION_NAME:company_mortgages}
   appointments:
     collection:
-      name: ${APPOINTMENTS_COLLECTION_NAME:appointments}
+      name: ${APPOINTMENTS_COLLECTION_NAME:delta_appointments}
   psc-statements:
     collection:
       name: ${PSC_STATEMENTS_COLLECTION_NAME:company_psc_statements}
@@ -44,7 +44,7 @@ spring:
       appointments:
         uri: ${MONGODB_APPOINTMENTS_URL:mongodb://mongo:27017/appointments}
         name: appointments
-        collection: ${APPOINTMENTS_COLLECTION_NAME:appointments}
+        collection: ${APPOINTMENTS_COLLECTION_NAME:delta_appointments}
       psc-statements:
         uri: ${MONGODB_PSC_STATEMENTS_URL:mongodb://mongo:27017/company_psc_statements}
         name: company_psc_statements

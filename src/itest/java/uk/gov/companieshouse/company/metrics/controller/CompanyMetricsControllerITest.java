@@ -54,7 +54,7 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
 
         CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsDocument(metricsApi, updated);
 
-        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(companyMetricsDocument));
+        when(companyMetricsService.getMetrics(MOCK_COMPANY_NUMBER)).thenReturn(Optional.of(companyMetricsDocument));
 
         HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
         ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
@@ -68,7 +68,7 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     @DisplayName(
             "Given a company number with no matching company metrics return a NOT FOUND response")
     void getCompanyMetricsNotFound() {
-        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
+        when(companyMetricsService.getMetrics(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
         HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
         ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
@@ -80,7 +80,7 @@ class CompanyMetricsControllerITest extends AbstractIntegrationTest {
     @Test
     @DisplayName("When calling get company metrics - returns a 500 INTERNAL SERVER ERROR")
     void getCompanyMetricsInternalServerError() {
-        when(companyMetricsService.get(any())).thenThrow(RuntimeException.class);
+        when(companyMetricsService.getMetrics(any())).thenThrow(RuntimeException.class);
         HttpEntity<?> request = new HttpEntity<>(iTestUtil.populateHttpHeaders("1234567"));
         ResponseEntity<MetricsApi> responseEntity = restTemplate.exchange(COMPANY_URL, HttpMethod.GET, request,
                 MetricsApi.class);

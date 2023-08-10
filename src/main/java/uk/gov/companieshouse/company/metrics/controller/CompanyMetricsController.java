@@ -41,7 +41,9 @@ public class CompanyMetricsController {
     @GetMapping("/company/{company_number}/metrics")
     public ResponseEntity<MetricsApi> getCompanyMetrics(
             @PathVariable("company_number") String companyNumber) {
-        return companyMetricsService.get(companyNumber)
+        logger.info(String.format("Getting company metrics for company number %s", companyNumber));
+
+        return companyMetricsService.getMetrics(companyNumber)
                 .map(companyMetricsDocument ->
                         new ResponseEntity<>(
                                 companyMetricsDocument.getCompanyMetrics(),

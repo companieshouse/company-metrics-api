@@ -70,7 +70,7 @@ class CompanyMetricsControllerTest {
     @Test
     @DisplayName("Retrieve company metrics for a given company number")
     void getCompanyMetrics() throws Exception {
-        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(
+        when(companyMetricsService.getMetrics(MOCK_COMPANY_NUMBER)).thenReturn(
                 Optional.of(testData.populateCompanyMetricsDocument()));
 
         mockMvc.perform(get(COMPANY_URL)
@@ -87,7 +87,7 @@ class CompanyMetricsControllerTest {
     @DisplayName(
             "Given a company number with no matching company metrics return a NOT FOUND response")
     void getCompanyMetricsNotFound() throws Exception {
-        when(companyMetricsService.get(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
+        when(companyMetricsService.getMetrics(MOCK_COMPANY_NUMBER)).thenReturn(Optional.empty());
 
         mockMvc.perform(get(COMPANY_URL)
                         .contentType(APPLICATION_JSON)
@@ -101,7 +101,7 @@ class CompanyMetricsControllerTest {
     @Test()
     @DisplayName("When calling get company metrics - returns a 500 INTERNAL SERVER ERROR")
     void getCompanyMetricsInternalServerError() {
-        when(companyMetricsService.get(any())).thenThrow(RuntimeException.class);
+        when(companyMetricsService.getMetrics(any())).thenThrow(RuntimeException.class);
 
         assertThatThrownBy(() ->
                 mockMvc.perform(get(COMPANY_URL)
