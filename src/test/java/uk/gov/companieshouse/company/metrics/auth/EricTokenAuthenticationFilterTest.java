@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
-public class EricTokenAuthenticationFilterTest {
+class EricTokenAuthenticationFilterTest {
 
     @Mock
     Logger logger;

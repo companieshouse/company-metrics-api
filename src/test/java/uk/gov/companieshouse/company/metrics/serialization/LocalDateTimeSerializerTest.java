@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class LocalDateTimeSerializerTest {
+class LocalDateTimeSerializerTest {
 
     private static final String DATE_STRING = "2015-06-26T08:31:35.058Z";
 

@@ -16,7 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PscCountsServiceTest {
+class PscCountsServiceTest {
 
     private static final String COMPANY_NUMBER = "12345678";
     private static final String CONTEXT_ID = "12345";
@@ -77,13 +77,13 @@ public class PscCountsServiceTest {
 
         PscApi pscs = pscCountsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
 
-        assertThat(pscs.getStatementsCount()).isEqualTo(0);
-        assertThat(pscs.getActiveStatementsCount()).isEqualTo(0);
-        assertThat(pscs.getWithdrawnStatementsCount()).isEqualTo(0);
-        assertThat(pscs.getPscsCount()).isEqualTo(0);
-        assertThat(pscs.getActivePscsCount()).isEqualTo(0);
-        assertThat(pscs.getPscsCount()).isEqualTo(0);
-        assertThat(pscs.getTotalCount()).isEqualTo(0);
+        assertThat(pscs.getStatementsCount()).isZero();
+        assertThat(pscs.getActiveStatementsCount()).isZero();
+        assertThat(pscs.getWithdrawnStatementsCount()).isZero();
+        assertThat(pscs.getPscsCount()).isZero();
+        assertThat(pscs.getActivePscsCount()).isZero();
+        assertThat(pscs.getPscsCount()).isZero();
+        assertThat(pscs.getTotalCount()).isZero();
     }
 
 }

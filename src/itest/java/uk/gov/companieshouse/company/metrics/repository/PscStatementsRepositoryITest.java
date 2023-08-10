@@ -7,22 +7,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.companieshouse.api.model.statements.StatementApi;
 import uk.gov.companieshouse.company.metrics.AbstractIntegrationTest;
 import uk.gov.companieshouse.company.metrics.model.PscStatement;
 import uk.gov.companieshouse.company.metrics.model.PscStatementDocument;
 import uk.gov.companieshouse.company.metrics.repository.pscstatements.PscStatementsRepository;
-
 import java.time.Instant;
-import java.util.List;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-public class PscStatementsRepositoryITest extends AbstractIntegrationTest {
+class PscStatementsRepositoryITest extends AbstractIntegrationTest {
 
     private static final String COMPANY_NUMBER = "OC312300";
 

@@ -1,28 +1,21 @@
 package uk.gov.companieshouse.company.metrics.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.companieshouse.api.model.psc.PscApi;
-import uk.gov.companieshouse.api.model.statements.StatementApi;
 import uk.gov.companieshouse.company.metrics.AbstractIntegrationTest;
 import uk.gov.companieshouse.company.metrics.model.Psc;
 import uk.gov.companieshouse.company.metrics.model.PscDocument;
-import uk.gov.companieshouse.company.metrics.model.PscStatementDocument;
 import uk.gov.companieshouse.company.metrics.repository.pscs.PscRepository;
-
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class PscRespositoryITest extends AbstractIntegrationTest {
+class PscRepositoryITest extends AbstractIntegrationTest {
 
     private static final String COMPANY_NUMBER = "OC312300";
 

@@ -76,6 +76,6 @@ public class CompanyMetricsApiErrorRetrySteps {
     @Given("A metrics document exists for {string} without data")
     public void aChargesDocumentExistsForWithoutData(String companyNumber) {
         companyMetricsRepository.save(iTestUtil.createTestCompanyMetricsDocumentWithoutData(companyNumber));
-        Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent()).isEqualTo(true);
+        Assertions.assertThat(companyMetricsRepository.findById(companyNumber)).isPresent();
     }
 }

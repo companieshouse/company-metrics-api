@@ -7,20 +7,11 @@ import static uk.gov.companieshouse.company.metrics.config.CucumberContext.CONTE
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.net.URI;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
@@ -29,7 +20,6 @@ import uk.gov.companieshouse.api.metrics.InternalData;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
-import uk.gov.companieshouse.api.metrics.PscApi;
 import uk.gov.companieshouse.company.metrics.model.AppointmentDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Officer;
@@ -37,6 +27,13 @@ import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.appointments.AppointmentRepository;
 import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepository;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
+import java.net.URI;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AppointmentsSteps {
 

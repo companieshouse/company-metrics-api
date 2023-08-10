@@ -14,7 +14,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class LocalDateSerializerTest {
+class LocalDateSerializerTest {
 
     private static final String DATE_STRING = "2015-06-26T08:31:35.058Z";
 

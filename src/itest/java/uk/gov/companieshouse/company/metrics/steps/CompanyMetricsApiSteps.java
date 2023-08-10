@@ -76,16 +76,15 @@ public class CompanyMetricsApiSteps {
     @Given("the company metrics exists for {string}")
     public void the_company_metrics_exists_for(String companyNumber) {
         companyMetricsRepository.save(iTestUtil.createTestCompanyMetricsDocument(companyNumber));
-        Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent())
-                .isEqualTo(true);
+        Assertions.assertThat(companyMetricsRepository.findById(companyNumber))
+                .isPresent();
 
     }
 
     @Given("no company metrics exists for {string}")
     public void no_company_metrics_exists_for(String companyNumber) {
         companyMetricsRepository.deleteAll();
-        Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent())
-                .isEqualTo(false);
+        Assertions.assertThat(companyMetricsRepository.findById(companyNumber)).isNotPresent();
     }
 
     @Given("the company charges entries exists for {string}")
@@ -160,18 +159,16 @@ public class CompanyMetricsApiSteps {
     @Then("nothing is persisted in the database")
     public void nothing_persisted_database() {
         List<CompanyMetricsDocument> companyMetricsDocuments = companyMetricsRepository.findAll();
-        Assertions.assertThat(companyMetricsDocuments).hasSize(0);
+        Assertions.assertThat(companyMetricsDocuments).isEmpty();
     }
 
     @Then("company metrics exists for {string} in company_metrics db with total mortgage count {string}")
     public void company_metrics_exists_for(String companyNumber, String number) {
-        Assertions.assertThat(companyMetricsRepository.findById(companyNumber).isPresent())
-                .isEqualTo(true);
+        Assertions.assertThat(companyMetricsRepository.findById(companyNumber)).isPresent();
         CompanyMetricsDocument companyMetricsDocument = companyMetricsRepository.findById(
                 companyNumber).get();
         assertThat(companyMetricsDocument.getId()).isEqualTo(companyNumber);
-        assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getTotalCount()
-                .toString()).isEqualTo(number);
+        assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getTotalCount().toString()).hasToString(number);
 
     }
 
