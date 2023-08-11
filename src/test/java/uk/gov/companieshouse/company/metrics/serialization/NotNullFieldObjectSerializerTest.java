@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.charges.ScottishAlterationsApi;
 
 @ExtendWith(MockitoExtension.class)
-public class NotNullFieldObjectSerializerTest {
+class NotNullFieldObjectSerializerTest {
 
     @Mock
     private SerializerProvider serializerProvider;

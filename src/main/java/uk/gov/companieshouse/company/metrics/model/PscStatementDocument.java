@@ -3,7 +3,6 @@ package uk.gov.companieshouse.company.metrics.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import uk.gov.companieshouse.api.model.statements.StatementApi;
 
 
 @Document(collection = "#{@environment.getProperty('mongodb.psc-statements.collection.name')}")

@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.company.metrics.model;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 

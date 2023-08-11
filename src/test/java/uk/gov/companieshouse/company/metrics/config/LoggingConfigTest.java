@@ -18,7 +18,7 @@ class LoggingConfigTest {
     @Test
     void logger() {
         Logger logger = loggingConfig.logger();
-        assertThat(logger).isNotNull();
-        assertThat(logger).isInstanceOf(Logger.class);
+        assertThat(logger).isNotNull().isInstanceOf(Logger.class);
     }
+
 }

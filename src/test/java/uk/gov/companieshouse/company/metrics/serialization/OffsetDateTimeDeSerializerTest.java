@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class OffsetDateTimeDeSerializerTest {
+class OffsetDateTimeDeSerializerTest {
 
     private static final String DATE_STRING = "2015-06-26T08:31:35.058Z";
 

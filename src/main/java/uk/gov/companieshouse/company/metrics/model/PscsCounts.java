@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.company.metrics.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class PscsCounts {
