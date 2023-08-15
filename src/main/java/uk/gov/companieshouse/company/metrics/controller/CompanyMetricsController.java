@@ -17,6 +17,7 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.company.metrics.exceptions.BadRequestException;
 import uk.gov.companieshouse.company.metrics.exceptions.ServiceUnavailableException;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 import uk.gov.companieshouse.logging.Logger;
 
@@ -41,7 +42,8 @@ public class CompanyMetricsController {
     @GetMapping("/company/{company_number}/metrics")
     public ResponseEntity<MetricsApi> getCompanyMetrics(
             @PathVariable("company_number") String companyNumber) {
-        logger.info(String.format("Getting company metrics for company number %s", companyNumber));
+        DataMapHolder.get().companyNumber(companyNumber);
+        logger.info("Getting company metrics", DataMapHolder.getLogMap());
 
         return companyMetricsService.getMetrics(companyNumber)
                 .map(companyMetricsDocument ->
@@ -63,10 +65,8 @@ public class CompanyMetricsController {
             @RequestHeader("x-request-id") String contextId,
             @PathVariable("company_number") String companyNumber,
             @Valid @RequestBody MetricsRecalculateApi requestBody) throws BadRequestException {
-        logger.info(String.format(
-                "Payload Successfully received on POST with context id %s and company number %s",
-                contextId,
-                companyNumber));
+        DataMapHolder.get().companyNumber(companyNumber);
+        logger.info("Payload Successfully received on POST", DataMapHolder.getLogMap());
 
         try {
             BodyBuilder responseBuilder = ResponseEntity.ok();

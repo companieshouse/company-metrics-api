@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import uk.gov.companieshouse.company.metrics.exceptions.BadRequestException;
 import uk.gov.companieshouse.company.metrics.exceptions.ServiceUnavailableException;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.logging.Logger;
 
 @ControllerAdvice
@@ -39,9 +40,9 @@ public class ExceptionHandlerConfig {
                 + " request with Correlation ID: %s", correlationId));
     }
 
-    private void errorLogException(Exception ex, String correlationId) {
-        logger.errorContext(null, String.format("Exception occurred while processing the "
-                + "API request with Correlation ID: %s", correlationId), ex, null);
+    private void errorLogException(Exception ex) {
+        logger.errorContext("Exception occurred while processing the "
+                + "API request", ex, DataMapHolder.getLogMap());
     }
 
     private Map<String, Object> responseAndLogBuilderHandler(Exception ex, WebRequest request) {
@@ -52,7 +53,7 @@ public class ExceptionHandlerConfig {
         }
         Map<String, Object> responseBody = new LinkedHashMap<>();
         populateResponseBody(responseBody, correlationId);
-        errorLogException(ex, correlationId);
+        errorLogException(ex);
 
         return responseBody;
     }

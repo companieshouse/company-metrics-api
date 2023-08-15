@@ -6,10 +6,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.logging.Logger;
 
 public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
@@ -27,7 +27,7 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
         String ericIdentity = request.getHeader("ERIC-Identity");
 
         if (StringUtils.isBlank(ericIdentity)) {
-            logger.error("Request received without eric identity");
+            logger.error("Request received without eric identity", DataMapHolder.getLogMap());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -36,13 +36,13 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (!("key".equalsIgnoreCase(ericIdentityType)
                 || ("oauth2".equalsIgnoreCase(ericIdentityType)))) {
-            logger.error("Request received without correct eric identity type");
+            logger.error("Request received without correct eric identity type", DataMapHolder.getLogMap());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         if (!isKeyAuthorised(request, ericIdentityType)) {
-            logger.info("Supplied key does not have sufficient privilege for the action");
+            logger.info("Supplied key does not have sufficient privilege for the action", DataMapHolder.getLogMap());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

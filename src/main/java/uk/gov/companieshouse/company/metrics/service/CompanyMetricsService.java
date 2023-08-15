@@ -11,6 +11,7 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.api.metrics.PscApi;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
@@ -63,7 +64,6 @@ public class CompanyMetricsService {
     public Optional<CompanyMetricsDocument> recalculateMetrics(String contextId,
             String companyNumber,
             MetricsRecalculateApi recalculateRequest) {
-
         CompanyMetricsDocument companyMetricsDocument = getMetrics(companyNumber)
                 .orElseGet(() -> getCompanyMetricsDocument(companyNumber));
         MetricsApi metrics = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
@@ -108,14 +108,12 @@ public class CompanyMetricsService {
             companyMetricsDocument.setUpdated(populateUpdated(
                     updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 
-            logger.info(String.format("Company metrics updated for context id %s with id %s",
-                    contextId, companyMetricsDocument.getId()));
+            logger.info("Company metrics updated", DataMapHolder.getLogMap());
             companyMetricsRepository.save(companyMetricsDocument);
             return Optional.of(companyMetricsDocument);
         } else {
             companyMetricsRepository.delete(companyMetricsDocument);
-            logger.info(String.format("Empty company metrics deleted for context id %s with id %s",
-                    contextId, companyMetricsDocument.getId()));
+            logger.info("Empty company metrics deleted", DataMapHolder.getLogMap());
             return Optional.empty();
         }
     }
