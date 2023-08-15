@@ -28,7 +28,8 @@ public class LocalDateTimeDeSerializer extends JsonDeserializer<LocalDateTime> {
                         LocalDateTime.parse(jsonNode.get("$date").textValue(), dateTimeFormatter);
 
         } catch (Exception exception) {
-            LOGGER.error("LocalDateTime Deserialization failed.", exception, DataMapHolder.getLogMap());
+            LOGGER.error("LocalDateTime Deserialization failed.", exception,
+                    DataMapHolder.getLogMap());
             throw new RuntimeException("Failed while deserializing "
                     + "date value for json node.", exception);
         }

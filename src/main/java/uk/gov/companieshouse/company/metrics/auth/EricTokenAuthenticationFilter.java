@@ -36,13 +36,15 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (!("key".equalsIgnoreCase(ericIdentityType)
                 || ("oauth2".equalsIgnoreCase(ericIdentityType)))) {
-            logger.error("Request received without correct eric identity type", DataMapHolder.getLogMap());
+            logger.error("Request received without correct eric identity type",
+                    DataMapHolder.getLogMap());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         if (!isKeyAuthorised(request, ericIdentityType)) {
-            logger.info("Supplied key does not have sufficient privilege for the action", DataMapHolder.getLogMap());
+            logger.info("Supplied key does not have sufficient privilege for the action",
+                    DataMapHolder.getLogMap());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

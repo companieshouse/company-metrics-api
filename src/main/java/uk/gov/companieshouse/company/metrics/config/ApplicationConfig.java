@@ -55,8 +55,10 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) {
-        this.logger.debug("Start: Excluding health check endpoint from security filter", DataMapHolder.getLogMap());
+        this.logger.debug("Start: Excluding health check endpoint from security filter",
+                DataMapHolder.getLogMap());
         web.ignoring().antMatchers("/company-metrics-api/healthcheck");
-        this.logger.debug("End: Excluding health check endpoint from security filter", DataMapHolder.getLogMap());
+        this.logger.debug("End: Excluding health check endpoint from security filter",
+                DataMapHolder.getLogMap());
     }
 }

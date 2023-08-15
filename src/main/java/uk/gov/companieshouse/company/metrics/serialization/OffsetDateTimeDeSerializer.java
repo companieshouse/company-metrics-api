@@ -25,7 +25,8 @@ public class OffsetDateTimeDeSerializer extends JsonDeserializer<OffsetDateTime>
             return OffsetDateTime.parse(jsonNode.get("$date")
                     .textValue(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         } catch (Exception exception) {
-            LOGGER.error("OffsetDateTime Deserialization failed.", exception, DataMapHolder.getLogMap());
+            LOGGER.error("OffsetDateTime Deserialization failed.", exception,
+                    DataMapHolder.getLogMap());
             throw new RuntimeException("Failed while deserializing "
                     + "date value for json node.", exception);
         }
