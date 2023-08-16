@@ -24,10 +24,9 @@ public class AppointmentsCountService {
     /**
      * Save or Update company_metrics for appointments.
      *
-     * @param contextId     Request context ID
      * @param companyNumber The ID of the company to update metrics for
      */
-    public AppointmentsApi recalculateMetrics(String contextId, String companyNumber) {
+    public AppointmentsApi recalculateMetrics(String companyNumber) {
         logger.debug("Recalculating appointments metrics", DataMapHolder.getLogMap());
 
         AppointmentsCounts appointmentsCounts = appointmentsRepository.getCounts(companyNumber);

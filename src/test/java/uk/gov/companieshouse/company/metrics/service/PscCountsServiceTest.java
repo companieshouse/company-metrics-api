@@ -58,8 +58,7 @@ class PscCountsServiceTest {
         when(statementsRepository.getCounts(COMPANY_NUMBER)).thenReturn(statementsCounts);
         when(pscRepository.getCounts(COMPANY_NUMBER)).thenReturn(pscsCounts);
 
-        PscApi pscs = pscCountsService.recalculateMetrics(CONTEXT_ID,
-                COMPANY_NUMBER);
+        PscApi pscs = pscCountsService.recalculateMetrics(COMPANY_NUMBER);
 
         assertThat(pscs.getStatementsCount()).isEqualTo(3);
         assertThat(pscs.getActiveStatementsCount()).isEqualTo(2);
@@ -75,7 +74,7 @@ class PscCountsServiceTest {
         when(statementsRepository.getCounts(COMPANY_NUMBER)).thenReturn(noStatementsCounts);
         when(pscRepository.getCounts(COMPANY_NUMBER)).thenReturn(noPscsCounts);
 
-        PscApi pscs = pscCountsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        PscApi pscs = pscCountsService.recalculateMetrics(COMPANY_NUMBER);
 
         assertThat(pscs.getStatementsCount()).isZero();
         assertThat(pscs.getActiveStatementsCount()).isZero();

@@ -29,10 +29,9 @@ public class PscCountService {
     /**
      * Save or Update company_metrics for pscs.
      *
-     * @param contextId     Request context ID
      * @param companyNumber The ID of the company to update metrics for
      */
-    public PscApi recalculateMetrics(String contextId, String companyNumber) {
+    public PscApi recalculateMetrics(String companyNumber) {
         logger.debug("Recalculating PSC metrics", DataMapHolder.getLogMap());
 
         PscStatementsCounts statementsCounts = pscStatementsRepository.getCounts(companyNumber);

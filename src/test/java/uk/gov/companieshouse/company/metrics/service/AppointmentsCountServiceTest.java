@@ -49,8 +49,7 @@ class AppointmentsCountServiceTest {
 
         when(appointmentsRepository.getCounts(COMPANY_NUMBER)).thenReturn(counts);
 
-        AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(CONTEXT_ID,
-                COMPANY_NUMBER);
+        AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(COMPANY_NUMBER);
 
         assertThat(appointments.getActiveCount()).isEqualTo(3);
         assertThat(appointments.getTotalCount()).isEqualTo(5);
@@ -64,7 +63,7 @@ class AppointmentsCountServiceTest {
     void shouldRemoveAppointmentsMetricsWhenAppointmentsCountsAreZero() {
         when(appointmentsRepository.getCounts(COMPANY_NUMBER)).thenReturn(noAppointmentsCounts);
 
-        AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(COMPANY_NUMBER);
 
         assertThat(appointments.getActiveCount()).isZero();
         assertThat(appointments.getTotalCount()).isZero();

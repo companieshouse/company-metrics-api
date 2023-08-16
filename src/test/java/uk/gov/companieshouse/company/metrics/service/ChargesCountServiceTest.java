@@ -39,7 +39,7 @@ class ChargesCountServiceTest {
 
         when(chargesRepository.getCounts(COMPANY_NUMBER)).thenReturn(chargesCounts);
 
-        MortgageApi mortgages = chargesCountService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        MortgageApi mortgages = chargesCountService.recalculateMetrics(COMPANY_NUMBER);
 
         assertThat(mortgages.getTotalCount()).isEqualTo(30);
         assertThat(mortgages.getSatisfiedCount()).isEqualTo(10);
@@ -50,7 +50,7 @@ class ChargesCountServiceTest {
     void shouldRecalculateMetricsWhenMortgageApiElementDoesNotExists() {
         when(chargesRepository.getCounts(COMPANY_NUMBER)).thenReturn(chargesCounts);
 
-        MortgageApi mortgages = chargesCountService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
+        MortgageApi mortgages = chargesCountService.recalculateMetrics(COMPANY_NUMBER);
 
         assertThat(mortgages.getTotalCount()).isEqualTo(30);
         assertThat(mortgages.getSatisfiedCount()).isEqualTo(10);

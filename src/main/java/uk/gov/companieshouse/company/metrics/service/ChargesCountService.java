@@ -24,11 +24,10 @@ public class ChargesCountService {
     /**
      * Save or Update company_metrics for charges.
      *
-     * @param contextId     Request context ID
      * @param companyNumber The ID of the company to update metrics for
      * @return Recalculated charges metrics
      */
-    public MortgageApi recalculateMetrics(String contextId, String companyNumber) {
+    public MortgageApi recalculateMetrics(String companyNumber) {
 
         logger.debug("Recalculating charges metrics", DataMapHolder.getLogMap());
         ChargesCounts chargesCounts = chargesRepository.getCounts(companyNumber);

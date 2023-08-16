@@ -138,15 +138,15 @@ class CompanyMetricsServiceTest {
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(chargesCountService.recalculateMetrics(any(), any()))
+        when(chargesCountService.recalculateMetrics(any()))
                 .thenReturn(MORTGAGES);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForCharges());
 
-        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(chargesCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(appointmentsCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -166,15 +166,15 @@ class CompanyMetricsServiceTest {
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(chargesCountService.recalculateMetrics(any(), any()))
+        when(chargesCountService.recalculateMetrics(any()))
                 .thenReturn(ZERO_MORTGAGES);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForCharges());
 
-        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(chargesCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(appointmentsCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -194,15 +194,15 @@ class CompanyMetricsServiceTest {
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(pscsCountService.recalculateMetrics(any(), any()))
+        when(pscsCountService.recalculateMetrics(any()))
                 .thenReturn(PSCS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForPscs());
 
-        verify(pscsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any());
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -222,15 +222,15 @@ class CompanyMetricsServiceTest {
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(appointmentsCountService.recalculateMetrics(any(), any()))
+        when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
@@ -251,15 +251,15 @@ class CompanyMetricsServiceTest {
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(appointmentsCountService.recalculateMetrics(any(), any()))
+        when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(ZERO_APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
@@ -280,15 +280,15 @@ class CompanyMetricsServiceTest {
     void shouldSetChargesMetricsOnNewDocument() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(chargesCountService.recalculateMetrics(any(), any()))
+        when(chargesCountService.recalculateMetrics(any()))
                 .thenReturn(MORTGAGES);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForCharges());
 
-        verify(chargesCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(chargesCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(appointmentsCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
@@ -307,15 +307,15 @@ class CompanyMetricsServiceTest {
     void shouldSetAppointmentsMetricsOnNewDocument() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(appointmentsCountService.recalculateMetrics(any(), any()))
+        when(appointmentsCountService.recalculateMetrics( any()))
                 .thenReturn(APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
@@ -335,15 +335,15 @@ class CompanyMetricsServiceTest {
     void shouldSetPscsMetricsOnNewDocument() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(pscsCountService.recalculateMetrics(any(), any()))
+        when(pscsCountService.recalculateMetrics( any()))
                 .thenReturn(PSCS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForPscs());
 
-        verify(pscsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
@@ -363,15 +363,15 @@ class CompanyMetricsServiceTest {
     void shouldSetAppointmentsMetricsOnDocumentWithoutAppointments() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
         companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
-        when(appointmentsCountService.recalculateMetrics(any(), any()))
+        when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
@@ -391,15 +391,15 @@ class CompanyMetricsServiceTest {
     void shouldSetPscsMetricsOnDocumentWithoutPscs() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
         companyMetricsDocument.getCompanyMetrics().getCounts().setPersonsWithSignificantControl(null);
-        when(pscsCountService.recalculateMetrics(any(), any()))
+        when(pscsCountService.recalculateMetrics(any()))
                 .thenReturn(PSCS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForPscs());
 
-        verify(pscsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
+        verify(pscsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
@@ -423,15 +423,15 @@ class CompanyMetricsServiceTest {
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
 
-        when(appointmentsCountService.recalculateMetrics(any(), any()))
+        when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(ZERO_APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
@@ -452,15 +452,15 @@ class CompanyMetricsServiceTest {
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
 
-        when(appointmentsCountService.recalculateMetrics(any(), any()))
+        when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(ZERO_APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
 
-        verify(appointmentsCountService).recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER);
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
 
         verify(companyMetricsRepository).delete(companyMetricsDocumentCaptor.capture());
@@ -477,9 +477,9 @@ class CompanyMetricsServiceTest {
                 () -> companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER, request))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        verify(chargesCountService, never()).recalculateMetrics(any(), any());
-        verify(appointmentsCountService, never()).recalculateMetrics(any(), any());
-        verify(pscsCountService, never()).recalculateMetrics(any(), any());
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(appointmentsCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
 
         verify(companyMetricsRepository, never()).save(any());
     }
