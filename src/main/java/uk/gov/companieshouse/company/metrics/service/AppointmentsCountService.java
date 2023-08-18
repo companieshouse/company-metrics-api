@@ -2,6 +2,7 @@ package uk.gov.companieshouse.company.metrics.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.company.metrics.model.AppointmentsCounts;
 import uk.gov.companieshouse.company.metrics.repository.appointments.AppointmentRepository;
 import uk.gov.companieshouse.logging.Logger;
@@ -23,13 +24,10 @@ public class AppointmentsCountService {
     /**
      * Save or Update company_metrics for appointments.
      *
-     * @param contextId     Request context ID
      * @param companyNumber The ID of the company to update metrics for
      */
-    public AppointmentsApi recalculateMetrics(String contextId, String companyNumber) {
-
-        logger.debug(String.format("Recalculating appointments metrics for %s with context-id %s",
-                companyNumber, contextId));
+    public AppointmentsApi recalculateMetrics(String companyNumber) {
+        logger.debug("Recalculating appointments metrics", DataMapHolder.getLogMap());
 
         AppointmentsCounts appointmentsCounts = appointmentsRepository.getCounts(companyNumber);
 

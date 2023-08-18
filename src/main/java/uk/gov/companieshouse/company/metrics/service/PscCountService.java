@@ -2,6 +2,7 @@ package uk.gov.companieshouse.company.metrics.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.PscApi;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.company.metrics.model.PscStatementsCounts;
 import uk.gov.companieshouse.company.metrics.model.PscsCounts;
 import uk.gov.companieshouse.company.metrics.repository.pscs.PscRepository;
@@ -28,13 +29,10 @@ public class PscCountService {
     /**
      * Save or Update company_metrics for pscs.
      *
-     * @param contextId     Request context ID
      * @param companyNumber The ID of the company to update metrics for
      */
-    public PscApi recalculateMetrics(String contextId, String companyNumber) {
-
-        logger.debug(String.format("Recalculating PSC metrics for %s with context-id %s",
-                companyNumber, contextId));
+    public PscApi recalculateMetrics(String companyNumber) {
+        logger.debug("Recalculating PSC metrics", DataMapHolder.getLogMap());
 
         PscStatementsCounts statementsCounts = pscStatementsRepository.getCounts(companyNumber);
 

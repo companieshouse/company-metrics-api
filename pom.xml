@@ -23,23 +23,27 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<spring.boot.version>2.7.4</spring.boot.version>
-		<test-containers.version>1.16.3</test-containers.version>
+		<spring.boot.version>2.7.13</spring.boot.version>
+		<test-containers.version>1.18.0</test-containers.version>
 		<maven-surefire-plugin.version>3.0.0-M9</maven-surefire-plugin.version>
-		<maven-build-helper-plugin.version>3.2.0</maven-build-helper-plugin.version>
+		<maven-build-helper-plugin.version>3.4.0</maven-build-helper-plugin.version>
 		<maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
 		<docker-maven-plugin.version>1.0.0</docker-maven-plugin.version>
-		<structured-logging.version>1.9.12</structured-logging.version>
-		<api-sdk-manager-java-library.version>1.0.4</api-sdk-manager-java-library.version>
+
+		<structured-logging.version>1.9.25</structured-logging.version>
+		<api-sdk-manager-java-library.version>1.0.11</api-sdk-manager-java-library.version>
 		<api-helper-java-library.version>1.4.5</api-helper-java-library.version>
-		<cucumber-java.version>7.2.3</cucumber-java.version>
+		<cucumber-java.version>7.11.2</cucumber-java.version>
 		<jib-maven-plugin.version>3.1.1</jib-maven-plugin.version>
-		<io-cucumber.version>7.2.3</io-cucumber.version>
-		<private-api-sdk-java.version>2.0.182</private-api-sdk-java.version>
+		<io-cucumber.version>7.11.2</io-cucumber.version>
+		<private-api-sdk-java.version>2.0.289</private-api-sdk-java.version>
 		<springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
+
 		<skip.integration.tests>false</skip.integration.tests>
 		<skip.unit.tests>false</skip.unit.tests>
-		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+
+		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+		<jacoco-maven-plugin.version>0.8.9</jacoco-maven-plugin.version>
 		<!--sonar configuration-->
 		<sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>

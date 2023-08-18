@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import uk.gov.companieshouse.company.metrics.auth.EricTokenAuthenticationFilter;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
+import uk.gov.companieshouse.company.metrics.logging.StructuredLoggingFilter;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 import uk.gov.companieshouse.logging.Logger;
@@ -33,7 +35,7 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        this.logger.debug("Start: configure Http Security");
+        this.logger.debug("Start: configure Http Security", DataMapHolder.getLogMap());
         http.httpBasic().disable()
                 //REST APIs not enabled for cross site script headers
                 .csrf().disable() //NOSONAR
@@ -44,9 +46,11 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterAt(new EricTokenAuthenticationFilter(logger),
                         BasicAuthenticationFilter.class)
+                .addFilterBefore(new StructuredLoggingFilter(logger),
+                        EricTokenAuthenticationFilter.class)
                 .authorizeRequests()
                 .anyRequest().permitAll();
-        this.logger.debug("End: configure Http Security");
+        this.logger.debug("End: configure Http Security", DataMapHolder.getLogMap());
     }
 
     /**
@@ -54,8 +58,10 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) {
-        this.logger.debug("Start: Excluding health check endpoint from security filter");
+        this.logger.debug("Start: Excluding health check endpoint from security filter",
+                DataMapHolder.getLogMap());
         web.ignoring().antMatchers("/company-metrics-api/healthcheck");
-        this.logger.debug("End: Excluding health check endpoint from security filter");
+        this.logger.debug("End: Excluding health check endpoint from security filter",
+                DataMapHolder.getLogMap());
     }
 }

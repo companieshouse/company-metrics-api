@@ -11,6 +11,7 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.api.metrics.PscApi;
+import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
@@ -63,7 +64,6 @@ public class CompanyMetricsService {
     public Optional<CompanyMetricsDocument> recalculateMetrics(String contextId,
             String companyNumber,
             MetricsRecalculateApi recalculateRequest) {
-
         CompanyMetricsDocument companyMetricsDocument = getMetrics(companyNumber)
                 .orElseGet(() -> getCompanyMetricsDocument(companyNumber));
         MetricsApi metrics = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
@@ -71,19 +71,19 @@ public class CompanyMetricsService {
 
         if (BooleanUtils.isTrue(recalculateRequest.getPersonsWithSignificantControl())) {
 
-            recalculatePscs(contextId, companyNumber, metrics);
+            recalculatePscs(companyNumber, metrics);
 
         }
 
         if (BooleanUtils.isTrue(recalculateRequest.getMortgage())) {
 
-            recalculateCharges(contextId, companyNumber, metrics);
+            recalculateCharges(companyNumber, metrics);
 
         }
 
         if (BooleanUtils.isTrue(recalculateRequest.getAppointments())) {
 
-            recalculateAppointments(contextId, companyNumber, metrics);
+            recalculateAppointments(companyNumber, metrics);
 
         }
 
@@ -108,21 +108,19 @@ public class CompanyMetricsService {
             companyMetricsDocument.setUpdated(populateUpdated(
                     updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 
-            logger.info(String.format("Company metrics updated for context id %s with id %s",
-                    contextId, companyMetricsDocument.getId()));
+            logger.info("Company metrics updated", DataMapHolder.getLogMap());
             companyMetricsRepository.save(companyMetricsDocument);
             return Optional.of(companyMetricsDocument);
         } else {
             companyMetricsRepository.delete(companyMetricsDocument);
-            logger.info(String.format("Empty company metrics deleted for context id %s with id %s",
-                    contextId, companyMetricsDocument.getId()));
+            logger.info("Empty company metrics deleted", DataMapHolder.getLogMap());
             return Optional.empty();
         }
     }
 
-    private void recalculateAppointments(String contextId, String companyNumber,
+    private void recalculateAppointments(String companyNumber,
             MetricsApi metrics) {
-        AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(contextId,
+        AppointmentsApi appointments = appointmentsCountService.recalculateMetrics(
                 companyNumber);
         if (appointments.getTotalCount() > 0) {
             CountsApi counts = Optional.ofNullable(metrics.getCounts())
@@ -134,8 +132,8 @@ public class CompanyMetricsService {
         }
     }
 
-    private void recalculateCharges(String contextId, String companyNumber, MetricsApi metrics) {
-        MortgageApi mortgages = chargesCountService.recalculateMetrics(contextId, companyNumber);
+    private void recalculateCharges(String companyNumber, MetricsApi metrics) {
+        MortgageApi mortgages = chargesCountService.recalculateMetrics(companyNumber);
         metrics.setMortgage(mortgages.getTotalCount() > 0 ? mortgages : null);  //NOSONAR
     }
 
@@ -150,8 +148,8 @@ public class CompanyMetricsService {
         return metrics;
     }
 
-    private void recalculatePscs(String contextId, String companyNumber, MetricsApi metrics) {
-        PscApi pscs = pscCountService.recalculateMetrics(contextId, companyNumber);
+    private void recalculatePscs(String companyNumber, MetricsApi metrics) {
+        PscApi pscs = pscCountService.recalculateMetrics(companyNumber);
         if (pscs.getTotalCount() > 0) { //NOSONAR
             CountsApi counts = Optional.ofNullable(metrics.getCounts())
                     .orElse(new CountsApi());

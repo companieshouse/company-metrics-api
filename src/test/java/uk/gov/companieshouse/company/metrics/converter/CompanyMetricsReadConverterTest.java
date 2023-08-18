@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)
@@ -46,6 +47,8 @@ class CompanyMetricsReadConverterTest {
         assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getTotalCount()).isEqualTo(51);
         assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getSatisfiedCount()).isEqualTo(42);
         assertThat(companyMetricsDocument.getCompanyMetrics().getMortgage().getPartSatisfiedCount()).isZero();
-        assertThat(objectMapper.getRegisteredModuleIds().stream().findFirst().get().toString().contains("SimpleModule"));
+        assertTrue(objectMapper.getRegisteredModuleIds().stream().findFirst().isPresent());
+        assertTrue(objectMapper.getRegisteredModuleIds().stream().findFirst().get().toString().contains("SimpleModule"));
+
     }
 }
