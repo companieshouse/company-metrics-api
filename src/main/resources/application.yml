@@ -26,7 +26,7 @@ mongodb:
       name: ${PSC_STATEMENTS_COLLECTION_NAME:company_psc_statements}
   pscs:
     collection:
-      name: ${PSC_STATEMENTS_COLLECTION_NAME:company_pscs}
+      name: ${PSC_STATEMENTS_COLLECTION_NAME:delta_company_pscs}
 
 spring:
   jackson:
@@ -52,7 +52,7 @@ spring:
       pscs:
         uri: ${MONGODB_PSCS_URL:mongodb://mongo:27017/company_pscs}
         name: company_psc_statements
-        collection: ${PSC_STATEMENTS_COLLECTION_NAME:company_pscs}
+        collection: ${PSC_STATEMENTS_COLLECTION_NAME:delta_company_pscs}
 
 management:
   endpoints:
