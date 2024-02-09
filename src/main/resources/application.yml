@@ -26,7 +26,7 @@ mongodb:
       name: ${PSC_STATEMENTS_COLLECTION_NAME:company_psc_statements}
   pscs:
     collection:
-      name: ${PSC_STATEMENTS_COLLECTION_NAME:company_pscs}
+      name: ${PSCS_COLLECTION_NAME:delta_company_pscs}
 
 spring:
   jackson:
