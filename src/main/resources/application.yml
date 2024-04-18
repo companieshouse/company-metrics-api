@@ -51,8 +51,8 @@ spring:
         collection: ${PSC_STATEMENTS_COLLECTION_NAME:company_psc_statements}
       pscs:
         uri: ${MONGODB_PSCS_URL:mongodb://mongo:27017/company_pscs}
-        name: company_psc_statements
-        collection: ${PSC_STATEMENTS_COLLECTION_NAME:company_pscs}
+        name: company_pscs
+        collection: ${PSCS_COLLECTION_NAME:delta_company_pscs}
 
 management:
   endpoints:
