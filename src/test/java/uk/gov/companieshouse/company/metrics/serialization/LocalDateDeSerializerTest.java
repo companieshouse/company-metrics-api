@@ -3,7 +3,7 @@ package uk.gov.companieshouse.company.metrics.serialization;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,9 +49,10 @@ class LocalDateDeSerializerTest {
 
     @Test
     void testDeserializeJsonNodeTextualValue() throws IOException {
-        when(jsonNode.get(any())).thenReturn(jsonNode);
-        when(jsonNode.getNodeType()).thenReturn(JsonNodeType.STRING);
-        when(jsonNode.textValue()).thenReturn(DATE_STRING);
+        String jsonString = "{\"$date\": \"2015-06-26\"}";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(jsonString);
+        when(jsonParser.readValueAsTree()).thenReturn(node);
         LocalDate localDate = deserializer.deserialize(jsonParser, deserializationContext);
 
         Assertions.assertEquals(DateTimeFormatter.parse(DATE_STRING), localDate);
@@ -60,7 +61,6 @@ class LocalDateDeSerializerTest {
     @Test
     void testDeserializeJsonNodeLongValue() throws IOException {
         when(jsonNode.get(any())).thenReturn(jsonNode);
-        when(jsonNode.getNodeType()).thenReturn(JsonNodeType.OBJECT);
         when(jsonNode.asLong()).thenReturn(1435308155000L);
         LocalDate localDate = deserializer.deserialize(jsonParser, deserializationContext);
 
