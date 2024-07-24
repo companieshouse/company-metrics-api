@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -25,6 +26,7 @@ import uk.gov.companieshouse.company.metrics.converter.CompanyMetricsWriteConver
 import uk.gov.companieshouse.company.metrics.converter.EnumConverters;
 import uk.gov.companieshouse.company.metrics.converter.OffsetDateTimeReadConverter;
 import uk.gov.companieshouse.company.metrics.converter.OffsetDateTimeWriteConverter;
+import uk.gov.companieshouse.company.metrics.converter.RegistersReadConverter;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateDeSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateSerializer;
 import uk.gov.companieshouse.company.metrics.serialization.LocalDateTimeDeSerializer;
@@ -44,6 +46,7 @@ public class MongoConfig {
 
         ObjectMapper objectMapper = customMapper();
         return new MongoCustomConversions(List.of(new CompanyMetricsReadConverter(objectMapper),
+                new RegistersReadConverter(objectMapper),
                 new EnumConverters.StringToEnum(),
                 new EnumConverters.EnumToString(),
                 new CompanyMetricsWriteConverter(objectMapper), new OffsetDateTimeReadConverter(),

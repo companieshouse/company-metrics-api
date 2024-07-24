@@ -52,6 +52,7 @@ public class TestData {
         metricsRecalculateApi.setAppointments(false);
         metricsRecalculateApi.setMortgage(true);
         metricsRecalculateApi.setPersonsWithSignificantControl(false);
+        metricsRecalculateApi.setRegisters(false);
         InternalData internalData = new InternalData();
         internalData.setUpdatedBy("updatedBy");
         metricsRecalculateApi.setInternalData(internalData);
@@ -65,6 +66,7 @@ public class TestData {
         metricsRecalculateApi.setAppointments(false);
         metricsRecalculateApi.setMortgage(false);
         metricsRecalculateApi.setPersonsWithSignificantControl(true);
+        metricsRecalculateApi.setRegisters(false);
         InternalData internalData = new InternalData();
         internalData.setUpdatedBy("updatedBy");
         metricsRecalculateApi.setInternalData(internalData);
@@ -78,6 +80,21 @@ public class TestData {
         metricsRecalculateApi.setAppointments(true);
         metricsRecalculateApi.setMortgage(false);
         metricsRecalculateApi.setPersonsWithSignificantControl(false);
+        metricsRecalculateApi.setRegisters(false);
+        InternalData internalData = new InternalData();
+        internalData.setUpdatedBy("updatedBy");
+        metricsRecalculateApi.setInternalData(internalData);
+
+        return metricsRecalculateApi;
+    }
+
+    public MetricsRecalculateApi populateMetricsRecalculateApiForRegisters() {
+
+        MetricsRecalculateApi metricsRecalculateApi = new MetricsRecalculateApi();
+        metricsRecalculateApi.setAppointments(false);
+        metricsRecalculateApi.setMortgage(false);
+        metricsRecalculateApi.setPersonsWithSignificantControl(false);
+        metricsRecalculateApi.setRegisters(true);
         InternalData internalData = new InternalData();
         internalData.setUpdatedBy("updatedBy");
         metricsRecalculateApi.setInternalData(internalData);

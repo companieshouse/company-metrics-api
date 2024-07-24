@@ -11,7 +11,6 @@ public class DateTimeFormatter {
 
     static java.time.format.DateTimeFormatter writeDateTimeFormatter =
             java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
     static java.time.format.DateTimeFormatter readDateTimeFormatter =
             java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

@@ -27,6 +27,9 @@ mongodb:
   pscs:
     collection:
       name: ${PSCS_COLLECTION_NAME:delta_company_pscs}
+  registers:
+    collection:
+      name: ${REGISTERS_COLLECTION_NAME:company_registers}
 
 spring:
   jackson:
@@ -53,6 +56,10 @@ spring:
         uri: ${MONGODB_PSCS_URL:mongodb://mongo:27017/company_pscs}
         name: company_pscs
         collection: ${PSCS_COLLECTION_NAME:delta_company_pscs}
+      registers:
+        uri: ${MONGODB_REGISTERS_URL:mongodb://mongo:27017/company_registers}
+        name: company_registers
+        collection: ${REGISTERS_COLLECTION_NAME:company_registers}
 
 management:
   endpoints:

@@ -2,6 +2,7 @@ package uk.gov.companieshouse.company.metrics.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -11,6 +12,7 @@ import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
 import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.api.metrics.PscApi;
+import uk.gov.companieshouse.api.metrics.RegistersApi;
 import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
@@ -27,6 +29,7 @@ public class CompanyMetricsService {
     private final ChargesCountService chargesCountService;
     private final AppointmentsCountService appointmentsCountService;
     private final PscCountService pscCountService;
+    private final RegisterMetricsService registerMetricsService;
     private final CompanyMetricsRepository companyMetricsRepository;
 
     /**
@@ -36,11 +39,13 @@ public class CompanyMetricsService {
                                  ChargesCountService chargesCountService,
                                  AppointmentsCountService appointmentsCountService,
                                  PscCountService pscCountService,
+                                 RegisterMetricsService registerMetricsService,
                                  CompanyMetricsRepository companyMetricsRepository) {
         this.logger = logger;
         this.chargesCountService = chargesCountService;
         this.appointmentsCountService = appointmentsCountService;
         this.pscCountService = pscCountService;
+        this.registerMetricsService = registerMetricsService;
         this.companyMetricsRepository = companyMetricsRepository;
     }
 
@@ -87,9 +92,16 @@ public class CompanyMetricsService {
 
         }
 
+        if (BooleanUtils.isTrue(recalculateRequest.getRegisters())) {
+
+            recalculateRegisters(companyNumber, metrics);
+
+        }
+
         if (!BooleanUtils.isTrue(recalculateRequest.getPersonsWithSignificantControl())
                 && !BooleanUtils.isTrue(recalculateRequest.getMortgage())
-                && !BooleanUtils.isTrue(recalculateRequest.getAppointments())) {
+                && !BooleanUtils.isTrue(recalculateRequest.getAppointments())
+                && !BooleanUtils.isTrue(recalculateRequest.getRegisters())) {
             throw new IllegalArgumentException(String.format(
                     "Unable to process payload with context id %s and company number %s",
                     contextId, companyNumber));
@@ -135,6 +147,18 @@ public class CompanyMetricsService {
     private void recalculateCharges(String companyNumber, MetricsApi metrics) {
         MortgageApi mortgages = chargesCountService.recalculateMetrics(companyNumber);
         metrics.setMortgage(mortgages.getTotalCount() > 0 ? mortgages : null);  //NOSONAR
+    }
+
+    private void recalculateRegisters(String companyNumber, MetricsApi metrics) {
+        RegistersApi registerMetrics = registerMetricsService.recalculateMetrics(companyNumber);
+
+        if (registerMetrics != null) {
+            logger.info("Company register metrics set", DataMapHolder.getLogMap());
+            metrics.setRegisters(registerMetrics);  //NOSONAR
+            return;
+        }
+        logger.info("Company register metrics unset", DataMapHolder.getLogMap());
+        metrics.setRegisters(null);  //NOSONAR
     }
 
     private MetricsApi cleanupMetricsContent(MetricsApi metrics) {
