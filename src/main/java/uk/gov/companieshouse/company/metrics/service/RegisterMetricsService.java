@@ -5,6 +5,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.RegisterApi;
 import uk.gov.companieshouse.api.metrics.RegistersApi;
@@ -43,84 +45,23 @@ public class RegisterMetricsService {
 
         RegistersApi registerMetrics = new RegistersApi();
 
-        boolean registerDataFound = false;
-        if (registers.getDirectors() != null
-                && !registers.getDirectors().getItems().isEmpty()) {
-            RegisteredItems currentRegister = registers.getDirectors()
-                    .getItems().get(0);
-            RegisterApi register = new RegisterApi();
-            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
-            register.setMovedOn(convertMovedOn(currentRegister));
-            registerMetrics.setDirectors(register);
-            registerDataFound = true;
-        }
+        MutableBoolean registerDataFound = new MutableBoolean(false);
 
-        if (registers.getSecretaries() != null
-                && !registers.getSecretaries().getItems().isEmpty()) {
-            RegisteredItems currentRegister = registers.getSecretaries()
-                    .getItems().get(0);
-            RegisterApi register = new RegisterApi();
-            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
-            register.setMovedOn(convertMovedOn(currentRegister));
-            registerMetrics.setSecretaries(register);
-            registerDataFound = true;
-        }
+        mapDirectorsRegister(registers, registerMetrics, registerDataFound);
 
-        if (registers.getMembers() != null
-                && !registers.getMembers().getItems().isEmpty()) {
-            RegisteredItems currentRegister = registers.getMembers()
-                    .getItems().get(0);
-            RegisterApi register = new RegisterApi();
-            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
-            register.setMovedOn(convertMovedOn(currentRegister));
-            registerMetrics.setMembers(register);
-            registerDataFound = true;
-        }
+        mapSecretariesRegister(registers, registerMetrics, registerDataFound);
 
-        if (registers.getPersonsWithSignificantControl() != null
-                && !registers.getPersonsWithSignificantControl().getItems().isEmpty()) {
-            RegisteredItems currentRegister = registers.getPersonsWithSignificantControl()
-                    .getItems().get(0);
-            RegisterApi register = new RegisterApi();
-            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
-            register.setMovedOn(convertMovedOn(currentRegister));
-            registerMetrics.setPersonsWithSignificantControl(register);
-            registerDataFound = true;
-        }
+        mapMembersRegister(registers, registerMetrics, registerDataFound);
 
-        if (registers.getUsualResidentialAddress() != null
-                && !registers.getUsualResidentialAddress().getItems().isEmpty()) {
-            RegisteredItems currentRegister = registers.getUsualResidentialAddress()
-                    .getItems().get(0);
-            RegisterApi register = new RegisterApi();
-            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
-            register.setMovedOn(convertMovedOn(currentRegister));
-            registerMetrics.setUsualResidentialAddress(register);
-            registerDataFound = true;
-        }
+        mapPscRegister(registers, registerMetrics, registerDataFound);
 
-        if (registers.getLlpMembers() != null
-                && !registers.getLlpMembers().getItems().isEmpty()) {
-            RegisteredItems currentRegister = registers.getLlpMembers().getItems().get(0);
-            RegisterApi register = new RegisterApi();
-            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
-            register.setMovedOn(convertMovedOn(currentRegister));
-            registerMetrics.setLlpMembers(register);
-            registerDataFound = true;
-        }
+        mapUraRegister(registers, registerMetrics, registerDataFound);
 
-        if (registers.getLlpUsualResidentialAddress() != null
-                && !registers.getLlpUsualResidentialAddress().getItems().isEmpty()) {
-            RegisteredItems currentRegister = registers.getLlpUsualResidentialAddress()
-                    .getItems().get(0);
-            RegisterApi register = new RegisterApi();
-            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
-            register.setMovedOn(convertMovedOn(currentRegister));
-            registerMetrics.setLlpUsualResidentialAddress(register);
-            registerDataFound = true;
-        }
+        mapLlpMembersRegister(registers, registerMetrics, registerDataFound);
 
-        if (registerDataFound) {
+        mapLlpUraRegister(registers, registerMetrics, registerDataFound);
+
+        if (registerDataFound.isTrue()) {
             logger.trace(String.format("Recalculating registers metrics registerMetrics=[%s]",
                     registerMetrics), DataMapHolder.getLogMap());
             return registerMetrics;
@@ -130,7 +71,104 @@ public class RegisterMetricsService {
         return null;
     }
 
-    private static OffsetDateTime convertMovedOn(RegisteredItems currentRegister) {
+    private void mapDirectorsRegister(Registers registers, RegistersApi registerMetrics,
+                                      MutableBoolean registerDataFound) {
+        if (registers.getDirectors() != null
+                && !registers.getDirectors().getItems().isEmpty()) {
+            RegisteredItems currentRegister = registers.getDirectors()
+                    .getItems().get(0);
+            RegisterApi register = new RegisterApi();
+            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
+            register.setMovedOn(convertMovedOn(currentRegister));
+            registerMetrics.setDirectors(register);
+            registerDataFound.setTrue();
+        }
+    }
+
+    private void mapSecretariesRegister(Registers registers, RegistersApi registerMetrics,
+                                        MutableBoolean registerDataFound) {
+        if (registers.getSecretaries() != null
+                && !registers.getSecretaries().getItems().isEmpty()) {
+            RegisteredItems currentRegister = registers.getSecretaries()
+                    .getItems().get(0);
+            RegisterApi register = new RegisterApi();
+            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
+            register.setMovedOn(convertMovedOn(currentRegister));
+            registerMetrics.setSecretaries(register);
+            registerDataFound.setTrue();
+        }
+    }
+
+    private void mapMembersRegister(Registers registers, RegistersApi registerMetrics,
+                                    MutableBoolean registerDataFound) {
+        if (registers.getMembers() != null
+                && !registers.getMembers().getItems().isEmpty()) {
+            RegisteredItems currentRegister = registers.getMembers()
+                    .getItems().get(0);
+            RegisterApi register = new RegisterApi();
+            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
+            register.setMovedOn(convertMovedOn(currentRegister));
+            registerMetrics.setMembers(register);
+            registerDataFound.setTrue();
+        }
+    }
+
+    private void mapPscRegister(Registers registers, RegistersApi registerMetrics,
+                                MutableBoolean registerDataFound) {
+        if (registers.getPersonsWithSignificantControl() != null
+                && !registers.getPersonsWithSignificantControl().getItems().isEmpty()) {
+            RegisteredItems currentRegister = registers.getPersonsWithSignificantControl()
+                    .getItems().get(0);
+            RegisterApi register = new RegisterApi();
+            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
+            register.setMovedOn(convertMovedOn(currentRegister));
+            registerMetrics.setPersonsWithSignificantControl(register);
+            registerDataFound.setTrue();
+        }
+    }
+
+    private void mapUraRegister(Registers registers, RegistersApi registerMetrics,
+                                MutableBoolean registerDataFound) {
+        if (registers.getUsualResidentialAddress() != null
+                && !registers.getUsualResidentialAddress().getItems().isEmpty()) {
+            RegisteredItems currentRegister = registers.getUsualResidentialAddress()
+                    .getItems().get(0);
+            RegisterApi register = new RegisterApi();
+            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
+            register.setMovedOn(convertMovedOn(currentRegister));
+            registerMetrics.setUsualResidentialAddress(register);
+            registerDataFound.setTrue();
+        }
+    }
+
+    private void mapLlpMembersRegister(Registers registers, RegistersApi registerMetrics,
+                                       MutableBoolean registerDataFound) {
+        if (registers.getLlpMembers() != null
+                && !registers.getLlpMembers().getItems().isEmpty()) {
+            RegisteredItems currentRegister = registers.getLlpMembers().getItems().get(0);
+            RegisterApi register = new RegisterApi();
+            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
+            register.setMovedOn(convertMovedOn(currentRegister));
+            registerMetrics.setLlpMembers(register);
+            registerDataFound.setTrue();
+        }
+    }
+
+    private void mapLlpUraRegister(Registers registers, RegistersApi registerMetrics,
+                                   MutableBoolean registerDataFound) {
+        if (registers.getLlpUsualResidentialAddress() != null
+                && !registers.getLlpUsualResidentialAddress().getItems().isEmpty()) {
+            RegisteredItems currentRegister = registers.getLlpUsualResidentialAddress()
+                    .getItems().get(0);
+            RegisterApi register = new RegisterApi();
+            register.setRegisterMovedTo(currentRegister.getRegisterMovedTo().getValue());
+            register.setMovedOn(convertMovedOn(currentRegister));
+            registerMetrics.setLlpUsualResidentialAddress(register);
+            registerDataFound.setTrue();
+        }
+    }
+
+    private OffsetDateTime convertMovedOn(RegisteredItems currentRegister) {
         return OffsetDateTime.of(currentRegister.getMovedOn(), LocalTime.MIDNIGHT, ZoneOffset.UTC);
     }
 
