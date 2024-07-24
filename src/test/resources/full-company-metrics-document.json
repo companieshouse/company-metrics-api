@@ -29,6 +29,18 @@
       "directors" : {
         "register_moved_to" : "public-register",
         "moved_on" : "2022-03-02T11:16:19.000Z"
+      },
+      "secretaries" : {
+        "register_moved_to" : "public-register",
+        "moved_on" : "2022-03-02T11:16:20.000Z"
+      },
+      "members" : {
+        "register_moved_to" : "public-register",
+        "moved_on" : "2022-03-02T11:16:21.000Z"
+      },
+      "usual_residential_address" : {
+        "register_moved_to" : "public-register",
+        "moved_on" : "2022-03-02T11:16:22.000Z"
       }
     }
   },

@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.metrics.AppointmentsApi;
-import uk.gov.companieshouse.api.metrics.MetricsApi;
-import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
-import uk.gov.companieshouse.api.metrics.MortgageApi;
-import uk.gov.companieshouse.api.metrics.PscApi;
+import uk.gov.companieshouse.api.metrics.*;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
 import uk.gov.companieshouse.company.metrics.model.Updated;
@@ -71,6 +69,11 @@ class CompanyMetricsServiceTest {
             .satisfiedCount(1)
             .partSatisfiedCount(0);
 
+    private static final RegistersApi NO_REGISTERS = new RegistersApi();
+    private static final RegistersApi REGISTERS = new RegistersApi().directors(
+            new RegisterApi().registerMovedTo("public-register").movedOn(
+                    OffsetDateTime.parse("2024-01-01T00:00Z")));
+
     @Mock
     private CompanyMetricsRepository companyMetricsRepository;
 
@@ -82,6 +85,9 @@ class CompanyMetricsServiceTest {
 
     @Mock
     private PscCountService pscsCountService;
+
+    @Mock
+    private RegisterMetricsService registerMetricsService;
 
     @Mock
     private Logger logger;
