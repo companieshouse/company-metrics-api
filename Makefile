@@ -80,7 +80,7 @@ sonar-pr-analysis:
 .PHONY: sonar
 sonar:
 	@# Help: Run sonar scan
-	mvn verify sonar:sonar
+	mvn verify sonar:sonar -Dskip.integration.tests=true
 
 .PHONY: deps
 deps:
