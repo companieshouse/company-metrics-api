@@ -67,4 +67,12 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
                 .map(s -> s.split(","))
                 .orElse(new String[]{});
     }
+
+    @Override
+    protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
+                                    jakarta.servlet.http.HttpServletResponse response,
+                                    jakarta.servlet.FilterChain filterChain)
+            throws jakarta.servlet.ServletException, IOException {
+
+    }
 }
