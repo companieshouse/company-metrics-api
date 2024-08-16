@@ -21,6 +21,40 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
+                                    jakarta.servlet.http.HttpServletResponse response,
+                                    jakarta.servlet.FilterChain filterChain) throws
+            jakarta.servlet.ServletException, IOException {
+        String ericIdentity = request.getHeader("ERIC-Identity");
+
+        if (StringUtils.isBlank(ericIdentity)) {
+            logger.error("Request received without eric identity", DataMapHolder.getLogMap());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String ericIdentityType = request.getHeader("ERIC-Identity-Type");
+
+        if (!("key".equalsIgnoreCase(ericIdentityType)
+                || ("oauth2".equalsIgnoreCase(ericIdentityType)))) {
+            logger.error("Request received without correct eric identity type",
+                    DataMapHolder.getLogMap());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        if (!isKeyAuthorised((HttpServletRequest) request, ericIdentityType)) {
+            logger.info("Supplied key does not have sufficient privilege for the action",
+                    DataMapHolder.getLogMap());
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        filterChain.doFilter(request,response);
+
+    }
+
+    /*@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
@@ -50,7 +84,7 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request,response);
-    }
+    }*/
 
     private boolean isKeyAuthorised(HttpServletRequest request, String ericIdentityType) {
         String[] privileges = getApiKeyPrivileges(request);
@@ -68,11 +102,5 @@ public class EricTokenAuthenticationFilter extends OncePerRequestFilter {
                 .orElse(new String[]{});
     }
 
-    @Override
-    protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
-                                    jakarta.servlet.http.HttpServletResponse response,
-                                    jakarta.servlet.FilterChain filterChain)
-            throws jakarta.servlet.ServletException, IOException {
 
-    }
 }
