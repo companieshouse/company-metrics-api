@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.company.metrics.config;
+git package uk.gov.companieshouse.company.metrics.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
