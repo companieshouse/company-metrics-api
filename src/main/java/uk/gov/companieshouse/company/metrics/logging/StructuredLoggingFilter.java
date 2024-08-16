@@ -24,11 +24,13 @@ public class StructuredLoggingFilter extends GenericFilterBean
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(jakarta.servlet.ServletRequest servletRequest,
+                         jakarta.servlet.ServletResponse servletResponse,
+                         jakarta.servlet.FilterChain filterChain)
+            throws IOException, jakarta.servlet.ServletException {
 
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse resp = (HttpServletResponse) response;
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse resp = (HttpServletResponse) servletResponse;
 
         try {
             logStartRequestProcessing((jakarta.servlet.http.HttpServletRequest) req, log);
@@ -37,7 +39,7 @@ public class StructuredLoggingFilter extends GenericFilterBean
                     .ofNullable(req.getHeader(LogContextProperties.REQUEST_ID.value()))
                     .orElse(UUID.randomUUID().toString()));
 
-            chain.doFilter(request, response);
+            filterChain.doFilter(servletRequest, servletResponse);
 
         } finally {
             logEndRequestProcessing((jakarta.servlet.http.HttpServletRequest) req,
@@ -46,11 +48,4 @@ public class StructuredLoggingFilter extends GenericFilterBean
         }
     }
 
-    @Override
-    public void doFilter(jakarta.servlet.ServletRequest servletRequest,
-                         jakarta.servlet.ServletResponse servletResponse,
-                         jakarta.servlet.FilterChain filterChain)
-            throws IOException, jakarta.servlet.ServletException {
-
-    }
 }
