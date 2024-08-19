@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -22,7 +23,7 @@ public class LocalDateDeSerializer extends JsonDeserializer<LocalDate> {
             var dateJsonNode = jsonNode.get("$date");
             if (dateJsonNode == null) {
                 return DateTimeFormatter.parse(jsonNode.textValue());
-            } else if (dateJsonNode.isTextual()) {
+            } else if (dateJsonNode.getNodeType() == JsonNodeType.STRING) {
                 var dateStr = dateJsonNode.textValue();
                 return DateTimeFormatter.parse(dateStr);
             } else {
