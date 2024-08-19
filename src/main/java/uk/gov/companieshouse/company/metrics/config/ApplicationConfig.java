@@ -70,40 +70,4 @@ public class ApplicationConfig {
         return web -> web.ignoring().requestMatchers("/company-metrics-api/healthcheck");
     }
 
-    /**
-     * mongoCustomConversions.
-     *
-     * @return MongoCustomConversions.
-     */
-    @Bean
-    public MongoCustomConversions mongoCustomConversions() {
-        var objectMapper = mongoDbObjectMapper();
-        return new MongoCustomConversions(List.of(
-                new CompanyMetricsWriteConverter(objectMapper),
-                new CompanyMetricsReadConverter(objectMapper),
-                new EnumConverters()));
-    }
-
-    /**
-     * Mongo DB Object Mapper.
-     *
-     * @return ObjectMapper.
-     */
-    private ObjectMapper mongoDbObjectMapper() {
-        var objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        var module = new SimpleModule();
-        module.addSerializer(LocalDate.class, new LocalDateSerializer());
-        module.addDeserializer(LocalDate.class, new LocalDateDeSerializer());
-        objectMapper.registerModule(module);
-
-        return objectMapper;
-    }
-
-    @Bean
-    public List<String> externalMethods() {
-        return Arrays.asList(HttpMethod.GET.name());
-    }
 }
