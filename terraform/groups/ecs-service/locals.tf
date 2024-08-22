@@ -8,7 +8,7 @@ locals {
   eric_port                   = "10000"
   docker_repo                 = "company-metrics-api"
   kms_alias                   = "alias/${var.aws_profile}/environment-services-kms"
-  lb_listener_rule_priority   = 41
+  lb_listener_rule_priority   = 144
   lb_listener_paths           = [
     "/company-metrics-api/healthcheck", "/company/*/metrics/*", "/company/*/metrics"
   ]
@@ -20,9 +20,9 @@ locals {
   use_set_environment_files   = var.use_set_environment_files
   application_subnet_ids      = data.aws_subnets.application.ids
 
-  stack_secrets              = jsondecode(data.vault_generic_secret.stack_secrets.data_json)
   application_subnet_pattern = local.stack_secrets["application_subnet_pattern"]
 
+  stack_secrets              = jsondecode(data.vault_generic_secret.stack_secrets.data_json)
   service_secrets            = jsondecode(data.vault_generic_secret.service_secrets.data_json)
 
   # create a map of secret name => secret arn to pass into ecs service module
@@ -42,9 +42,8 @@ locals {
   ])
 
   ssm_global_version_map = [
-    for sec in data.aws_ssm_parameter.global_secret : {
-      name = "GLOBAL_${var.ssm_version_prefix}${replace(upper(basename(sec.name)), "-", "_")}", value = sec.version
-    }
+    for sec in data.aws_ssm_parameter.global_secret :
+      { "name"  = "GLOBAL_${var.ssm_version_prefix}${replace(upper(basename(sec.name)), "-", "_")}", "value" = sec.version }
   ]
 
   service_secrets_arn_map = {

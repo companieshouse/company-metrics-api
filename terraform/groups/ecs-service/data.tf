@@ -1,4 +1,3 @@
-
 data "vault_generic_secret" "stack_secrets" {
   path = "applications/${var.aws_profile}/${var.environment}/${local.stack_name}-stack"
 }
@@ -26,6 +25,13 @@ data "aws_subnets" "application" {
   }
 }
 
+data "aws_ecs_cluster" "ecs_cluster" {
+  cluster_name = "${local.name_prefix}-cluster"
+}
+data "aws_iam_role" "ecs_cluster_iam_role" {
+  name = "${local.name_prefix}-ecs-task-execution-role"
+}
+
 data "aws_lb" "service_lb" {
   name = "${var.environment}-chs-apichgovuk"
 }
@@ -42,13 +48,6 @@ data "aws_lb" "secondary_lb" {
 data "aws_lb_listener" "secondary_lb_listener" {
   load_balancer_arn = data.aws_lb.secondary_lb.arn
   port = 443
-}
-
-data "aws_ecs_cluster" "ecs_cluster" {
-  cluster_name = "${local.name_prefix}-cluster"
-}
-data "aws_iam_role" "ecs_cluster_iam_role" {
-  name = "${local.name_prefix}-ecs-task-execution-role"
 }
 
 # retrieve all secrets for this stack using the stack path
