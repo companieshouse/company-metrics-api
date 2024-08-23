@@ -9,7 +9,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import uk.gov.companieshouse.api.charges.ChargeApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
@@ -123,7 +126,9 @@ public class CompanyMetricsApiSteps {
     public void the_get_call_response_body_should_match_file(String jsonFileName)
             throws IOException {
 
-        File file = new ClassPathResource("/json/output/" + jsonFileName + ".json").getFile();
+        String file = FileCopyUtils.copyToString(new InputStreamReader(
+                new FileInputStream("src/itest/resources/json/output/" + jsonFileName + ".json")));
+
         MetricsApi expected = objectMapper.readValue(file, MetricsApi.class);
 
         MetricsApi actual = (MetricsApi) CucumberContext.CONTEXT.get("getResponseBody");

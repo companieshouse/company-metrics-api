@@ -24,24 +24,28 @@ public class StructuredLoggingFilter extends GenericFilterBean
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(jakarta.servlet.ServletRequest servletRequest,
+                         jakarta.servlet.ServletResponse servletResponse,
+                         jakarta.servlet.FilterChain filterChain)
+            throws IOException, jakarta.servlet.ServletException {
 
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse resp = (HttpServletResponse) response;
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse resp = (HttpServletResponse) servletResponse;
 
         try {
-            logStartRequestProcessing(req, log);
+            logStartRequestProcessing((jakarta.servlet.http.HttpServletRequest) req, log);
 
             DataMapHolder.initialise(Optional
                     .ofNullable(req.getHeader(LogContextProperties.REQUEST_ID.value()))
                     .orElse(UUID.randomUUID().toString()));
 
-            chain.doFilter(request, response);
+            filterChain.doFilter(servletRequest, servletResponse);
 
         } finally {
-            logEndRequestProcessing(req, resp, log);
+            logEndRequestProcessing((jakarta.servlet.http.HttpServletRequest) req,
+                    (jakarta.servlet.http.HttpServletResponse) resp, log);
             DataMapHolder.clear();
         }
     }
+
 }

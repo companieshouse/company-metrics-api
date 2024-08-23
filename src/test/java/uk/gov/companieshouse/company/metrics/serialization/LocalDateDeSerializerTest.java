@@ -60,7 +60,6 @@ class LocalDateDeSerializerTest {
     @Test
     void testDeserializeJsonNodeLongValue() throws IOException {
         when(jsonNode.get(any())).thenReturn(jsonNode);
-        when(jsonNode.getNodeType()).thenReturn(JsonNodeType.OBJECT);
         when(jsonNode.asLong()).thenReturn(1435308155000L);
         LocalDate localDate = deserializer.deserialize(jsonParser, deserializationContext);
 
