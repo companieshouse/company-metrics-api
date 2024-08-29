@@ -9,9 +9,7 @@ locals {
   docker_repo                 = "company-metrics-api"
   kms_alias                   = "alias/${var.aws_profile}/environment-services-kms"
   lb_listener_rule_priority   = 144
-  lb_listener_paths           = [
-    "/company-metrics-api/healthcheck", "/company/*/metrics/*", "/company/*/metrics"
-  ]
+  lb_listener_paths          = ["/company-exemptions/*/internal", "/company-exemptions/healthcheck", "/company/*/exemptions"]
   healthcheck_path            = "/company-metrics-api/healthcheck" #healthcheck path for company-metrics-api
   healthcheck_matcher         = "200"
   vpc_name                    = local.stack_secrets["vpc_name"]
