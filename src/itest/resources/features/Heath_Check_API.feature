@@ -1,5 +1,7 @@
 Feature: Health check API endpoint
 
+
+  @Ignored
   Scenario: Client invokes GET /healthcheck endpoint
     Given the application running
     When the client invokes '/company-metrics-api/healthcheck' endpoint

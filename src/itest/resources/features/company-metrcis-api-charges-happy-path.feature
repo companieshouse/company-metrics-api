@@ -2,7 +2,6 @@ Feature: Process company charges metrics recalculate
 
   Scenario Outline: retrieve company metrics document successfully
 
-    Given Company metrics api rest service is running
     And the company metrics exists for "<id>"
     When I send GET request with company number "<companyNumber>"
     Then I should receive 200 status code
@@ -15,7 +14,6 @@ Feature: Process company charges metrics recalculate
 
   Scenario Outline: recalculate charges and insert company metrics db successfully
 
-    Given Company metrics api rest service is running
     And no company metrics exists for "<id>"
     And the company charges entries exists for "<companyNumber>"
     When I send POST request with company number "<companyNumber>" to update charges metrics
@@ -29,7 +27,6 @@ Feature: Process company charges metrics recalculate
 
   Scenario Outline: recalculate charges and update company metrics db successfully
 
-    Given Company metrics api rest service is running
     And the company metrics exists for "<companyNumber>"
     And multiple company charges entries exists for "<companyNumber>"
     When I send POST request with company number "<companyNumber>" to update charges metrics
@@ -42,7 +39,6 @@ Feature: Process company charges metrics recalculate
 
   Scenario Outline: recalculate charges receive 400 when mortgage flag is null in request
 
-    Given Company metrics api rest service is running
     And no company metrics exists for "<id>"
     And the company charges entries exists for "<companyNumber>"
     When I send POST request with company number "<companyNumber>" and mortgage flag null in request
