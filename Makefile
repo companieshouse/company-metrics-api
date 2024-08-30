@@ -45,12 +45,10 @@ test: test-integration test-unit
 
 .PHONY: test-unit
 test-unit:
-    @# Help: Run unit tests
 	mvn test -Dskip.integration.tests=true
 
 .PHONY: test-integration
 test-integration:
-    @# Help: Run integration tests
 	mvn integration-test verify -Dskip.unit.tests=true failsafe:verify
 
 .PHONY: run-local
