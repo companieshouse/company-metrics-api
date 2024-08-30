@@ -35,6 +35,11 @@ build:
 	cp ./target/$(artifact_name)-$(version).jar ./$(artifact_name).jar
 
 .PHONY: test
+security-check:
+	mvn org.owasp:dependency-check-maven:update-only
+	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=4 -DassemblyAnalyzerEnabled=false
+
+.PHONY: build
 test: test-integration test-unit
 	@# Help: Run all test-* targets (convenience method for developers)
 
