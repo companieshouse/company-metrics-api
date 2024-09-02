@@ -16,4 +16,5 @@ provider "vault" {
       password = var.hashicorp_vault_password
     }
   }
+
 }
