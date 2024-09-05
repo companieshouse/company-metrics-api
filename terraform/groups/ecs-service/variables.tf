@@ -30,7 +30,7 @@ variable "docker_registry" {
 variable "desired_task_count" {
   type = number
   description = "The desired ECS task count for this service"
-  default = 1 # defaulted low for dev environments, override for production
+  default = 5 # defaulted low for dev environments, override for production
 }
 variable "required_cpus" {
   type = number
@@ -56,7 +56,13 @@ variable "eric_memory" {
 variable "max_task_count" {
   type        = number
   description = "The maximum number of tasks for this service."
-  default     = 1
+  default     = 10
+}
+
+variable "min_task_count" {
+  type        = number
+  description = "The minimum number of tasks for this service."
+  default     = 5
 }
 
 variable "use_fargate" {
