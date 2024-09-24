@@ -9,7 +9,8 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/itest/resources/features",
         plugin = {"pretty", "json:target/cucumber-report.json"},
-        glue = {"uk.gov.companieshouse.company.metrics"}
+        glue = {"uk.gov.companieshouse.company.metrics"},
+        tags = "not @Ignored"
 )
 @CucumberContextConfiguration
 public class CucumberFeaturesRunnerITest extends AbstractIntegrationTest {
