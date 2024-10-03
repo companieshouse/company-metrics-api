@@ -118,7 +118,8 @@ public class TestData {
         Updated updated =
                 createUpdated("source-metrics-updated-body-1.json");
 
-        return new CompanyMetricsDocument(metricsApi, updated);
+        return new CompanyMetricsDocument(metricsApi, updated)
+                .version(1L);
     }
 
     public CompanyMetricsDocument populateFullCompanyMetricsDocument () throws IOException {
