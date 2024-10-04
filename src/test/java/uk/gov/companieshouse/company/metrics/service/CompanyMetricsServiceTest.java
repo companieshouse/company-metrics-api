@@ -17,9 +17,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
@@ -29,6 +31,7 @@ import uk.gov.companieshouse.api.metrics.RegisterApi;
 import uk.gov.companieshouse.api.metrics.RegistersApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.TestData;
+import uk.gov.companieshouse.company.metrics.model.UnversionedCompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
@@ -97,8 +100,13 @@ class CompanyMetricsServiceTest {
     @Mock
     private Logger logger;
 
-    private final ArgumentCaptor<CompanyMetricsDocument> companyMetricsDocumentCaptor = ArgumentCaptor.forClass(
-            CompanyMetricsDocument.class);
+    @Mock
+    private MongoTemplate mongoTemplate;
+
+    @Captor
+    private ArgumentCaptor<CompanyMetricsDocument> companyMetricsDocumentCaptor;
+    @Captor
+    private ArgumentCaptor<UnversionedCompanyMetricsDocument> unVersionedCompanyMetricsDocumentCaptor;
 
     @InjectMocks
     private CompanyMetricsService companyMetricsService;
@@ -273,7 +281,6 @@ class CompanyMetricsServiceTest {
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
 
-
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
         Updated updated = companyMetricsDocument.getUpdated();
@@ -284,8 +291,6 @@ class CompanyMetricsServiceTest {
         assertThat(metricsApi.getMortgage()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotEqualTo(initialETTag);
     }
-
-
 
     @Test
     @DisplayName("Should set charges metrics on a new document")
@@ -303,13 +308,13 @@ class CompanyMetricsServiceTest {
         verify(pscsCountService, never()).recalculateMetrics(any());
 
 
-        verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
+        verify(mongoTemplate).save(unVersionedCompanyMetricsDocumentCaptor.capture());
 
-        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
+        Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
         assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
 
-        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        MetricsApi metricsApi = unVersionedCompanyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getMortgage()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
     }
@@ -330,13 +335,13 @@ class CompanyMetricsServiceTest {
         verify(pscsCountService, never()).recalculateMetrics(any());
 
 
-        verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
+        verify(mongoTemplate).save(unVersionedCompanyMetricsDocumentCaptor.capture());
 
-        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
+        Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
         assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
 
-        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        MetricsApi metricsApi = unVersionedCompanyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getCounts()).isNotNull();
         assertThat(metricsApi.getCounts().getAppointments()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
@@ -358,13 +363,13 @@ class CompanyMetricsServiceTest {
         verify(appointmentsCountService, never()).recalculateMetrics(any());
 
 
-        verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
+        verify(mongoTemplate).save(unVersionedCompanyMetricsDocumentCaptor.capture());
 
-        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
+        Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
         assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
 
-        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        MetricsApi metricsApi = unVersionedCompanyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getCounts()).isNotNull();
         assertThat(metricsApi.getCounts().getPersonsWithSignificantControl()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
@@ -377,6 +382,7 @@ class CompanyMetricsServiceTest {
         companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
         when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(APPOINTMENTS);
+        when(companyMetricsRepository.findById(any())).thenReturn(Optional.of(companyMetricsDocument));
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForAppointments());
@@ -399,12 +405,42 @@ class CompanyMetricsServiceTest {
     }
 
     @Test
+    @DisplayName("Should save UnversionedCompanyMetricsDocument when updating legacy document")
+    void shouldSaveUnversionedCompanyMetricsDocumentWhenUpdatingLegacyDocument() throws IOException {
+        CompanyMetricsDocument companyMetricsDocument = testData.populateUnversionedFullCompanyMetricsDocument();
+        companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
+        when(appointmentsCountService.recalculateMetrics(any()))
+                .thenReturn(APPOINTMENTS);
+        when(companyMetricsRepository.findById(any())).thenReturn(Optional.of(companyMetricsDocument));
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForAppointments());
+
+        verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
+        verify(chargesCountService, never()).recalculateMetrics(any());
+        verify(pscsCountService, never()).recalculateMetrics(any());
+
+        verify(mongoTemplate).save(unVersionedCompanyMetricsDocumentCaptor.capture());
+        verify(companyMetricsRepository, never()).save(any());
+
+        Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
+        assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
+        assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
+
+        MetricsApi metricsApi = unVersionedCompanyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        assertThat(metricsApi.getCounts()).isNotNull();
+        assertThat(metricsApi.getCounts().getAppointments()).isNotNull();
+        assertThat(metricsApi.getEtag()).isNotNull();
+    }
+
+    @Test
     @DisplayName("Should set pscs metrics on a document without pscs counts")
     void shouldSetPscsMetricsOnDocumentWithoutPscs() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
         companyMetricsDocument.getCompanyMetrics().getCounts().setPersonsWithSignificantControl(null);
         when(pscsCountService.recalculateMetrics(any()))
                 .thenReturn(PSCS);
+        when(companyMetricsRepository.findById(any())).thenReturn(Optional.of(companyMetricsDocument));
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
                 testData.populateMetricsRecalculateApiForPscs());
@@ -444,7 +480,6 @@ class CompanyMetricsServiceTest {
         verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
-
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 

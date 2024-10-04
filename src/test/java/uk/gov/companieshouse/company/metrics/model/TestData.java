@@ -122,8 +122,13 @@ public class TestData {
                 .version(1L);
     }
 
-    public CompanyMetricsDocument populateFullCompanyMetricsDocument () throws IOException {
+    public CompanyMetricsDocument populateUnversionedFullCompanyMetricsDocument () throws IOException {
         String content = loadTestDataFile("full-company-metrics-document.json");
         return getObjectMapper().readValue(content, CompanyMetricsDocument.class);
+    }
+
+    public CompanyMetricsDocument populateFullCompanyMetricsDocument () throws IOException {
+        return populateUnversionedFullCompanyMetricsDocument()
+                .version(1L);
     }
 }

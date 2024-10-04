@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
@@ -15,6 +16,7 @@ import uk.gov.companieshouse.api.metrics.PscApi;
 import uk.gov.companieshouse.api.metrics.RegistersApi;
 import uk.gov.companieshouse.company.metrics.logging.DataMapHolder;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
+import uk.gov.companieshouse.company.metrics.model.UnversionedCompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.logging.Logger;
@@ -31,22 +33,25 @@ public class CompanyMetricsService {
     private final PscCountService pscCountService;
     private final RegisterMetricsService registerMetricsService;
     private final CompanyMetricsRepository companyMetricsRepository;
+    private final MongoTemplate mongoTemplate;
 
     /**
      * Constructor.
      */
     public CompanyMetricsService(Logger logger,
-                                 ChargesCountService chargesCountService,
-                                 AppointmentsCountService appointmentsCountService,
-                                 PscCountService pscCountService,
-                                 RegisterMetricsService registerMetricsService,
-                                 CompanyMetricsRepository companyMetricsRepository) {
+            ChargesCountService chargesCountService,
+            AppointmentsCountService appointmentsCountService,
+            PscCountService pscCountService,
+            RegisterMetricsService registerMetricsService,
+            CompanyMetricsRepository companyMetricsRepository,
+            MongoTemplate mongoTemplate) {
         this.logger = logger;
         this.chargesCountService = chargesCountService;
         this.appointmentsCountService = appointmentsCountService;
         this.pscCountService = pscCountService;
         this.registerMetricsService = registerMetricsService;
         this.companyMetricsRepository = companyMetricsRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     /**
@@ -69,8 +74,7 @@ public class CompanyMetricsService {
     public Optional<CompanyMetricsDocument> recalculateMetrics(String contextId,
             String companyNumber,
             MetricsRecalculateApi recalculateRequest) {
-        CompanyMetricsDocument companyMetricsDocument = getMetrics(companyNumber)
-                .orElseGet(() -> getCompanyMetricsDocument(companyNumber));
+        CompanyMetricsDocument companyMetricsDocument = getCompanyMetricsDocument(companyNumber);
         MetricsApi metrics = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
                 .orElse(new MetricsApi());
 
@@ -121,7 +125,11 @@ public class CompanyMetricsService {
                     updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 
             logger.info("Company metrics updated", DataMapHolder.getLogMap());
-            companyMetricsRepository.save(companyMetricsDocument);
+            if (companyMetricsDocument.getVersion() == null) {
+                mongoTemplate.save(new UnversionedCompanyMetricsDocument(companyMetricsDocument));
+            } else {
+                companyMetricsRepository.save(companyMetricsDocument);
+            }
             return Optional.of(companyMetricsDocument);
         } else {
             companyMetricsRepository.delete(companyMetricsDocument);
