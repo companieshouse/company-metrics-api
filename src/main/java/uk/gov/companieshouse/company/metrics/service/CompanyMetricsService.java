@@ -125,7 +125,10 @@ public class CompanyMetricsService {
                     updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 
             logger.info("Company metrics updated", DataMapHolder.getLogMap());
-            if (companyMetricsDocument.getVersion() == null) {
+            if (companyMetricsDocument.getId() == null) {
+                companyMetricsDocument.setId(companyNumber);
+                mongoTemplate.insert(new UnversionedCompanyMetricsDocument(companyMetricsDocument));
+            } else if (companyMetricsDocument.getVersion() == null) {
                 mongoTemplate.save(new UnversionedCompanyMetricsDocument(companyMetricsDocument));
             } else {
                 companyMetricsRepository.save(companyMetricsDocument);
@@ -195,11 +198,7 @@ public class CompanyMetricsService {
     private CompanyMetricsDocument getCompanyMetricsDocument(String companyNumber) {
 
         CompanyMetricsDocument companyMetricsDocument = getMetrics(companyNumber)
-                .orElseGet(() -> {
-                    CompanyMetricsDocument document = new CompanyMetricsDocument();
-                    document.setId(companyNumber);
-                    return document;
-                });
+                .orElse(new CompanyMetricsDocument());
         MetricsApi metricsApi = Optional.ofNullable(companyMetricsDocument.getCompanyMetrics())
                 .orElse(new MetricsApi());
         companyMetricsDocument.setCompanyMetrics(metricsApi);

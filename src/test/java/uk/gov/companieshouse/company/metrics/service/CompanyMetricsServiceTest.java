@@ -155,6 +155,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should update existing charges metrics")
     void shouldUpdateExistingChargesMetrics() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
@@ -183,6 +184,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should not save charges metrics when no charges in DB")
     void shouldNotSaveChargesMetricsWhenNoChargesInDB() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
@@ -211,6 +213,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should update existing pscs metrics")
     void shouldUpdateExistingPscsMetrics() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
@@ -239,6 +242,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should update existing appointments metrics")
     void shouldUpdateExistingAppointmentsMetrics() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
@@ -251,7 +255,6 @@ class CompanyMetricsServiceTest {
         verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
-
 
         verify(companyMetricsRepository).save(companyMetricsDocument);
 
@@ -268,6 +271,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should not save appointments metrics when no appointments in DB")
     void shouldNotSaveAppointmentsMetricsWhenNoAppointmentsInDB() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         String initialETTag = companyMetricsDocument.getCompanyMetrics().getEtag();
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
@@ -308,7 +312,7 @@ class CompanyMetricsServiceTest {
         verify(pscsCountService, never()).recalculateMetrics(any());
 
 
-        verify(mongoTemplate).save(unVersionedCompanyMetricsDocumentCaptor.capture());
+        verify(mongoTemplate).insert(unVersionedCompanyMetricsDocumentCaptor.capture());
 
         Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
@@ -334,8 +338,7 @@ class CompanyMetricsServiceTest {
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
 
-
-        verify(mongoTemplate).save(unVersionedCompanyMetricsDocumentCaptor.capture());
+        verify(mongoTemplate).insert(unVersionedCompanyMetricsDocumentCaptor.capture());
 
         Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
@@ -362,8 +365,7 @@ class CompanyMetricsServiceTest {
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(appointmentsCountService, never()).recalculateMetrics(any());
 
-
-        verify(mongoTemplate).save(unVersionedCompanyMetricsDocumentCaptor.capture());
+        verify(mongoTemplate).insert(unVersionedCompanyMetricsDocumentCaptor.capture());
 
         Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
@@ -379,6 +381,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should set appointments metrics on a document without appointments counts")
     void shouldSetAppointmentsMetricsOnDocumentWithoutAppointments() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
         when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(APPOINTMENTS);
@@ -390,7 +393,6 @@ class CompanyMetricsServiceTest {
         verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
-
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -408,6 +410,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should save UnversionedCompanyMetricsDocument when updating legacy document")
     void shouldSaveUnversionedCompanyMetricsDocumentWhenUpdatingLegacyDocument() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateUnversionedFullCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
         when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(APPOINTMENTS);
@@ -437,6 +440,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should set pscs metrics on a document without pscs counts")
     void shouldSetPscsMetricsOnDocumentWithoutPscs() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         companyMetricsDocument.getCompanyMetrics().getCounts().setPersonsWithSignificantControl(null);
         when(pscsCountService.recalculateMetrics(any()))
                 .thenReturn(PSCS);
@@ -448,7 +452,6 @@ class CompanyMetricsServiceTest {
         verify(pscsCountService).recalculateMetrics(COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(appointmentsCountService, never()).recalculateMetrics(any());
-
 
         verify(companyMetricsRepository).save(companyMetricsDocumentCaptor.capture());
 
@@ -466,6 +469,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should clean-up metrics document when count field has no data")
     void shouldCleanUpMetricsDocumentWhenCountsHasNoData() throws IOException {
         CompanyMetricsDocument companyMetricsDocument = testData.populateFullCompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         companyMetricsDocument.getCompanyMetrics().getCounts().setAppointments(null);
         companyMetricsDocument.getCompanyMetrics().getCounts().setPersonsWithSignificantControl(null);
         doReturn(Optional.of(companyMetricsDocument))
@@ -496,6 +500,7 @@ class CompanyMetricsServiceTest {
     @DisplayName("Should delete metrics document with no metrics data")
     void shouldDeleteMetricsDocumentWithNoMetricsData() {
         CompanyMetricsDocument companyMetricsDocument = new CompanyMetricsDocument();
+        companyMetricsDocument.setId(COMPANY_NUMBER);
         doReturn(Optional.of(companyMetricsDocument))
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
 
