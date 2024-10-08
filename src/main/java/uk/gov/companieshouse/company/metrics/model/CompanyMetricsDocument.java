@@ -1,68 +1,26 @@
 package uk.gov.companieshouse.company.metrics.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.annotation.Version;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 
-@Document(collection = "#{@environment.getProperty('mongodb.company-metrics.collection.name')}")
-public class CompanyMetricsDocument {
+public class CompanyMetricsDocument extends BaseCompanyMetricsDocument {
 
-    @Id
-    @Field("_id")
-    private String id;
+    @Version
+    private Long version;
 
-    @Field("data")
-    @JsonProperty("data")
-    private MetricsApi companyMetrics;
-
-    private Updated updated;
-
-    /**
-     * Constructor taking in MetricsApi and Updated objects.
-     */
-    public CompanyMetricsDocument(MetricsApi companyMetrics, Updated updated) {
-
-        this.companyMetrics = companyMetrics;
-        this.updated = updated;
-    }
-
-    /**
-     * Constructor.
-     */
     public CompanyMetricsDocument() {
-        this.companyMetrics = null;
-        this.updated = null;
     }
 
-    public String getId() {
-        return id;
+    public CompanyMetricsDocument(MetricsApi companyMetrics, Updated updated) {
+        super(companyMetrics, updated);
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public Long getVersion() {
+        return version;
     }
 
-    public MetricsApi getCompanyMetrics() {
-        return companyMetrics;
-    }
-
-    /**
-     * setter for companyMetrics.
-     */
-    public MetricsApi setCompanyMetrics(MetricsApi companyMetrics) {
-
-        this.companyMetrics = companyMetrics;
-        return this.companyMetrics;
-    }
-
-    public Updated getUpdated() {
-        return updated;
-    }
-
-    public Updated setUpdated(Updated updated) {
-        this.updated = updated;
-        return this.updated;
+    public CompanyMetricsDocument version(Long version) {
+        this.version = version;
+        return this;
     }
 }

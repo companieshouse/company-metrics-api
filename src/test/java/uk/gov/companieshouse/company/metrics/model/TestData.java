@@ -118,11 +118,17 @@ public class TestData {
         Updated updated =
                 createUpdated("source-metrics-updated-body-1.json");
 
-        return new CompanyMetricsDocument(metricsApi, updated);
+        return new CompanyMetricsDocument(metricsApi, updated)
+                .version(1L);
+    }
+
+    public CompanyMetricsDocument populateUnversionedFullCompanyMetricsDocument () throws IOException {
+        String content = loadTestDataFile("full-company-metrics-document.json");
+        return getObjectMapper().readValue(content, CompanyMetricsDocument.class);
     }
 
     public CompanyMetricsDocument populateFullCompanyMetricsDocument () throws IOException {
-        String content = loadTestDataFile("full-company-metrics-document.json");
-        return getObjectMapper().readValue(content, CompanyMetricsDocument.class);
+        return populateUnversionedFullCompanyMetricsDocument()
+                .version(1L);
     }
 }
