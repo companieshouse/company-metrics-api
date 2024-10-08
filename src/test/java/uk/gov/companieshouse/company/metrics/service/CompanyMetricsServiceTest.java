@@ -312,13 +312,13 @@ class CompanyMetricsServiceTest {
         verify(pscsCountService, never()).recalculateMetrics(any());
 
 
-        verify(mongoTemplate).insert(unVersionedCompanyMetricsDocumentCaptor.capture());
+        verify(companyMetricsRepository).insert(companyMetricsDocumentCaptor.capture());
 
-        Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
+        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
         assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
 
-        MetricsApi metricsApi = unVersionedCompanyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getMortgage()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
     }
@@ -338,13 +338,13 @@ class CompanyMetricsServiceTest {
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
 
-        verify(mongoTemplate).insert(unVersionedCompanyMetricsDocumentCaptor.capture());
+        verify(companyMetricsRepository).insert(companyMetricsDocumentCaptor.capture());
 
-        Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
+        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
         assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
 
-        MetricsApi metricsApi = unVersionedCompanyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getCounts()).isNotNull();
         assertThat(metricsApi.getCounts().getAppointments()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
@@ -365,13 +365,13 @@ class CompanyMetricsServiceTest {
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(appointmentsCountService, never()).recalculateMetrics(any());
 
-        verify(mongoTemplate).insert(unVersionedCompanyMetricsDocumentCaptor.capture());
+        verify(companyMetricsRepository).insert(companyMetricsDocumentCaptor.capture());
 
-        Updated updated = unVersionedCompanyMetricsDocumentCaptor.getValue().getUpdated();
+        Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
         assertThat(updated.getBy()).isEqualTo(UPDATED_BY);
         assertThat(updated.getType()).isEqualTo(COMPANY_METRICS);
 
-        MetricsApi metricsApi = unVersionedCompanyMetricsDocumentCaptor.getValue().getCompanyMetrics();
+        MetricsApi metricsApi = companyMetricsDocumentCaptor.getValue().getCompanyMetrics();
         assertThat(metricsApi.getCounts()).isNotNull();
         assertThat(metricsApi.getCounts().getPersonsWithSignificantControl()).isNotNull();
         assertThat(metricsApi.getEtag()).isNotNull();
