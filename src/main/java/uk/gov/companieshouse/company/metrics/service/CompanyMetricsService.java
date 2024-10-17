@@ -124,7 +124,7 @@ public class CompanyMetricsService {
             companyMetricsDocument.setUpdated(populateUpdated(
                     updatedBy != null ? updatedBy : String.format("contextId:%s", contextId)));
 
-            logger.info("Company metrics updated", DataMapHolder.getLogMap());
+            logger.info("Updating company metrics", DataMapHolder.getLogMap());
             if (companyMetricsDocument.getId() == null) { // A new document
                 companyMetricsDocument.setId(companyNumber);
                 companyMetricsRepository.insert(companyMetricsDocument);
@@ -135,8 +135,8 @@ public class CompanyMetricsService {
             }
             return Optional.of(companyMetricsDocument);
         } else {
-            companyMetricsRepository.delete(companyMetricsDocument);
-            logger.info("Empty company metrics deleted", DataMapHolder.getLogMap());
+            logger.info("Deleting empty company metrics document", DataMapHolder.getLogMap());
+            companyMetricsRepository.deleteById(companyNumber);
             return Optional.empty();
         }
     }

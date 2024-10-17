@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.company.metrics.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +30,10 @@ class CompanyMetricsServiceVersionedDocumentITest extends AbstractIntegrationTes
     private static final MortgageApi MORTGAGES = new MortgageApi()
             .totalCount(1)
             .satisfiedCount(1)
+            .partSatisfiedCount(0);
+    private static final MortgageApi EMPTY_MORTGAGES = new MortgageApi()
+            .totalCount(0)
+            .satisfiedCount(0)
             .partSatisfiedCount(0);
     private final TestData testData = new TestData();
 
@@ -119,5 +124,19 @@ class CompanyMetricsServiceVersionedDocumentITest extends AbstractIntegrationTes
 
         assertNotNull(document.get().getCompanyMetrics().getMortgage());
         assertNotNull(document.get().getCompanyMetrics().getEtag());
+    }
+
+
+    @Test
+    void shouldDeleteDocumentForMissingCompanyNumber() {
+        when(chargesCountService.recalculateMetrics(any()))
+                .thenReturn(EMPTY_MORTGAGES);
+
+        companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
+                testData.populateMetricsRecalculateApiForCharges());
+
+        Optional<CompanyMetricsDocument> document = companyMetricsRepository.findById(COMPANY_NUMBER);
+
+        assertFalse(document.isPresent());
     }
 }
