@@ -515,7 +515,7 @@ class CompanyMetricsServiceTest {
         verify(pscsCountService, never()).recalculateMetrics(any());
 
 
-        verify(companyMetricsRepository).delete(companyMetricsDocumentCaptor.capture());
+        verify(companyMetricsRepository).deleteById(any());
     }
 
     @Test
