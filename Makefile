@@ -1,6 +1,5 @@
 artifact_name       := company-metrics-api
 version             := unversioned
-
 ## Create help from comments in Makefile
 help:
 	@printf "%-20s %s\n" "Target" "Description"
@@ -10,8 +9,6 @@ help:
         | sort \
         | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' \
         | xargs -I _ sh -c 'printf "%-20s " _; make _ -nB | (grep -i "^# Help:" || echo "") | tail -1 | sed "s/^# Help: //g"'
-
-dependency_check_runner := 416670754337.dkr.ecr.eu-west-2.amazonaws.com/dependency-check-runner
 
 .PHONY: all
 all:
@@ -95,11 +92,4 @@ lint: lint/docker-compose sonar
 lint/docker-compose:
 	@# Help: Lint docker file
 	docker-compose -f docker-compose.yml config
-
-.PHONY: dependency-check
-dependency-check:
-	docker run --rm -e DEPENDENCY_CHECK_SUPPRESSIONS_HOME=/opt -v "$$(pwd)":/app -w /app ${dependency_check_runner} --repo-name="$(basename "$$(pwd)")"
-
-.PHONY: security-check
-security-check: dependency-check
 
