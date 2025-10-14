@@ -24,7 +24,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
-		<spring.boot.version>3.3.3</spring.boot.version>
+		<spring.boot.version>3.4.10</spring.boot.version>
 		<test-containers.version>1.19.8</test-containers.version>
 		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
 		<maven-build-helper-plugin.version>3.6.0</maven-build-helper-plugin.version>
@@ -35,7 +35,7 @@
 		<docker-maven-plugin.version>1.0.0</docker-maven-plugin.version>
 
 		<structured-logging.version>3.0.7</structured-logging.version>
-		<api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
+		<api-sdk-manager-java-library.version>3.0.13</api-sdk-manager-java-library.version>
 		<api-helper-java-library.version>3.0.1</api-helper-java-library.version>
 		<cucumber-java.version>7.18.0</cucumber-java.version>
 		<wiremock.version>3.5.2</wiremock.version>
@@ -44,8 +44,8 @@
 		<io-cucumber.version>7.15.0</io-cucumber.version>
 		<private-api-sdk-java.version>4.0.389</private-api-sdk-java.version>
 		<springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
-		<commons-lang3.version>3.14.0</commons-lang3.version>
-		<apache.httpclient5.version>5.3.1</apache.httpclient5.version>
+		<commons-lang3.version>3.19.0</commons-lang3.version>
+		<apache.httpclient5.version>5.4.4</apache.httpclient5.version>
 		<commons-io.version>2.16.1</commons-io.version>
 
 		<skip.integration.tests>false</skip.integration.tests>
