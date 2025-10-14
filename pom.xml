@@ -42,7 +42,7 @@
 		<docker-java-api.version>3.3.6</docker-java-api.version>
 		<jib-maven-plugin.version>3.4.2</jib-maven-plugin.version>
 		<io-cucumber.version>7.15.0</io-cucumber.version>
-		<private-api-sdk-java.version>4.0.186</private-api-sdk-java.version>
+		<private-api-sdk-java.version>4.0.389</private-api-sdk-java.version>
 		<springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
 		<apache.httpclient5.version>5.3.1</apache.httpclient5.version>
