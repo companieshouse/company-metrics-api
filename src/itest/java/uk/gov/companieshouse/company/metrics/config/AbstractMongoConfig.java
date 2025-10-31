@@ -16,7 +16,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 public class AbstractMongoConfig {
 
     public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(
-            DockerImageName.parse("mongo:6.0.19"));
+            DockerImageName.parse("mongo:7.0.17"));
 
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry registry) {
