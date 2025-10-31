@@ -2,6 +2,9 @@ package uk.gov.companieshouse.company.metrics.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +14,6 @@ import uk.gov.companieshouse.company.metrics.AbstractIntegrationTest;
 import uk.gov.companieshouse.company.metrics.model.Psc;
 import uk.gov.companieshouse.company.metrics.model.PscDocument;
 import uk.gov.companieshouse.company.metrics.repository.pscs.PscRepository;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 class PscRepositoryITest extends AbstractIntegrationTest {
 

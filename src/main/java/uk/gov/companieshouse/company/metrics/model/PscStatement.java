@@ -4,6 +4,7 @@ import java.time.Instant;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class PscStatement {
+
     @Field("ceased_on")
     private Instant ceasedOn;
 

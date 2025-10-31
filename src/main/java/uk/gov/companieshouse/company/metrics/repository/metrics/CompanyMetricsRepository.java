@@ -6,4 +6,5 @@ import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 
 @Repository
 public interface CompanyMetricsRepository extends MongoRepository<CompanyMetricsDocument, String> {
+
 }

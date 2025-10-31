@@ -8,6 +8,13 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
+import java.net.URI;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -31,13 +38,6 @@ import uk.gov.companieshouse.company.metrics.repository.charges.ChargesRepositor
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
 import uk.gov.companieshouse.company.metrics.repository.pscs.PscRepository;
 import uk.gov.companieshouse.company.metrics.repository.pscstatements.PscStatementsRepository;
-import java.net.URI;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class PscsSteps {
 
@@ -77,11 +77,11 @@ public class PscsSteps {
     private final HttpHeaders headers = new HttpHeaders();
 
     public PscsSteps(ChargesRepository chargesRepository,
-                     CompanyMetricsRepository companyMetricsRepository,
-                     AppointmentRepository appointmentRepository,
-                     PscStatementsRepository pscStatementsRepository,
-                     PscRepository pscRepository,
-                     TestRestTemplate restTemplate) {
+            CompanyMetricsRepository companyMetricsRepository,
+            AppointmentRepository appointmentRepository,
+            PscStatementsRepository pscStatementsRepository,
+            PscRepository pscRepository,
+            TestRestTemplate restTemplate) {
         this.chargesRepository = chargesRepository;
         this.companyMetricsRepository = companyMetricsRepository;
         this.appointmentRepository = appointmentRepository;
@@ -199,7 +199,7 @@ public class PscsSteps {
         CONTEXT.set(ORIGINAL_ETAG, eTag);
 
         Updated updated = new Updated();
-        updated.setAt(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
+        updated.setAt(LocalDateTime.now().minusDays(1));
         updated.setBy("Someone");
         updated.setType(COMPANY_METRICS_TYPE);
 

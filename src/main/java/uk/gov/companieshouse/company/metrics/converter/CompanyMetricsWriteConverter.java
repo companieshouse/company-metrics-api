@@ -18,6 +18,7 @@ public class CompanyMetricsWriteConverter implements
 
     /**
      * Write convertor.
+     *
      * @param source source Document.
      * @return CompanyMetrics BSON object.
      */

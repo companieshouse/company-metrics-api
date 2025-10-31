@@ -17,7 +17,6 @@ import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 import uk.gov.companieshouse.logging.Logger;
 
 
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity

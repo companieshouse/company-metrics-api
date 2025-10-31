@@ -24,6 +24,7 @@ import uk.gov.companieshouse.company.metrics.service.CompanyMetricsService;
 import uk.gov.companieshouse.company.metrics.steps.ITestUtil;
 
 class CompanyMetricsControllerITest extends AbstractIntegrationTest {
+
     private static final String MOCK_COMPANY_NUMBER = "12345678";
     private static final String COMPANY_URL = String.format("/company/%s/metrics", MOCK_COMPANY_NUMBER);
 

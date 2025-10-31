@@ -18,10 +18,10 @@
       "part_satisfied_count": 0,
       "total_count": 51
     },
-    "registers" : {
-      "directors" : {
-        "register_moved_to" : "public-register",
-        "moved_on" : "2022-03-02T11:16:19.000Z"
+    "registers": {
+      "directors": {
+        "register_moved_to": "public-register",
+        "moved_on": "2022-03-02T11:16:19.000Z"
       }
     }
   },

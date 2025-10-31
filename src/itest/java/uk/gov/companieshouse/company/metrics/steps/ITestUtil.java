@@ -1,43 +1,42 @@
 package uk.gov.companieshouse.company.metrics.steps;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.companieshouse.api.charges.ChargeApi;
-import uk.gov.companieshouse.api.metrics.MetricsApi;
-import uk.gov.companieshouse.api.metrics.MortgageApi;
-import uk.gov.companieshouse.api.metrics.CountsApi;
 import uk.gov.companieshouse.api.metrics.AppointmentsApi;
-import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
+import uk.gov.companieshouse.api.metrics.CountsApi;
 import uk.gov.companieshouse.api.metrics.InternalData;
+import uk.gov.companieshouse.api.metrics.MetricsApi;
+import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
+import uk.gov.companieshouse.api.metrics.MortgageApi;
 import uk.gov.companieshouse.company.metrics.model.ChargesDocument;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
 
 @ExtendWith(SpringExtension.class)
 public class ITestUtil {
 
     public ChargesDocument createChargesDocumentWithoutData(String companyNumber,
-        String chargeId) {
+            String chargeId) {
 
         var updated = new Updated();
         updated.setAt(LocalDateTime.now());
         updated.setType("mortgage_delta");
         updated.setBy("updatedBy");
         return new ChargesDocument()
-            .setId(chargeId)
-            .setCompanyNumber(companyNumber)
-            .setData(null)
-            .setUpdated(updated);
+                .setId(chargeId)
+                .setCompanyNumber(companyNumber)
+                .setData(null)
+                .setUpdated(updated);
     }
 
     public ChargesDocument createChargesDocument(String companyNumber,
-                                                 String chargeId,
-                                                 ChargeApi.StatusEnum status) {
+            String chargeId,
+            ChargeApi.StatusEnum status) {
 
         var updated = new Updated();
         updated.setAt(LocalDateTime.now());
@@ -48,10 +47,10 @@ public class ITestUtil {
         chargeApi.setChargeCode("12");
         chargeApi.setStatus(status);
         return new ChargesDocument()
-                    .setId(chargeId)
-                    .setCompanyNumber(companyNumber)
-                    .setData(chargeApi)
-                    .setUpdated(updated);
+                .setId(chargeId)
+                .setCompanyNumber(companyNumber)
+                .setData(chargeApi)
+                .setUpdated(updated);
     }
 
     public CompanyMetricsDocument createTestCompanyMetricsDocument(String companyNumber) {
@@ -114,11 +113,12 @@ public class ITestUtil {
 
         return metricsRecalculateApi;
     }
+
     public HttpHeaders populateHttpHeaders(String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("ERIC-Identity" , "SOME_IDENTITY");
+        headers.set("ERIC-Identity", "SOME_IDENTITY");
         headers.set("ERIC-Identity-Type", "key");
         headers.set("x-request-id", id);
         headers.set("ERIC-Authorised-Key-Privileges", "internal-app");

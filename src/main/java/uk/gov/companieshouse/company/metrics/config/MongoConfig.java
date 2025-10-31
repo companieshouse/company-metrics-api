@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -54,8 +53,8 @@ public class MongoConfig {
     }
 
     /**
-     * This method takes in custom conversions and created MongoConverter, so that MongoConverter
-     * can be passed onto MongoTemplate.
+     * This method takes in custom conversions and created MongoConverter, so that MongoConverter can be passed onto
+     * MongoTemplate.
      *
      * @param factory MongoDatabaseFactory
      * @return MongoConverter
@@ -64,7 +63,7 @@ public class MongoConfig {
             MongoDatabaseFactory factory) {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
         MongoMappingContext mappingContext = new MongoMappingContext();
-        mappingContext.setSimpleTypeHolder(mongoCustomConversions() .getSimpleTypeHolder());
+        mappingContext.setSimpleTypeHolder(mongoCustomConversions().getSimpleTypeHolder());
         mappingContext.setApplicationContext(applicationContext);
         mappingContext.afterPropertiesSet();
 

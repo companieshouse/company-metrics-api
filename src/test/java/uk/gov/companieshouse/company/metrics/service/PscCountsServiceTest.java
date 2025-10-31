@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.company.metrics.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,9 +14,6 @@ import uk.gov.companieshouse.company.metrics.model.PscsCounts;
 import uk.gov.companieshouse.company.metrics.repository.pscs.PscRepository;
 import uk.gov.companieshouse.company.metrics.repository.pscstatements.PscStatementsRepository;
 import uk.gov.companieshouse.logging.Logger;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PscCountsServiceTest {

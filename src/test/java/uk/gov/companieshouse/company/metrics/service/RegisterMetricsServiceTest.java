@@ -1,5 +1,13 @@
 package uk.gov.companieshouse.company.metrics.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,16 +22,6 @@ import uk.gov.companieshouse.api.registers.Registers;
 import uk.gov.companieshouse.company.metrics.model.RegistersDocument;
 import uk.gov.companieshouse.company.metrics.repository.registers.RegistersRepository;
 import uk.gov.companieshouse.logging.Logger;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unused")
@@ -60,9 +58,9 @@ class RegisterMetricsServiceTest {
 
     private RegistersDocument getRegistersDocument() {
         List<RegisteredItems> items = new ArrayList<RegisteredItems>();
-            items.add(new RegisteredItems().registerMovedTo(RegisteredItems.RegisterMovedToEnum.PUBLIC_REGISTER)
-                    .movedOn(LocalDate.parse("2024-01-01")));
-         RegisterListDirectors registerListDirectors = new RegisterListDirectors()
+        items.add(new RegisteredItems().registerMovedTo(RegisteredItems.RegisterMovedToEnum.PUBLIC_REGISTER)
+                .movedOn(LocalDate.parse("2024-01-01")));
+        RegisterListDirectors registerListDirectors = new RegisterListDirectors()
                 .registerType(RegisterListDirectors.RegisterTypeEnum.DIRECTORS).items(items);
         return new RegistersDocument().setData(new CompanyRegister().registers(new Registers().directors(registerListDirectors)));
     }

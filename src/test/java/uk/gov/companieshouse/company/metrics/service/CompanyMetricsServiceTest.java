@@ -311,7 +311,6 @@ class CompanyMetricsServiceTest {
         verify(appointmentsCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
 
-
         verify(companyMetricsRepository).insert(companyMetricsDocumentCaptor.capture());
 
         Updated updated = companyMetricsDocumentCaptor.getValue().getUpdated();
@@ -328,7 +327,7 @@ class CompanyMetricsServiceTest {
     void shouldSetAppointmentsMetricsOnNewDocument() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(appointmentsCountService.recalculateMetrics( any()))
+        when(appointmentsCountService.recalculateMetrics(any()))
                 .thenReturn(APPOINTMENTS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
@@ -355,7 +354,7 @@ class CompanyMetricsServiceTest {
     void shouldSetPscsMetricsOnNewDocument() {
         doReturn(Optional.empty())
                 .when(companyMetricsRepository).findById(COMPANY_NUMBER);
-        when(pscsCountService.recalculateMetrics( any()))
+        when(pscsCountService.recalculateMetrics(any()))
                 .thenReturn(PSCS);
 
         companyMetricsService.recalculateMetrics(CONTEXT_ID, COMPANY_NUMBER,
@@ -513,7 +512,6 @@ class CompanyMetricsServiceTest {
         verify(appointmentsCountService).recalculateMetrics(COMPANY_NUMBER);
         verify(chargesCountService, never()).recalculateMetrics(any());
         verify(pscsCountService, never()).recalculateMetrics(any());
-
 
         verify(companyMetricsRepository).deleteById(any());
     }

@@ -1,9 +1,14 @@
 package uk.gov.companieshouse.company.metrics.steps;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.companieshouse.company.metrics.config.CucumberContext.CONTEXT;
+
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -16,13 +21,6 @@ import uk.gov.companieshouse.api.metrics.PscApi;
 import uk.gov.companieshouse.company.metrics.model.CompanyMetricsDocument;
 import uk.gov.companieshouse.company.metrics.model.Updated;
 import uk.gov.companieshouse.company.metrics.repository.metrics.CompanyMetricsRepository;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.companieshouse.company.metrics.config.CucumberContext.CONTEXT;
 
 public class CommonApiSteps {
 
@@ -116,7 +114,7 @@ public class CommonApiSteps {
         CONTEXT.set(ORIGINAL_ETAG, eTag);
 
         Updated updated = new Updated();
-        updated.setAt(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
+        updated.setAt(LocalDateTime.now().minusDays(1));
         updated.setBy("stream-partition-offset");
         updated.setType(COMPANY_METRICS_TYPE);
 

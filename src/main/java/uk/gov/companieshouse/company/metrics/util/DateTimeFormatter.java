@@ -16,6 +16,7 @@ public class DateTimeFormatter {
 
     /**
      * Parse date string to LocalDate.
+     *
      * @param dateStr date as string.
      * @return parsed date.
      */
@@ -27,6 +28,7 @@ public class DateTimeFormatter {
 
     /**
      * Format date.
+     *
      * @param localDate date to format.
      * @return formatted date as string.
      */

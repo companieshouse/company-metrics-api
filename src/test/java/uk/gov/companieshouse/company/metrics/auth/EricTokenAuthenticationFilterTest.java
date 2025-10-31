@@ -5,10 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +24,7 @@ class EricTokenAuthenticationFilterTest {
     jakarta.servlet.http.HttpServletRequest request;
 
     @Mock
-    jakarta.servlet.http.HttpServletResponse  response;
+    jakarta.servlet.http.HttpServletResponse response;
 
     @Mock
     jakarta.servlet.FilterChain filterChain;

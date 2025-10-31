@@ -3,9 +3,7 @@ package uk.gov.companieshouse.company.metrics.service;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Optional;
-
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.metrics.RegisterApi;
@@ -72,7 +70,7 @@ public class RegisterMetricsService {
     }
 
     private void mapDirectorsRegister(Registers registers, RegistersApi registerMetrics,
-                                      MutableBoolean registerDataFound) {
+            MutableBoolean registerDataFound) {
         if (registers.getDirectors() != null
                 && !registers.getDirectors().getItems().isEmpty()) {
             RegisteredItems currentRegister = registers.getDirectors()
@@ -86,7 +84,7 @@ public class RegisterMetricsService {
     }
 
     private void mapSecretariesRegister(Registers registers, RegistersApi registerMetrics,
-                                        MutableBoolean registerDataFound) {
+            MutableBoolean registerDataFound) {
         if (registers.getSecretaries() != null
                 && !registers.getSecretaries().getItems().isEmpty()) {
             RegisteredItems currentRegister = registers.getSecretaries()
@@ -100,7 +98,7 @@ public class RegisterMetricsService {
     }
 
     private void mapMembersRegister(Registers registers, RegistersApi registerMetrics,
-                                    MutableBoolean registerDataFound) {
+            MutableBoolean registerDataFound) {
         if (registers.getMembers() != null
                 && !registers.getMembers().getItems().isEmpty()) {
             RegisteredItems currentRegister = registers.getMembers()
@@ -114,7 +112,7 @@ public class RegisterMetricsService {
     }
 
     private void mapPscRegister(Registers registers, RegistersApi registerMetrics,
-                                MutableBoolean registerDataFound) {
+            MutableBoolean registerDataFound) {
         if (registers.getPersonsWithSignificantControl() != null
                 && !registers.getPersonsWithSignificantControl().getItems().isEmpty()) {
             RegisteredItems currentRegister = registers.getPersonsWithSignificantControl()
@@ -128,7 +126,7 @@ public class RegisterMetricsService {
     }
 
     private void mapUraRegister(Registers registers, RegistersApi registerMetrics,
-                                MutableBoolean registerDataFound) {
+            MutableBoolean registerDataFound) {
         if (registers.getUsualResidentialAddress() != null
                 && !registers.getUsualResidentialAddress().getItems().isEmpty()) {
             RegisteredItems currentRegister = registers.getUsualResidentialAddress()
@@ -142,7 +140,7 @@ public class RegisterMetricsService {
     }
 
     private void mapLlpMembersRegister(Registers registers, RegistersApi registerMetrics,
-                                       MutableBoolean registerDataFound) {
+            MutableBoolean registerDataFound) {
         if (registers.getLlpMembers() != null
                 && !registers.getLlpMembers().getItems().isEmpty()) {
             RegisteredItems currentRegister = registers.getLlpMembers().getItems().get(0);
@@ -155,7 +153,7 @@ public class RegisterMetricsService {
     }
 
     private void mapLlpUraRegister(Registers registers, RegistersApi registerMetrics,
-                                   MutableBoolean registerDataFound) {
+            MutableBoolean registerDataFound) {
         if (registers.getLlpUsualResidentialAddress() != null
                 && !registers.getLlpUsualResidentialAddress().getItems().isEmpty()) {
             RegisteredItems currentRegister = registers.getLlpUsualResidentialAddress()

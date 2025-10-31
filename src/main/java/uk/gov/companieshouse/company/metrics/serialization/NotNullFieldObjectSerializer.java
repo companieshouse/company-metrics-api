@@ -13,7 +13,7 @@ public class NotNullFieldObjectSerializer extends JsonSerializer<Object> {
 
     @Override
     public void serialize(Object value, JsonGenerator jsonGenerator,
-                          SerializerProvider serializerProvider) throws IOException {
+            SerializerProvider serializerProvider) throws IOException {
         if (isEmpty(serializerProvider, value)) {
             jsonGenerator.writeNull();
         } else {

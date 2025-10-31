@@ -5,19 +5,17 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
-
 import uk.gov.companieshouse.company.metrics.util.DateTimeFormatter;
 
 public class LocalDateDeSerializer extends JsonDeserializer<LocalDate> {
 
     @Override
     public LocalDate deserialize(JsonParser jsonParser,
-                                 DeserializationContext deserializationContext) throws IOException {
+            DeserializationContext deserializationContext) throws IOException {
         JsonNode jsonNode = jsonParser.readValueAsTree();
         try {
             var dateJsonNode = jsonNode.get("$date");
