@@ -32,7 +32,8 @@ class OffsetDateTimeSerializerTest {
 
     @Test
     void testSerialiseValidValue() throws IOException {
-        serializer.serialize(OffsetDateTime.parse(DATE_STRING, DateTimeFormatter.ISO_OFFSET_DATE_TIME), jsonGenerator, serializerProvider);
+        serializer.serialize(OffsetDateTime.parse(DATE_STRING, DateTimeFormatter.ISO_OFFSET_DATE_TIME), jsonGenerator,
+                serializerProvider);
 
         verify(jsonGenerator).writeRawValue("ISODate(\"2015-06-26T08:31:35.058Z\")");
     }

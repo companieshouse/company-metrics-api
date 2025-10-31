@@ -1,10 +1,9 @@
 package uk.gov.companieshouse.company.metrics.steps;
 
-import java.util.Collections;
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.Collections;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -30,11 +29,11 @@ public class CompanyMetricsApiErrorRetrySteps {
 
     @When("I send POST request with an invalid payload that fails to de-serialised into Request object")
     public void iSendPOSTRequestWithARandomInvalidPayloadThatFailsToDeSerialisedIntoRequestObject() {
-        Object badObject = "A bad object" ;
+        Object badObject = "A bad object";
         HttpEntity<Object> request = new HttpEntity<>(badObject,
-            iTestUtil.populateHttpHeaders("1234567"));
+                iTestUtil.populateHttpHeaders("1234567"));
         String uri = "/company/1234567/metrics/recalculate";
-        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class );
+        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class);
         CucumberContext.CONTEXT.set("statusCode", response.getStatusCodeValue());
     }
 
@@ -47,7 +46,7 @@ public class CompanyMetricsApiErrorRetrySteps {
         MetricsRecalculateApi metricsRecalculateApi = iTestUtil.populateMetricsRecalculateApi(true);
         HttpEntity<Object> request = new HttpEntity<>(metricsRecalculateApi, headers);
         String uri = "/company/1234567/metrics/recalculate";
-        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class );
+        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, request, Void.class);
         CucumberContext.CONTEXT.set("statusCode", response.getStatusCodeValue());
     }
 
@@ -57,7 +56,7 @@ public class CompanyMetricsApiErrorRetrySteps {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-request-id", "5234234234");
-        headers.set("ERIC-Identity" , "SOME_IDENTITY");
+        headers.set("ERIC-Identity", "SOME_IDENTITY");
         headers.set("ERIC-Identity-Type", "key");
         headers.set("ERIC-Authorised-Key-Privileges", "internal-app");
         HttpEntity<MetricsRecalculateApi> request = new HttpEntity<>(metricsRecalculateApi, headers);

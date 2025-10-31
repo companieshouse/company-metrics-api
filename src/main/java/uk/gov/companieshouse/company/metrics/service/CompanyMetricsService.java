@@ -2,7 +2,6 @@ package uk.gov.companieshouse.company.metrics.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,6 @@ import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -34,7 +33,7 @@ public class ExceptionHandlerConfig {
         this.logger = logger;
     }
 
-    private void populateResponseBody(Map<String, Object> responseBody , String correlationId) {
+    private void populateResponseBody(Map<String, Object> responseBody, String correlationId) {
         responseBody.put("timestamp", LocalDateTime.now());
         responseBody.put("message", String.format("Exception occurred while processing the API"
                 + " request with Correlation ID: %s", correlationId));
@@ -67,14 +66,13 @@ public class ExceptionHandlerConfig {
      */
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleException(Exception ex,
-                                                  WebRequest request) {
+            WebRequest request) {
         return new ResponseEntity<>(responseAndLogBuilderHandler(ex, request),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
-     * BadRequestException exception handler.
-     * Thrown when data is given in the wrong format.
+     * BadRequestException exception handler. Thrown when data is given in the wrong format.
      *
      * @param ex      exception to handle.
      * @param request request.
@@ -83,7 +81,7 @@ public class ExceptionHandlerConfig {
     @ExceptionHandler(value = {BadRequestException.class, DateTimeParseException.class,
             HttpMessageNotReadableException.class, MethodArgumentNotValidException.class})
     public ResponseEntity<Object> handleBadRequestException(Exception ex,
-                                                            WebRequest request) {
+            WebRequest request) {
         return new ResponseEntity<>(responseAndLogBuilderHandler(ex, request),
                 HttpStatus.BAD_REQUEST);
 
@@ -98,14 +96,13 @@ public class ExceptionHandlerConfig {
      */
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
     public ResponseEntity<Object> handleMethodNotAllowedException(Exception ex,
-                                                                  WebRequest request) {
+            WebRequest request) {
         return new ResponseEntity<>(responseAndLogBuilderHandler(ex, request),
                 HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     /**
-     * ServiceUnavailableException exception handler.
-     * To be thrown when there are connection issues.
+     * ServiceUnavailableException exception handler. To be thrown when there are connection issues.
      *
      * @param ex      exception to handle.
      * @param request request.
@@ -114,7 +111,7 @@ public class ExceptionHandlerConfig {
     @ExceptionHandler(value = {ServiceUnavailableException.class, DataAccessException.class,
             DataAccessResourceFailureException.class})
     public ResponseEntity<Object> handleServiceUnavailableException(Exception ex,
-                                                                    WebRequest request) {
+            WebRequest request) {
         return new ResponseEntity<>(responseAndLogBuilderHandler(ex, request),
                 HttpStatus.SERVICE_UNAVAILABLE);
     }

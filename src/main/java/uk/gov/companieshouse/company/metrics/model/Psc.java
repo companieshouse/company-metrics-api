@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 
 public class Psc {
+
     @Field("ceased_on")
     private Instant ceasedOn;
 

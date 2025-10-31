@@ -3,10 +3,6 @@ package uk.gov.companieshouse.company.metrics.logging;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.GenericFilterBean;
@@ -25,8 +21,8 @@ public class StructuredLoggingFilter extends GenericFilterBean
 
     @Override
     public void doFilter(jakarta.servlet.ServletRequest servletRequest,
-                         jakarta.servlet.ServletResponse servletResponse,
-                         jakarta.servlet.FilterChain filterChain)
+            jakarta.servlet.ServletResponse servletResponse,
+            jakarta.servlet.FilterChain filterChain)
             throws IOException, jakarta.servlet.ServletException {
 
         HttpServletRequest req = (HttpServletRequest) servletRequest;

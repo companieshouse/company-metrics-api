@@ -11,7 +11,7 @@ public class OffsetDateTimeSerializer extends JsonSerializer<OffsetDateTime> {
 
     @Override
     public void serialize(OffsetDateTime offsetDateTime, JsonGenerator jsonGenerator,
-                          SerializerProvider serializerProvider) throws IOException {
+            SerializerProvider serializerProvider) throws IOException {
         if (offsetDateTime == null) {
             jsonGenerator.writeNull();
         } else {

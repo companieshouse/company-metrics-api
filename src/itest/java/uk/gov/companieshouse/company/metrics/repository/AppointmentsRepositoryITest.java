@@ -67,7 +67,7 @@ class AppointmentsRepositoryITest extends AbstractIntegrationTest {
     private AppointmentDocument buildAppointment(String role) {
 
         Officer officer = new Officer()
-            .setOfficerRole(role);
+                .setOfficerRole(role);
 
         return new AppointmentDocument()
                 .setCompanyNumber(COMPANY_NUMBER)

@@ -2,16 +2,16 @@ package uk.gov.companieshouse.company.metrics.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Objects;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileCopyUtils;
+import uk.gov.companieshouse.api.metrics.InternalData;
 import uk.gov.companieshouse.api.metrics.MetricsApi;
 import uk.gov.companieshouse.api.metrics.MetricsRecalculateApi;
-import uk.gov.companieshouse.api.metrics.InternalData;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Objects;
 
 @ExtendWith(SpringExtension.class)
 public class TestData {
@@ -39,8 +39,7 @@ public class TestData {
         return FileCopyUtils.copyToString(jsonPayload);
     }
 
-    public ObjectMapper getObjectMapper()
-    {
+    public ObjectMapper getObjectMapper() {
         objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
@@ -112,7 +111,7 @@ public class TestData {
         return metricsRecalculateApi;
     }
 
-    public CompanyMetricsDocument populateCompanyMetricsDocument () throws IOException {
+    public CompanyMetricsDocument populateCompanyMetricsDocument() throws IOException {
         MetricsApi metricsApi =
                 createMetricsApi("source-metrics-body-1.json");
         Updated updated =
@@ -122,12 +121,12 @@ public class TestData {
                 .version(1L);
     }
 
-    public CompanyMetricsDocument populateUnversionedFullCompanyMetricsDocument () throws IOException {
+    public CompanyMetricsDocument populateUnversionedFullCompanyMetricsDocument() throws IOException {
         String content = loadTestDataFile("full-company-metrics-document.json");
         return getObjectMapper().readValue(content, CompanyMetricsDocument.class);
     }
 
-    public CompanyMetricsDocument populateFullCompanyMetricsDocument () throws IOException {
+    public CompanyMetricsDocument populateFullCompanyMetricsDocument() throws IOException {
         return populateUnversionedFullCompanyMetricsDocument()
                 .version(1L);
     }

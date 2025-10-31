@@ -10,7 +10,7 @@ public class NonBlankStringSerializer extends JsonSerializer<String> {
 
     @Override
     public void serialize(String value, JsonGenerator jsonGenerator,
-                          SerializerProvider serializerProvider) throws IOException {
+            SerializerProvider serializerProvider) throws IOException {
         if (isEmpty(serializerProvider, value)) {
             jsonGenerator.writeNull();
         } else {

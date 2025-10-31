@@ -83,7 +83,8 @@ class CompanyMetricsServiceVersionedDocumentITest extends AbstractIntegrationTes
 
     @Test
     void shouldUpdateExistingUnversionedDocument() throws IOException {
-        UnversionedCompanyMetricsDocument initialMetricsDocument = new UnversionedCompanyMetricsDocument(testData.populateFullCompanyMetricsDocument());
+        UnversionedCompanyMetricsDocument initialMetricsDocument = new UnversionedCompanyMetricsDocument(
+                testData.populateFullCompanyMetricsDocument());
         initialMetricsDocument.setId(COMPANY_NUMBER);
         initialMetricsDocument.version(null);
         mongoTemplate.save(initialMetricsDocument);
@@ -105,7 +106,8 @@ class CompanyMetricsServiceVersionedDocumentITest extends AbstractIntegrationTes
 
     @Test
     void shouldUpdateExistingVersionedDocument() throws IOException {
-        UnversionedCompanyMetricsDocument initialMetricsDocument = new UnversionedCompanyMetricsDocument(testData.populateFullCompanyMetricsDocument());
+        UnversionedCompanyMetricsDocument initialMetricsDocument = new UnversionedCompanyMetricsDocument(
+                testData.populateFullCompanyMetricsDocument());
         initialMetricsDocument.setId(COMPANY_NUMBER);
         initialMetricsDocument.version(1L);
 

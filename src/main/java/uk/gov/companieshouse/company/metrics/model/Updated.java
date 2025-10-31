@@ -16,8 +16,9 @@ public class Updated {
 
     /**
      * Instantiate company insolvency updated data.
-     * @param at timestamp for the delta change
-     * @param by updated by
+     *
+     * @param at   timestamp for the delta change
+     * @param by   updated by
      * @param type the delta type
      */
     public Updated(LocalDateTime at, String by, String type) {

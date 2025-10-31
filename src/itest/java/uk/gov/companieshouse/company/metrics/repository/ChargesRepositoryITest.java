@@ -99,8 +99,8 @@ class ChargesRepositoryITest extends AbstractIntegrationTest {
         chargeApi.setId(id);
 
         return new ChargesDocument().setCompanyNumber(MOCK_COMPANY_NUMBER)
-                        .setId(id).setData(chargeApi)
-                        .setUpdated(populateUpdateObject("updatedBy"));
+                .setId(id).setData(chargeApi)
+                .setUpdated(populateUpdateObject("updatedBy"));
     }
 
     private Updated populateUpdateObject(String updatedBy) {
