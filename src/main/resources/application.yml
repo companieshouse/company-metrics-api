@@ -62,10 +62,13 @@ spring:
         collection: ${REGISTERS_COLLECTION_NAME:company_registers}
 
 management:
+  health:
+    mongo:
+      enabled: false
   endpoints:
     enabled-by-default: false
     web:
-      base-path: /company-metrics-api
+      base-path: /
       path-mapping:
         health: healthcheck
   endpoint:

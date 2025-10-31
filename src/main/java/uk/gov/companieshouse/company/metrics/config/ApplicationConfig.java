@@ -51,7 +51,7 @@ public class ApplicationConfig {
      */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/company-metrics-api/healthcheck");
+        return web -> web.ignoring().requestMatchers("/healthcheck");
     }
 
 }
