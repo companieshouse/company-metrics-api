@@ -21,7 +21,7 @@
 
         <main.class>uk.gov.companieshouse.company.metrics.CompanyMetricsApiApplication</main.class>
 
-        <spring.boot.version>3.5.7</spring.boot.version>
+        <spring.boot.version>3.5.14</spring.boot.version>
 
         <!-- Internal -->
         <structured-logging.version>3.0.43</structured-logging.version>
