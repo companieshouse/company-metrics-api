@@ -22,9 +22,10 @@
         <main.class>uk.gov.companieshouse.company.metrics.CompanyMetricsApiApplication</main.class>
 
         <spring.boot.version>3.5.15</spring.boot.version>
+        <opentelemetry.version>2.31.0</opentelemetry.version>
 
         <!-- Internal -->
-        <structured-logging.version>3.0.43</structured-logging.version>
+        <structured-logging.version>3.0.57</structured-logging.version>
         <api-sdk-manager-java-library.version>3.0.13</api-sdk-manager-java-library.version>
         <api-helper-java-library.version>3.0.3</api-helper-java-library.version>
         <private-api-sdk-java.version>4.0.404</private-api-sdk-java.version>
@@ -219,10 +220,21 @@
             <artifactId>httpclient5</artifactId>
             <version>${apache.httpclient5.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-spring-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>${opentelemetry.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
